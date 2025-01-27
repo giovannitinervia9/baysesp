@@ -1,16 +1,21 @@
 Package: baysesp
-Title: What the Package Does (One Line, Title Case)
+Title: Bayes estimation of sensitivity and specificity of diagnostic tests in presence of verification bias
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+    person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
+Description: 
+    `baysesp` is an R package that provides Bayesian methods for estimating the sensitivity 
+    and specificity of diagnostic tests in the presence of verification bias. It allows users 
+    to incorporate prior information and obtain posterior distributions of test performance 
+    metrics using Bayesian inference. The package includes functions for data simulation, 
+    model fitting via Stan, and posterior summarization, facilitating robust and flexible 
+    analysis of diagnostic test accuracy.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Imports: 
-    dplyr,
-    rstan
 URL: https://github.com/giovannitinervia9/baysesp
 BugReports: https://github.com/giovannitinervia9/baysesp/issues
+Depends: 
+    dplyr,
+    rstan

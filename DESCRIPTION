@@ -1,11 +1,11 @@
 Package: baysesp
-Title: Bayes estimation of sensitivity and specificity of diagnostic tests in presence of verification bias
+Title: Bayesian estimation of sensitivity and specificity of diagnostic tests accounting for verification bias
 Version: 0.0.0.9000
 Authors@R: 
     person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
 Description: 
     `baysesp` is an R package that provides Bayesian methods for estimating the sensitivity 
-    and specificity of diagnostic tests in the presence of verification bias. It allows users 
+    and specificity of diagnostic tests accounting for verification bias. It allows users 
     to incorporate prior information and obtain posterior distributions of test performance 
     metrics using Bayesian inference.
 License: GPL (>= 3)

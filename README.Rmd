@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-`baysesp` is an `R` package that allows users to estimate the sensitivity and specificity of diagnostic tests in the presence of verification bias via bayesian methods.
+`baysesp` is an `R` package that enables users to estimate the sensitivity and specificity of diagnostic tests while accounting for verification bias using Bayesian methods.
 
 ## Installation
 
@@ -30,7 +30,7 @@ devtools::install_github("giovannitinervia9/baysesp")
 
 ## Example
 
-We first generate a dataset using the `baysesp_simul()`
+We first generate a dataset using the `baysesp_simul()` function:
 
 ```{r, warning=F, message=F}
 library(baysesp)
@@ -39,7 +39,7 @@ y <- baysesp_simul(n = 1000, p = 0.01, se = 0.9, sp = 0.5)
 ```
 
 
-Next, we convert the simulated data into the appropriate format for the `baysesp()` function using `y_to_stan_data()`
+Next, we convert the simulated data into the appropriate format for the `baysesp()` function using `y_to_stan_data()`:
 
 ```{r}
 stan_data <- y_to_stan_data(y)
@@ -69,7 +69,7 @@ Let's check the results:
 
 ```{r}
 a <- 0.05
-s <- summary(fit)
+s <- summary(fit, probs = c(a / 2, 1 - a / 2))
 round(s$summary, 3)
 ```
 

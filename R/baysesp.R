@@ -62,6 +62,7 @@
 #' set.seed(123)
 #' baysesp_simul(n = 500, nsim = 10, p = 0.05, se = 0.85, sp = 0.95)
 #'
+#' @importFrom stats rmultinom
 #' @export
 baysesp_simul <- function(n = 100,
                           nsim = 1,
@@ -78,16 +79,16 @@ baysesp_simul <- function(n = 100,
   p_v1_d0_t0 <- l22 * sp * (1 - p)                           # r2
   p_v0_t1 <- (1 - l11) * se * p + (1 - l21) * (1 - sp) * (1 - p) # u1
   p_v0_t0 <- (1 - l12) * (1 - se) * p + (1 - l22) * sp * (1 - p) # u2
-  
+
   probs <- c(p_v1_d1_t1,
              p_v1_d1_t0,
              p_v1_d0_t1,
              p_v1_d0_t0,
              p_v0_t1,
              p_v0_t0)
-  
+
   y <- rmultinom(n = nsim, size = n, prob = probs)
-  
+
   rownames(y) <- c("s1", "s2", "r1", "r2", "u1", "u2")
   colnames(y) <- paste0("nsim", 1:nsim)
   y
@@ -125,6 +126,7 @@ baysesp_simul <- function(n = 100,
 #' # Convert the first simulation to a Stan-compatible list
 #' stan_data <- y_to_stan_data(y, index = 1)
 #'
+#' @importFrom stats setNames
 #' @export
 y_to_stan_data <- function(y, index = 1) {
   as.list(setNames(y[, index], rownames(y)))
@@ -186,15 +188,15 @@ y_to_data_frame <- function(y, index = 1) {
     # Extract the counts from matrix y
     row.names    = c("s1", "s2", "r1", "r2", "u1", "u2")
   )
-  
+
   # Expand into individual rows
   df <- scheme[rep(rownames(scheme), scheme$count), c("verification", "test", "disease")]
-  
+
   # Reset row names
   rownames(df) <- NULL
-  
+
   df
-  
+
 }
 
 
@@ -236,31 +238,34 @@ y_to_data_frame <- function(y, index = 1) {
 #'
 #' # Convert to Stan-compatible count list
 #' stan_data <- data_frame_to_stan_data(data)
-#'
+#' @importFrom dplyr filter
 #' @export
 data_frame_to_stan_data <- function(data) {
-  s1 <- data |> filter(test == 1 &
+  test <- data$test
+  verification <- data$verification
+  disease = data$disease
+  s1 <- data |> dplyr::filter(test == 1 &
                          verification == 1 & disease == 1) |> nrow()
-  
-  
-  s2 <- data |> filter(test == 0 &
+
+
+  s2 <- data |> dplyr::filter(test == 0 &
                          verification == 1 & disease == 1) |> nrow()
-  
-  
-  r1 <- data |> filter(test == 1 &
+
+
+  r1 <- data |> dplyr::filter(test == 1 &
                          verification == 1 & disease == 0) |> nrow()
-  
-  
-  r2 <- data |> filter(test == 0 &
+
+
+  r2 <- data |> dplyr::filter(test == 0 &
                          verification == 1 & disease == 0) |> nrow()
-  
-  u1 <- data |> filter(test == 1 & verification == 0) |> nrow()
-  
+
+  u1 <- data |> dplyr::filter(test == 1 & verification == 0) |> nrow()
+
   # test negative, verification not done
-  u2 <- data |> filter(test == 0 & verification == 0) |> nrow()
-  
-  
-  
+  u2 <- data |> dplyr::filter(test == 0 & verification == 0) |> nrow()
+
+
+
   list(
     s1 = s1,
     s2 = s2,
@@ -269,7 +274,7 @@ data_frame_to_stan_data <- function(data) {
     u1 = u1,
     u2 = u2
   )
-  
+
 }
 
 
@@ -320,6 +325,7 @@ data_frame_to_stan_data <- function(data) {
 #' # Generate the Stan model code
 #' stan_code <- generate_stan_model(priors)
 #' cat(stan_code)
+#' @export
 generate_stan_model <- function(priors) {
   stan_code <- paste0(
     "
@@ -373,7 +379,7 @@ parameters {
   // Multinomial likelihood
   y ~ multinomial(p_y);
   }")
-  
+
   stan_code
 }
 
@@ -433,7 +439,7 @@ parameters {
 #' fit <- baysesp(stan_data)
 #' print(fit)
 #' }
-#'
+#' @importFrom rstan stan
 #' @export
 baysesp <- function(stan_data,
                     chains = 4,
@@ -451,7 +457,7 @@ baysesp <- function(stan_data,
                     ),
                     ...) {
   model_code <- generate_stan_model(priors)
-  
+
   stan(
     model_code = model_code,
     data = stan_data,
@@ -461,5 +467,5 @@ baysesp <- function(stan_data,
     cores = cores,
     ...
   )
-  
+
 }

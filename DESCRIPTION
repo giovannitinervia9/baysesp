@@ -7,9 +7,7 @@ Description:
     `baysesp` is an R package that provides Bayesian methods for estimating the sensitivity 
     and specificity of diagnostic tests in the presence of verification bias. It allows users 
     to incorporate prior information and obtain posterior distributions of test performance 
-    metrics using Bayesian inference. The package includes functions for data simulation, 
-    model fitting via Stan, and posterior summarization, facilitating robust and flexible 
-    analysis of diagnostic test accuracy.
+    metrics using Bayesian inference.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

@@ -11,13 +11,13 @@ generate_stan_model(priors)
 specifying the prior distribution for a parameter. The list must include
 the following named elements:
 \describe{
-\item{\code{"p"}}{Prior for disease prevalence (\eqn{p}).}
-\item{\code{"se"}}{Prior for test sensitivity (\eqn{Se = P(T = 1 | D = 1)}).}
-\item{\code{"sp"}}{Prior for test specificity (\eqn{Sp = P(T = 0 | D = 0)}).}
-\item{\code{"l11"}}{Prior for verification probability given \eqn{(T = 1, D = 1)} (\eqn{P(V = 1 | T = 1, D = 1)}).}
-\item{\code{"l21"}}{Prior for verification probability given \eqn{(T = 1, D = 0)} (\eqn{P(V = 1 | T = 1, D = 0)}).}
-\item{\code{"l12"}}{Prior for verification probability given \eqn{(T = 0, D = 1)} (\eqn{P(V = 1 | T = 0, D = 1)}).}
-\item{\code{"l22"}}{Prior for verification probability given \eqn{(T = 0, D = 0)} (\eqn{P(V = 1 | T = 0, D = 0)}).}
+\item{\code{"p"}}{Prior for disease prevalence \eqn{p}.}
+\item{\code{"se"}}{Prior for test sensitivity \eqn{Se = P(T = 1 | D = 1)}.}
+\item{\code{"sp"}}{Prior for test specificity \eqn{Sp = P(T = 0 | D = 0)}.}
+\item{\code{"l11"}}{Prior for verification probability given \eqn{(T = 1, D = 1)} \eqn{P(V = 1 | T = 1, D = 1)}.}
+\item{\code{"l21"}}{Prior for verification probability given \eqn{(T = 1, D = 0)} \eqn{P(V = 1 | T = 1, D = 0)}.}
+\item{\code{"l12"}}{Prior for verification probability given \eqn{(T = 0, D = 1)} \eqn{P(V = 1 | T = 0, D = 1)}.}
+\item{\code{"l22"}}{Prior for verification probability given \eqn{(T = 0, D = 0)} \eqn{P(V = 1 | T = 0, D = 0)}.}
 }
 
 Each prior should be specified in Stan syntax (e.g., \code{"beta(2,2)"} or \code{"normal(0.5, 0.1)"}).}

@@ -98,32 +98,42 @@ baysesp_simul <- function(n = 100,
 
 #-------------------------------------------------------------------------------
 
-#' Convert Simulation Data to Stan-Compatible List
+#' Convert a Count Matrix to a Named List for `baysesp()`
 #'
-#' This function converts a matrix of simulated diagnostic test data into a list
-#' format suitable for use in Stan models. It extracts the data for a specified
-#' simulation index and returns it as a named list.
+#' This function converts a matrix containing diagnostic test data into a named
+#' list format suitable for use in `baysesp()`. It extracts the data for a specified
+#' column index and returns it as a list with named elements corresponding to different
+#' diagnostic test outcome categories.
 #'
-#' @param y Matrix. A matrix of simulated data, such as the output from \code{\link{baysesp_simul}}.
-#' Each row represents a count category (e.g., verified true positives, false negatives, etc.).
-#' @param index Integer. The simulation index to extract from the matrix. Default is 1.
-#'
-#' @return A named list containing the counts for each category:
-#' \itemize{
-#'   \item \eqn{s1}: Verified true positives \eqn{(V = 1, T = 1, D = 1)}
-#'   \item \eqn{s2}: Verified false negatives \eqn{(V = 1, T = 0, D = 1)}
-#'   \item \eqn{r1}: Verified false positives \eqn{(V = 1, T = 1, D = 0)}
-#'   \item \eqn{r2}: Verified true negatives \eqn{(V = 1, T = 0, D = 0)}
-#'   \item \eqn{u1}: Unverified test positives \eqn{(V = 0, T = 1, D = NA)}
-#'   \item \eqn{u2}: Unverified test negatives \eqn{(V = 0, T = 0, D = NA)}
+#' @param y Matrix. A numeric matrix where each row represents a count category,
+#' and each column corresponds to a different dataset (e.g., different simulations or
+#' different data sources). The matrix must have exactly six rows
+#' with the following names:
+#' \describe{
+#'   \item{\code{"s1"}}{Count of verified true positives \eqn{(V = 1, T = 1, D = 1)}.}
+#'   \item{\code{"s2"}}{Count of verified false negatives \eqn{(V = 1, T = 0, D = 1)}.}
+#'   \item{\code{"r1"}}{Count of verified false positives \eqn{(V = 1, T = 1, D = 0)}.}
+#'   \item{\code{"r2"}}{Count of verified true negatives \eqn{(V = 1, T = 0, D = 0)}.}
+#'   \item{\code{"u1"}}{Count of unverified individuals who tested positive \eqn{(V = 0, T = 1, D = \text{NA})}.}
+#'   \item{\code{"u2"}}{Count of unverified individuals who tested negative \eqn{(V = 0, T = 0, D = \text{NA})}.}
 #' }
 #'
-#' @examples
-#' # Generate simulated data
-#' set.seed(123)
-#' y <- baysesp_simul(n = 500, nsim = 3)
+#' The function assumes that row names are assigned to ensure correct mapping of
+#' elements. If row names are missing, it will assign default names.
 #'
-#' # Convert the first simulation to a Stan-compatible list
+#' @param index Integer. The column index in \code{y} to be extracted and converted
+#' into a named list. Default is 1.
+#'
+#' @return A named list containing the counts for each category. If row names are
+#' missing, the function assigns default names ("s1", "s2", "r1", "r2", "u1", "u2")
+#' in order.
+#'
+#' @examples
+#' # Example count matrix with named rows
+#' y <- matrix(c(50, 30, 20, 40, 60, 100), ncol = 1,
+#'             dimnames = list(c("s1", "s2", "r1", "r2", "u1", "u2"), "dataset1"))
+#'
+#' # Convert the first column to a Stan-compatible list
 #' stan_data <- y_to_stan_data(y, index = 1)
 #'
 #' @importFrom stats setNames
@@ -146,12 +156,12 @@ y_to_stan_data <- function(y, index = 1) {
 #' simulations or different data sources). The matrix must have exactly six rows,
 #' named as follows:
 #' \describe{
-#'   \item{\code{"s1"}}{Count of verified true positives (\eqn{V = 1, T = 1, D = 1}).}
-#'   \item{\code{"s2"}}{Count of verified false negatives (\eqn{V = 1, T = 0, D = 1}).}
-#'   \item{\code{"r1"}}{Count of verified false positives (\eqn{V = 1, T = 1, D = 0}).}
-#'   \item{\code{"r2"}}{Count of verified true negatives (\eqn{V = 1, T = 0, D = 0}).}
-#'   \item{\code{"u1"}}{Count of unverified individuals who tested positive (\eqn{V = 0, T = 1, D = NA}).}
-#'   \item{\code{"u2"}}{Count of unverified individuals who tested negative (\eqn{V = 0, T = 0, D = NA}).}
+#'   \item{\code{"s1"}}{Count of verified true positives \eqn{(V = 1, T = 1, D = 1)}.}
+#'   \item{\code{"s2"}}{Count of verified false negatives \eqn{(V = 1, T = 0, D = 1)}.}
+#'   \item{\code{"r1"}}{Count of verified false positives \eqn{(V = 1, T = 1, D = 0)}.}
+#'   \item{\code{"r2"}}{Count of verified true negatives \eqn{(V = 1, T = 0, D = 0)}.}
+#'   \item{\code{"u1"}}{Count of unverified individuals who tested positive \eqn{(V = 0, T = 1, D = \text{NA})}.}
+#'   \item{\code{"u2"}}{Count of unverified individuals who tested negative \eqn{(V = 0, T = 0, D = \text{NA})}.}
 #' }
 #' The column(s) of \code{y} can contain multiple datasets, where each column
 #' corresponds to a different data instance (e.g., different simulations or subsets).
@@ -220,12 +230,12 @@ y_to_data_frame <- function(y, index = 1) {
 #'
 #' @return A named list containing counts of individuals in different verification, test, and disease status categories:
 #' \describe{
-#'   \item{\code{s1}}{Verified true positives (\eqn{V = 1, T = 1, D = 1}).}
-#'   \item{\code{s2}}{Verified false negatives (\eqn{V = 1, T = 0, D = 1}).}
-#'   \item{\code{r1}}{Verified false positives (\eqn{V = 1, T = 1, D = 0}).}
-#'   \item{\code{r2}}{Verified true negatives (\eqn{V = 1, T = 0, D = 0}).}
-#'   \item{\code{u1}}{Unverified test positives (\eqn{V = 0, T = 1, D = NA}).}
-#'   \item{\code{u2}}{Unverified test negatives (\eqn{V = 0, T = 0, D = NA}).}
+#'   \item{\code{"s1"}}{Count of verified true positives \eqn{(V = 1, T = 1, D = 1)}.}
+#'   \item{\code{"s2"}}{Count of verified false negatives \eqn{(V = 1, T = 0, D = 1)}.}
+#'   \item{\code{"r1"}}{Count of verified false positives \eqn{(V = 1, T = 1, D = 0)}.}
+#'   \item{\code{"r2"}}{Count of verified true negatives \eqn{(V = 1, T = 0, D = 0)}.}
+#'   \item{\code{"u1"}}{Count of unverified individuals who tested positive \eqn{(V = 0, T = 1, D = \text{NA})}.}
+#'   \item{\code{"u2"}}{Count of unverified individuals who tested negative \eqn{(V = 0, T = 0, D = \text{NA})}.}
 #' }
 #'
 #' @examples
@@ -291,13 +301,13 @@ data_frame_to_stan_data <- function(data) {
 #' specifying the prior distribution for a parameter. The list must include
 #' the following named elements:
 #' \describe{
-#'   \item{\code{"p"}}{Prior for disease prevalence (\eqn{p}).}
-#'   \item{\code{"se"}}{Prior for test sensitivity (\eqn{Se = P(T = 1 | D = 1)}).}
-#'   \item{\code{"sp"}}{Prior for test specificity (\eqn{Sp = P(T = 0 | D = 0)}).}
-#'   \item{\code{"l11"}}{Prior for verification probability given \eqn{(T = 1, D = 1)} (\eqn{P(V = 1 | T = 1, D = 1)}).}
-#'   \item{\code{"l21"}}{Prior for verification probability given \eqn{(T = 1, D = 0)} (\eqn{P(V = 1 | T = 1, D = 0)}).}
-#'   \item{\code{"l12"}}{Prior for verification probability given \eqn{(T = 0, D = 1)} (\eqn{P(V = 1 | T = 0, D = 1)}).}
-#'   \item{\code{"l22"}}{Prior for verification probability given \eqn{(T = 0, D = 0)} (\eqn{P(V = 1 | T = 0, D = 0)}).}
+#'   \item{\code{"p"}}{Prior for disease prevalence \eqn{p}.}
+#'   \item{\code{"se"}}{Prior for test sensitivity \eqn{Se = P(T = 1 | D = 1)}.}
+#'   \item{\code{"sp"}}{Prior for test specificity \eqn{Sp = P(T = 0 | D = 0)}.}
+#'   \item{\code{"l11"}}{Prior for verification probability given \eqn{(T = 1, D = 1)} \eqn{P(V = 1 | T = 1, D = 1)}.}
+#'   \item{\code{"l21"}}{Prior for verification probability given \eqn{(T = 1, D = 0)} \eqn{P(V = 1 | T = 1, D = 0)}.}
+#'   \item{\code{"l12"}}{Prior for verification probability given \eqn{(T = 0, D = 1)} \eqn{P(V = 1 | T = 0, D = 1)}.}
+#'   \item{\code{"l22"}}{Prior for verification probability given \eqn{(T = 0, D = 0)} \eqn{P(V = 1 | T = 0, D = 0)}.}
 #' }
 #'
 #' Each prior should be specified in Stan syntax (e.g., \code{"beta(2,2)"} or \code{"normal(0.5, 0.1)"}).
@@ -398,30 +408,30 @@ parameters {
 #' using \code{\link{data_frame_to_stan_data}} or \code{\link{y_to_stan_data}}.
 #' It must contain the following named elements:
 #' \describe{
-#'   \item{\code{s1}}{Number of verified true positives (\eqn{V = 1, T = 1, D = 1}).}
-#'   \item{\code{s2}}{Number of verified false negatives (\eqn{V = 1, T = 0, D = 1}).}
-#'   \item{\code{r1}}{Number of verified false positives (\eqn{V = 1, T = 1, D = 0}).}
-#'   \item{\code{r2}}{Number of verified true negatives (\eqn{V = 1, T = 0, D = 0}).}
-#'   \item{\code{u1}}{Number of unverified individuals who tested positive (\eqn{V = 0, T = 1, D = NA}).}
-#'   \item{\code{u2}}{Number of unverified individuals who tested negative (\eqn{V = 0, T = 0, D = NA}).}
+#'   \item{\code{"s1"}}{Count of verified true positives \eqn{(V = 1, T = 1, D = 1)}.}
+#'   \item{\code{"s2"}}{Count of verified false negatives \eqn{(V = 1, T = 0, D = 1)}.}
+#'   \item{\code{"r1"}}{Count of verified false positives \eqn{(V = 1, T = 1, D = 0)}.}
+#'   \item{\code{"r2"}}{Count of verified true negatives \eqn{(V = 1, T = 0, D = 0)}.}
+#'   \item{\code{"u1"}}{Count of unverified individuals who tested positive \eqn{(V = 0, T = 1, D = \text{NA})}.}
+#'   \item{\code{"u2"}}{Count of unverified individuals who tested negative \eqn{(V = 0, T = 0, D = \text{NA})}.}
 #' }
 #'
 #' @param chains Integer. Number of Markov chains to run in the Stan model. Default is 4.
 #' @param iter Integer. Total number of iterations per chain. Default is 2000.
-#' @param warmup Integer. Number of warmup (burn-in) iterations per chain. Default is \code{iter / 2}.
+#' @param warmup Integer. Number of warmup (burn-in) iterations per chain. Default is \code{iter/2}.
 #' @param cores Integer. Number of CPU cores to use for parallel computation. Defaults to \code{getOption("mc.cores", 1L)}.
 #' @param priors Named list. A list specifying the prior distributions for each parameter.
 #' The list must include the following named elements:
 #' \describe{
-#'   \item{\code{"p"}}{Prior for disease prevalence (\eqn{p}), e.g., \code{"beta(1,1)"}.}
-#'   \item{\code{"se"}}{Prior for sensitivity (\eqn{Se = P(T = 1 | D = 1)}), e.g., \code{"beta(1,1)"}.}
-#'   \item{\code{"sp"}}{Prior for specificity (\eqn{Sp = P(T = 0 | D = 0)}), e.g., \code{"beta(1,1)"}.}
-#'   \item{\code{"l11"}}{Prior for verification probability given \eqn{(T = 1, D = 1)} (\eqn{P(V = 1 | T = 1, D = 1)}).}
-#'   \item{\code{"l21"}}{Prior for verification probability given \eqn{(T = 1, D = 0)} (\eqn{P(V = 1 | T = 1, D = 0)}).}
-#'   \item{\code{"l12"}}{Prior for verification probability given \eqn{(T = 0, D = 1)} (\eqn{P(V = 1 | T = 0, D = 1)}).}
-#'   \item{\code{"l22"}}{Prior for verification probability given \eqn{(T = 0, D = 0)} (\eqn{P(V = 1 | T = 0, D = 0)}).}
+#'   \item{\code{"p"}}{Prior for disease prevalence \eqn{p}.}
+#'   \item{\code{"se"}}{Prior for sensitivity \eqn{Se = P(T = 1 | D = 1)}.}
+#'   \item{\code{"sp"}}{Prior for specificity \eqn{Sp = P(T = 0 | D = 0)}.}
+#'   \item{\code{"l11"}}{Prior for verification probability given \eqn{(T = 1, D = 1)} \eqn{P(V = 1 | T = 1, D = 1)}.}
+#'   \item{\code{"l21"}}{Prior for verification probability given \eqn{(T = 1, D = 0)} \eqn{P(V = 1 | T = 1, D = 0)}.}
+#'   \item{\code{"l12"}}{Prior for verification probability given \eqn{(T = 0, D = 1)} \eqn{P(V = 1 | T = 0, D = 1)}.}
+#'   \item{\code{"l22"}}{Prior for verification probability given \eqn{(T = 0, D = 0)} \eqn{P(V = 1 | T = 0, D = 0)}.}
 #' }
-#' Each prior should be specified using Stan's syntax (e.g., \code{"beta(1,1)"} or \code{"normal(0.5,0.1)"}).
+#' Each prior should be specified using Stan's syntax (e.g., \code{"beta(1,1)"}).
 #'
 #' @param ... Additional arguments to pass to the \code{\link[rstan]{stan}} function.
 #'

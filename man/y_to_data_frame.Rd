@@ -12,12 +12,12 @@ individuals, and each column represents a different dataset (e.g., different
 simulations or different data sources). The matrix must have exactly six rows,
 named as follows:
 \describe{
-\item{\code{"s1"}}{Count of verified true positives (\eqn{V = 1, T = 1, D = 1}).}
-\item{\code{"s2"}}{Count of verified false negatives (\eqn{V = 1, T = 0, D = 1}).}
-\item{\code{"r1"}}{Count of verified false positives (\eqn{V = 1, T = 1, D = 0}).}
-\item{\code{"r2"}}{Count of verified true negatives (\eqn{V = 1, T = 0, D = 0}).}
-\item{\code{"u1"}}{Count of unverified individuals who tested positive (\eqn{V = 0, T = 1, D = NA}).}
-\item{\code{"u2"}}{Count of unverified individuals who tested negative (\eqn{V = 0, T = 0, D = NA}).}
+\item{\code{"s1"}}{Count of verified true positives \eqn{(V = 1, T = 1, D = 1)}.}
+\item{\code{"s2"}}{Count of verified false negatives \eqn{(V = 1, T = 0, D = 1)}.}
+\item{\code{"r1"}}{Count of verified false positives \eqn{(V = 1, T = 1, D = 0)}.}
+\item{\code{"r2"}}{Count of verified true negatives \eqn{(V = 1, T = 0, D = 0)}.}
+\item{\code{"u1"}}{Count of unverified individuals who tested positive \eqn{(V = 0, T = 1, D = \text{NA})}.}
+\item{\code{"u2"}}{Count of unverified individuals who tested negative \eqn{(V = 0, T = 0, D = \text{NA})}.}
 }
 The column(s) of \code{y} can contain multiple datasets, where each column
 corresponds to a different data instance (e.g., different simulations or subsets).}

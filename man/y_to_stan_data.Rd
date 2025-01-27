@@ -2,38 +2,47 @@
 % Please edit documentation in R/baysesp.R
 \name{y_to_stan_data}
 \alias{y_to_stan_data}
-\title{Convert Simulation Data to Stan-Compatible List}
+\title{Convert a Count Matrix to a Named List for \code{baysesp()}}
 \usage{
 y_to_stan_data(y, index = 1)
 }
 \arguments{
-\item{y}{Matrix. A matrix of simulated data, such as the output from \code{\link{baysesp_simul}}.
-Each row represents a count category (e.g., verified true positives, false negatives, etc.).}
+\item{y}{Matrix. A numeric matrix where each row represents a count category,
+and each column corresponds to a different dataset (e.g., different simulations or
+different data sources). The matrix must have exactly six rows
+with the following names:
+\describe{
+\item{\code{"s1"}}{Count of verified true positives \eqn{(V = 1, T = 1, D = 1)}.}
+\item{\code{"s2"}}{Count of verified false negatives \eqn{(V = 1, T = 0, D = 1)}.}
+\item{\code{"r1"}}{Count of verified false positives \eqn{(V = 1, T = 1, D = 0)}.}
+\item{\code{"r2"}}{Count of verified true negatives \eqn{(V = 1, T = 0, D = 0)}.}
+\item{\code{"u1"}}{Count of unverified individuals who tested positive \eqn{(V = 0, T = 1, D = \text{NA})}.}
+\item{\code{"u2"}}{Count of unverified individuals who tested negative \eqn{(V = 0, T = 0, D = \text{NA})}.}
+}
 
-\item{index}{Integer. The simulation index to extract from the matrix. Default is 1.}
+The function assumes that row names are assigned to ensure correct mapping of
+elements. If row names are missing, it will assign default names.}
+
+\item{index}{Integer. The column index in \code{y} to be extracted and converted
+into a named list. Default is 1.}
 }
 \value{
-A named list containing the counts for each category:
-\itemize{
-\item \eqn{s1}: Verified true positives \eqn{(V = 1, T = 1, D = 1)}
-\item \eqn{s2}: Verified false negatives \eqn{(V = 1, T = 0, D = 1)}
-\item \eqn{r1}: Verified false positives \eqn{(V = 1, T = 1, D = 0)}
-\item \eqn{r2}: Verified true negatives \eqn{(V = 1, T = 0, D = 0)}
-\item \eqn{u1}: Unverified test positives \eqn{(V = 0, T = 1, D = NA)}
-\item \eqn{u2}: Unverified test negatives \eqn{(V = 0, T = 0, D = NA)}
-}
+A named list containing the counts for each category. If row names are
+missing, the function assigns default names ("s1", "s2", "r1", "r2", "u1", "u2")
+in order.
 }
 \description{
-This function converts a matrix of simulated diagnostic test data into a list
-format suitable for use in Stan models. It extracts the data for a specified
-simulation index and returns it as a named list.
+This function converts a matrix containing diagnostic test data into a named
+list format suitable for use in \code{baysesp()}. It extracts the data for a specified
+column index and returns it as a list with named elements corresponding to different
+diagnostic test outcome categories.
 }
 \examples{
-# Generate simulated data
-set.seed(123)
-y <- baysesp_simul(n = 500, nsim = 3)
+# Example count matrix with named rows
+y <- matrix(c(50, 30, 20, 40, 60, 100), ncol = 1,
+            dimnames = list(c("s1", "s2", "r1", "r2", "u1", "u2"), "dataset1"))
 
-# Convert the first simulation to a Stan-compatible list
+# Convert the first column to a Stan-compatible list
 stan_data <- y_to_stan_data(y, index = 1)
 
 }

@@ -18,12 +18,12 @@ the following binary-coded columns:
 \value{
 A named list containing counts of individuals in different verification, test, and disease status categories:
 \describe{
-\item{\code{s1}}{Verified true positives (\eqn{V = 1, T = 1, D = 1}).}
-\item{\code{s2}}{Verified false negatives (\eqn{V = 1, T = 0, D = 1}).}
-\item{\code{r1}}{Verified false positives (\eqn{V = 1, T = 1, D = 0}).}
-\item{\code{r2}}{Verified true negatives (\eqn{V = 1, T = 0, D = 0}).}
-\item{\code{u1}}{Unverified test positives (\eqn{V = 0, T = 1, D = NA}).}
-\item{\code{u2}}{Unverified test negatives (\eqn{V = 0, T = 0, D = NA}).}
+\item{\code{"s1"}}{Count of verified true positives \eqn{(V = 1, T = 1, D = 1)}.}
+\item{\code{"s2"}}{Count of verified false negatives \eqn{(V = 1, T = 0, D = 1)}.}
+\item{\code{"r1"}}{Count of verified false positives \eqn{(V = 1, T = 1, D = 0)}.}
+\item{\code{"r2"}}{Count of verified true negatives \eqn{(V = 1, T = 0, D = 0)}.}
+\item{\code{"u1"}}{Count of unverified individuals who tested positive \eqn{(V = 0, T = 1, D = \text{NA})}.}
+\item{\code{"u2"}}{Count of unverified individuals who tested negative \eqn{(V = 0, T = 0, D = \text{NA})}.}
 }
 }
 \description{

@@ -12,3 +12,5 @@ RoxygenNote: 7.3.2
 Imports: 
     dplyr,
     rstan
+URL: https://github.com/giovannitinervia9/baysesp
+BugReports: https://github.com/giovannitinervia9/baysesp/issues

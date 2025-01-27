@@ -1,0 +1,76 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# baysesp
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+`baysesp` is an `R` package that allows users to estimate the sensitivity and specificity of diagnostic tests in the presence of verification bias via bayesian methods.
+
+## Installation
+
+You can install the development version of `baysesp` from [GitHub](https://github.com/giovannitinervia9/baysesp) with:
+
+``` r
+devtools::install_github("giovannitinervia9/baysesp")
+```
+
+## Example
+
+We first generate a dataset using the `baysesp_simul()`
+
+```{r, warning=F, message=F}
+library(baysesp)
+set.seed(123)
+y <- baysesp_simul(n = 1000, p = 0.01, se = 0.9, sp = 0.5)
+```
+
+
+Next, we convert the simulated data into the appropriate format for the `baysesp()` function using `y_to_stan_data()`
+
+```{r}
+stan_data <- y_to_stan_data(y)
+```
+
+We specify our priors as follows:
+
+```{r}
+priors <- list(
+  p = "beta(0.0199, 1.9701)",
+  se = "beta(1, 1)",
+  sp = "beta(1, 1)",
+  l11 = "beta(15.4, 6.6)",
+  l21 = "beta(15, 10)",
+  l12 = "beta(4.67, 4.67)",
+  l22 = "beta(0.4, 3.6)"
+)
+```
+
+
+We now fit the model using `baysesp()`:
+
+```{r, warning=FALSE, message=FALSE, results="hide"}
+fit <- baysesp(stan_data, priors = priors)
+```
+Let's check the results: 
+
+```{r}
+a <- 0.05
+s <- summary(fit)
+round(s$summary, 3)
+```
+
+

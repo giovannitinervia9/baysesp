@@ -35,7 +35,7 @@ We first generate a dataset using the `baysesp_simul()` function:
 ```{r, warning=F, message=F}
 library(baysesp)
 
-y <- baysesp_simul(n = 1000, p = 0.01, se = 0.9, sp = 0.5)
+y <- baysesp_simul(n = 10000, p = 0.05, se = 0.8, sp = 0.9)
 y
 ```
 

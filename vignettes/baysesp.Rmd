@@ -1,0 +1,172 @@
+---
+title: "`baysesp`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{baysesp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, include = FALSE}
+library(baysesp)
+set.seed(123)
+```
+
+# Introduction to `baysesp`: Bayesian Estimation of Sensitivity and Specificity under Verification Bias
+
+## What is Verification Bias?
+
+Diagnostic test evaluation relies on key performance metrics such as **sensitivity** and **specificity**. These metrics are typically estimated by comparing test results to a **gold standard** that provides the true disease status. However, in real-world scenarios, the gold standard test is often applied selectively, commonly based on test results or clinical suspicion, leading to **verification bias**.
+
+When only a subset of patients undergo disease verification, estimates of sensitivity and specificity become **biased** and misleading. Ignoring verification bias can lead to incorrect conclusions about a test's accuracy, affecting clinical decision-making and public health policies.
+
+## Zhou's model
+
+A classical approach to account for verification bias was proposed in a paper of 1993, "Maximum likelihood estimators of sensitivity and specificity corrected for verification bias", by **Xiao-Hua Zhou**, who developed a statistical model within the maximum likelihood framework. Zhou's model estimates sensitivity and specificity while accounting for verification probabilities, which describe the likelihood of undergoing gold standard verification given test results and disease status.
+
+Consider the three random variables:
+
+- $T$, which assumes value $1$ if the subject has a positive test result, $0$ otherwise;
+
+- $V$: which assumes value $1$ if the subject undergoes gold standard verification, $0$ otherwise;
+
+- $D$: which assumes value $1$ if the subject has the disease according to the gold standard, $0$ otherwise;
+
+Consider the following parameters:
+
+- $p$, prevalence of the disease;
+
+- $\text{Se} = P(T=1|D=1)$, sensitivity of the diagnostic test;
+
+- $\text{Sp} = P(T=0|D=0)$, specificity of the diagnostic test;
+
+- $\lambda_{11}=P(V=1|T=1,D=1)$, probability of verification for true positives;
+
+- $\lambda_{21}=P(V=1|T=1,D=0)$, probability of verification for false positives;
+
+- $\lambda_{12}=P(V=1|T=0,D=1)$, probability of verification for false negatives;
+
+- $\lambda_{22}=P(V=1|T=0,D=0)$, probability of verification for true negatives;
+
+
+
+Consider the following contingency table
+
+$$
+\begin{array}{c|cc}
+ & \textbf{Diagnostic results} &  \\
+\hline
+\textbf{Verified} & T = 1 & T = 0 \\
+\hline
+D = 1 & s_1 & s_2 \\
+D = 0 & r_1 & r_2 \\
+\hline
+\textbf{Unverified} & u_1 & u_2 \\
+\hline
+\textbf{Total} & n_1 & n_2 \\
+\end{array}
+$$
+
+Zhou (1993) showed that $(s_1, s_2, r_1, r_2, u_1, u_2)$ is a realization of a multinomial random variable with the following probabilities:
+
+$$
+\begin{array}{c|cc}
+ & \textbf{Diagnostic results} &  \\
+\hline
+\textbf{Verified} & T = 1 & T = 0 \\
+\hline
+D = 1 & \lambda_{11} \text{Se} p & \lambda_{12} (1 -\text{Se}) p \\
+D = 0 & \lambda_{21}(1 - \text{Sp})(1 - p) & \lambda_{22}\text{Sp}(1 - p) \\
+\hline
+\textbf{Unverified} & (1 - \lambda_{11})\text{Se}p + (1 - \lambda_{21})(1 - \text{Sp})(1 - p)
+ & (1 - \lambda_{12})(1 - \text{Se})p + (1 - \lambda_{22})\text{Sp}(1 - p) \\
+\end{array}
+$$
+
+Since the contingency table has only 5 degrees of freedom, while the model has 7 parameters, the system is not fully identifiable. That means only 5 of the 7 parameters can be estimated directly, while at least two must be assumed known or derived from additional information.
+
+To address this issue, Zhou introduces the following ratios of verification probabilities: $$k_1 = \dfrac{\lambda_{11}}{\lambda_{21}}$$ $$k_2 = \dfrac{\lambda_{12}}{\lambda_{22}}$$ and derives upper and lower bounds for them: $$\dfrac{s_1}{s_1 + u_1} \leq k_1 \leq \dfrac{r_1 + u_1}{r_1}$$ $$\dfrac{s_2}{s_2 + u_2} \leq k_2 \leq \dfrac{r_2 + u_2}{r_2}$$
+
+By assuming that $k_1$ and $k_2$ take known values within these bounds, Zhou derives maximum likelihood estimators for sensitivity and specificity.
+
+## Limitations of Zhou's model
+
+While Zhou's approach allows for estimating **bounds** for sensitivity and specificity, highlighting the potential impact of verification bias, it does not provide a way to compute point estimates and confidence intervals of sensitivity and specificity without assuming fixed values for $k_1$ and $k_2$.
+
+This limitation motivates **Bayesian approaches**, such as those implemented in `baysesp`, which allow for incorporating prior knowledge and obtaining full posterior distributions for all parameters.
+
+
+
+## Key features of `baysesp`
+The `baysesp` package provides a Bayesian framework to estimate sensitivity and specificity under verification bias. It includes functions for simulating diagnostic test data, structuring data for Bayesian inference, defining prior distributions, and fitting a Bayesian model using Stan.
+
+### Simulating data with verification bias
+
+A crucial step in assessing the impact of verification bias is working with realistic diagnostic test data. The function `baysesp_simul()` allows users to simulate data from a diagnostic test, incorporating different probabilities of verification based on test results and disease status. By specifying parameters such as prevalence, sensitivity, specificity, and verification probabilities, users can generate datasets that mimic real-world verification bias scenarios.
+
+For example, the following code simulates a dataset of 500 individuals, where the prevalence of the disease is 5%, and the test has sensitivity and specificity values of 0.85 and 0.95, respectively. Verification probabilities are also specified, reflecting a scenario where verification is more likely for test-positive cases.
+
+```{r}
+sim_data <- baysesp_simul(n = 5000, p = 0.05, se = 0.85, sp = 0.95,
+                          l11 = 0.8, l21 = 0.4, l12 = 0.3, l22 = 0.1)
+```
+
+The function returns a matrix of counts representing the number of verified and unverified individuals, classified by their test result and true disease status, with a structure that mirrors the contingency table used in Zhou’s model.
+
+```{r}
+sim_data
+```
+
+### Preparing data for bayesian inference
+Once the simulated (or real-world) diagnostic test data is available, it must be structured in a format suitable for Bayesian modeling. The function `y_to_stan_data()` converts the count matrix into a named list, ensuring compatibility with Stan, the probabilistic programming language used for Bayesian inference in `baysesp`.
+
+```{r}
+stan_data <- y_to_stan_data(sim_data)
+stan_data
+```
+
+### Defining priors
+
+Once the diagnostic test data has been structured, the next step is to estimate sensitivity and specificity while accounting for verification bias. `baysesp` allows users to define prior distributions for all model parameters, including disease prevalence, test sensitivity and specificity, and verification probabilities. This flexibility enables the incorporation of prior knowledge or external information to improve estimation.
+
+For example, the following priors assume that sensitivity, specificity, and verification probabilities follow Beta distributions, reflecting reasonable prior beliefs about these parameters:
+
+```{r}
+priors <- list(
+  p = "beta(0.0199, 1.9701)", # mean = 0.01, var = 0.01
+  se = "beta(1, 1)",          # uniform prior
+  sp = "beta(1, 1)",          # uniform prior
+  l11 = "beta(15.4, 6.6)",    # mean = 0.7, var = 0.01
+  l21 = "beta(15, 10)",       # mean = 0.6, var = 0.01
+  l12 = "beta(4.67, 4.67)",   # mean = 0.5, var = 0.03
+  l22 = "beta(0.4, 3.6)"      # mean = 0.1, var = 0.01
+)
+```
+
+### Performing bayesian estimation
+
+The central function of `baysesp` package is `baysesp()`, which allows the user to fit the model providing the structured data and prior distributions. 
+
+To run the estimation, we simply call:
+
+```{r}
+fit <- baysesp(stan_data, priors = priors, iter = 50000, chains = 4, cores = 4)
+```
+
+Once the model has been fitted, users can extract the estimated posterior means and credible intervals for the parameters:
+
+```{r}
+a <- 0.05
+s <- summary(fit, probs = c(a/2, 1 - a/2))
+round(s$summary, 3)
+```
+
+## Conclusion
+By integrating Bayesian inference into the estimation of sensitivity and specificity, `baysesp` offers a powerful alternative to classical approaches that rely on strong assumptions. The ability to incorporate prior knowledge and obtain full posterior distributions makes it particularly useful in cases where verification bias is severe or when additional information is available. Through its set of functions for data simulation, data preparation and Bayesian inference, `baysesp` enables researchers to derive more accurate and reliable estimates, ultimately improving diagnostic test evaluation.

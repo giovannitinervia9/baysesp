@@ -34,8 +34,9 @@ We first generate a dataset using the `baysesp_simul()` function:
 
 ```{r, warning=F, message=F}
 library(baysesp)
-set.seed(123)
+
 y <- baysesp_simul(n = 1000, p = 0.01, se = 0.9, sp = 0.5)
+y
 ```
 
 
@@ -43,6 +44,7 @@ Next, we convert the simulated data into the appropriate format for the `baysesp
 
 ```{r}
 stan_data <- y_to_stan_data(y)
+stan_data
 ```
 
 We specify our priors as follows:
@@ -63,7 +65,7 @@ priors <- list(
 We now fit the model using `baysesp()`:
 
 ```{r, warning=FALSE, message=FALSE, results="hide"}
-fit <- baysesp(stan_data, priors = priors)
+fit <- baysesp(stan_data, priors = priors, chains = 8, iter = 50000, cores = 8)
 ```
 Let's check the results: 
 

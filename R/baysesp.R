@@ -32,17 +32,17 @@
 #' @param nsim Integer. The number of simulation replicates. Default is 1.
 #' @param p Numeric. The prevalence of the disease in the population. Default is 0.01.
 #' @param se Numeric. The sensitivity of the diagnostic test, defined as
-#' \eqn{P(T = 1 | D = 1)}. Default is 0.8.
+#' \eqn{P(T = 1 | D = 1)}.
 #' @param sp Numeric. The specificity of the diagnostic test, defined as
-#' \eqn{P(T = 0 | D = 0)}. Default is 0.9.
+#' \eqn{P(T = 0 | D = 0)}.
 #' @param l11 Numeric. Probability of verification given a positive test result
-#' and a positive disease status, defined as \eqn{P(V = 1 | T = 1, D = 1)}. Default is 0.8.
-#' @param l12 Numeric. Probability of verification given a negative test result
-#' and a positive disease status, defined as \eqn{P(V = 1 | T = 0, D = 1)}. Default is 0.4.
+#' and a positive disease status, defined as \eqn{P(V = 1 | T = 1, D = 1)}.
 #' @param l21 Numeric. Probability of verification given a positive test result
-#' and a negative disease status, defined as \eqn{P(V = 1 | T = 1, D = 0)}. Default is 0.3.
+#' and a negative disease status, defined as \eqn{P(V = 1 | T = 1, D = 0)}.
+#' @param l12 Numeric. Probability of verification given a negative test result
+#' and a positive disease status, defined as \eqn{P(V = 1 | T = 0, D = 1)}.
 #' @param l22 Numeric. Probability of verification given a negative test result
-#' and a negative disease status, defined as \eqn{P(V = 1 | T = 0, D = 0)}. Default is 0.5.
+#' and a negative disease status, defined as \eqn{P(V = 1 | T = 0, D = 0)}.
 #'
 #' @return A matrix of counts with 6 rows and `nsim` columns.
 #' The rows represent:
@@ -70,8 +70,8 @@ baysesp_simul <- function(n = 100,
                           se = 0.8,
                           sp = 0.9,
                           l11 = 0.8,
-                          l12 = 0.4,
                           l21 = 0.3,
+                          l12 = 0.4,
                           l22 = 0.5) {
   p_v1_d1_t1 <- l11 * se * p                                 # s1
   p_v1_d1_t0 <- l12 * (1 - se) * p                           # s2

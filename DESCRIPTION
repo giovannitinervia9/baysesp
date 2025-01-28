@@ -17,3 +17,7 @@ BugReports: https://github.com/giovannitinervia9/baysesp/issues
 Depends: 
     dplyr,
     rstan
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

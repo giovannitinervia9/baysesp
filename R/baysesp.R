@@ -479,3 +479,63 @@ baysesp <- function(stan_data,
   )
 
 }
+
+
+
+#------------------------------------------------------------------------------
+#' Compute Beta Distribution Parameters from Mean and Variance
+#'
+#' This function calculates the shape parameters (\eqn{\alpha} and \eqn{\beta})
+#' of a Beta distribution given a specified mean (\eqn{\mu}) and variance (\eqn{\sigma^2}).
+#' Optionally, it also plots the resulting Beta distribution.
+#'
+#' @param mu Numeric. The mean of the Beta distribution. Default is 0.5.
+#' @param var Numeric. The variance of the Beta distribution. Default is 0.25.
+#' @param plot Logical. If \code{TRUE}, returns a plot of the Beta density function. Default is \code{TRUE}.
+#'
+#' @return If \code{plot = FALSE}, returns a named numeric vector with elements:
+#'   \item{alpha}{Shape parameter \eqn{\alpha} of the Beta distribution.}
+#'   \item{beta}{Shape parameter \eqn{\beta} of the Beta distribution.}
+#'
+#'   If \code{plot = TRUE}, returns a list containing:
+#'   \item{par}{A named numeric vector with the computed \eqn{\alpha} and \eqn{\beta} values.}
+#'   \item{plot}{A ggplot object displaying the Beta density function.}
+#'
+#' @examples
+#' # Compute Beta parameters without plotting
+#' prior_beta(mu = 0.7, var = 0.1, plot = FALSE)
+#'
+#' # Compute and visualize Beta distribution
+#' res <- prior_beta(mu = 0.3, var = 0.05, plot = TRUE)
+#' res$plot  # Display the plot
+#'
+#' @import ggplot2
+#' @importFrom stats dbeta
+#' @export
+prior_beta <- function(mu = 0.5,
+                       var = 0.25,
+                       plot = TRUE) {
+  precision <- 1 / var
+  phi <- precision
+  theta <- mu / (1 - mu)
+
+  beta <- (phi * theta + (1 + theta) ^ 2) / (1 + theta) ^ 3
+  alpha <- beta * theta
+
+  par <- c(alpha = alpha, beta = beta)
+  res <- par
+  if (plot) {
+    x <- seq(0.001, 0.999, l = 100)
+    f <- dbeta(x, alpha, beta)
+    d <- data.frame(x = x, f = f)
+    p <- ggplot2::ggplot(d, aes(x = x, y = f)) +
+      ggplot2::geom_line() +
+      ggplot2::labs(
+        title = paste0("a = ", round(alpha, 3), ", b = ", round(beta, 3)),
+        x = "x",
+        y = "f(x; a, b)"
+      ) + ggplot2::theme_bw()
+    res <- list(par = par, plot = p)
+  }
+  return(res)
+}

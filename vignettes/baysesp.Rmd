@@ -157,7 +157,7 @@ The central function of `baysesp` package is `baysesp()`, which allows the user 
 To run the estimation, we simply call:
 
 ```{r}
-fit <- baysesp(stan_data, priors = priors, iter = 50000, chains = 4, cores = 4)
+fit <- baysesp(stan_data, priors = priors)
 ```
 
 Once the model has been fitted, users can extract the estimated posterior means and credible intervals for the parameters:

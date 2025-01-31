@@ -16,7 +16,8 @@ URL: https://github.com/giovannitinervia9/baysesp
 BugReports: https://github.com/giovannitinervia9/baysesp/issues
 Depends: 
     dplyr,
-    rstan
+    rstan,
+    ggplot2
 Suggests: 
     knitr,
     rmarkdown

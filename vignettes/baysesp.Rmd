@@ -134,19 +134,27 @@ stan_data
 
 ### Defining priors
 
-Once the diagnostic test data has been structured, the next step is to estimate sensitivity and specificity while accounting for verification bias. `baysesp` allows users to define prior distributions for all model parameters, including disease prevalence, test sensitivity and specificity, and verification probabilities. This flexibility enables the incorporation of prior knowledge or external information to improve estimation.
+Once the diagnostic test data has been structured, the next step is to estimate sensitivity and specificity while accounting for verification bias. `baysesp` allows users to define prior distributions for all model parameters. This enables the incorporation of prior knowledge or external information to improve estimation.
 
-For example, the following priors assume that sensitivity, specificity, and verification probabilities follow Beta distributions, reflecting reasonable prior beliefs about these parameters:
+Since all model parameters are probabilities, a natural choice is to use Beta priors. The function `prior_beta()` allows users to define the mean $\mu$ and standard deviaton $\sigma$ of the Beta distribution they wish to assume as a prior. It then returns the corresponding values of the parameters $\alpha$ and $\beta$ which will be used by Stan for model fitting.
+
+For example, studies have shown that the prevalence of the disease in the population is approximately `0.01`. We can use `prior_beta()` to determine the corresponding values of $\alpha$ and $\beta$:
+
+```{r}
+prior_beta(mu = 0.01, sd = 0.1)
+```
+
+Once we obtain the desired prior parameters, we must store them in a named list as follows:
 
 ```{r}
 priors <- list(
-  p = "beta(0.0199, 1.9701)", # mean = 0.01, var = 0.01
+  p = "beta(0.0199, 1.9701)", # mean = 0.01, sd = 0.1
   se = "beta(1, 1)",          # uniform prior
   sp = "beta(1, 1)",          # uniform prior
-  l11 = "beta(15.4, 6.6)",    # mean = 0.7, var = 0.01
-  l21 = "beta(15, 10)",       # mean = 0.6, var = 0.01
-  l12 = "beta(4.67, 4.67)",   # mean = 0.5, var = 0.03
-  l22 = "beta(0.4, 3.6)"      # mean = 0.1, var = 0.01
+  l11 = "beta(15.4, 6.6)",    # mean = 0.7, sd = 0.1
+  l21 = "beta(15, 10)",       # mean = 0.6, sd = 0.1
+  l12 = "beta(13, 13)",       # mean = 0.5, sd = 0.1
+  l22 = "beta(0.4, 3.6)"      # mean = 0.1, sd = 0.1
 )
 ```
 
@@ -156,7 +164,7 @@ The central function of `baysesp` package is `baysesp()`, which allows the user 
 
 To run the estimation, we simply call:
 
-```{r}
+```{r, warning=FALSE, message=FALSE, results="hide"}
 fit <- baysesp(stan_data, priors = priors)
 ```
 

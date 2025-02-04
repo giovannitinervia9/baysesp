@@ -255,24 +255,30 @@ data_frame_to_stan_data <- function(data) {
   verification <- data$verification
   disease = data$disease
   s1 <- data |> dplyr::filter(test == 1 &
-                         verification == 1 & disease == 1) |> nrow()
+                                verification == 1 &
+                                disease == 1) |> nrow()
 
 
   s2 <- data |> dplyr::filter(test == 0 &
-                         verification == 1 & disease == 1) |> nrow()
+                                verification == 1 &
+                                disease == 1) |> nrow()
 
 
   r1 <- data |> dplyr::filter(test == 1 &
-                         verification == 1 & disease == 0) |> nrow()
+                                verification == 1 &
+                                disease == 0) |> nrow()
 
 
   r2 <- data |> dplyr::filter(test == 0 &
-                         verification == 1 & disease == 0) |> nrow()
+                                verification == 1 &
+                                disease == 0) |> nrow()
 
-  u1 <- data |> dplyr::filter(test == 1 & verification == 0) |> nrow()
+  u1 <- data |> dplyr::filter(test == 1 &
+                                verification == 0) |> nrow()
 
   # test negative, verification not done
-  u2 <- data |> dplyr::filter(test == 0 & verification == 0) |> nrow()
+  u2 <- data |> dplyr::filter(test == 0 &
+                                verification == 0) |> nrow()
 
 
 
@@ -512,32 +518,30 @@ baysesp <- function(stan_data,
 #' @import ggplot2
 #' @importFrom stats dbeta
 #' @export
-prior_beta <- function(mu = 0.5,
-                       sd = 0.5,
-                       plot = TRUE) {
-  var <- sd^2
+prior_beta <- function (mu = 0.5,
+                        sd = 0.5,
+                        plot = TRUE)
+{
+  var <- sd ^ 2
   precision <- 1 / var
   phi <- precision
   theta <- mu / (1 - mu)
-
   beta <- (phi * theta + (1 + theta) ^ 2) / (1 + theta) ^ 3
   alpha <- beta * theta
-
   par <- c(alpha = alpha, beta = beta)
-  res <- par
+  string <- paste0("beta(", par[1], ", ", par[2], ")")
+  res <- list(par = par, string = string)
   if (plot) {
     x <- seq(0.001, 0.999, l = 100)
     f <- dbeta(x, alpha, beta)
     d <- data.frame(x = x, f = f)
-    p <- ggplot2::ggplot(d, aes(x = x, y = f)) +
-      ggplot2::geom_line() +
+    p <- ggplot2::ggplot(d, aes(x = x, y = f)) + ggplot2::geom_line() +
       ggplot2::labs(
         title = bquote(alpha == .(round(alpha, 3)) ~ "," ~ beta == .(round(beta, 3))),
         x = "x",
-        y = expression(f(x ~";"~ alpha, beta))
-      ) +
-      ggplot2::theme_bw()
-    res <- list(par = par, plot = p)
+        y = expression(f(x ~ ";" ~ alpha, beta))
+      ) + ggplot2::theme_bw()
+    res$plot <- p
   }
   res
 }

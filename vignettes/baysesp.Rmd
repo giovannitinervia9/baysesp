@@ -144,18 +144,20 @@ For example, studies have shown that the prevalence of the disease in the popula
 prior_beta(mu = 0.01, sd = 0.1)
 ```
 
-Once we obtain the desired prior parameters, we must store them in a named list as follows:
+`prior_beta()` returns both the numeric value of the parameters and a string containing the expression that should be passed to stan in order to fit the model. By default it also returns a plot of the prior distribution.
 
+We must store the desired prior parameters in a named list as follows:
 ```{r}
 priors <- list(
-  p = "beta(0.0199, 1.9701)", # mean = 0.01, sd = 0.1
+  p = prior_beta(mu = 0.01, sd = 0.1)$string,
   se = "beta(1, 1)",          # uniform prior
   sp = "beta(1, 1)",          # uniform prior
-  l11 = "beta(15.4, 6.6)",    # mean = 0.7, sd = 0.1
-  l21 = "beta(15, 10)",       # mean = 0.6, sd = 0.1
-  l12 = "beta(13, 13)",       # mean = 0.5, sd = 0.1
-  l22 = "beta(0.4, 3.6)"      # mean = 0.1, sd = 0.1
+  l11 = prior_beta(mu = 0.7, sd = 0.1)$string,
+  l21 = prior_beta(mu = 0.6, sd = 0.1)$string,
+  l12 = prior_beta(mu = 0.5, sd = 0.1)$string,
+  l22 = prior_beta(mu = 0.1, sd = 0.1)$string
 )
+priors
 ```
 
 ### Performing bayesian estimation

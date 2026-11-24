@@ -45,14 +45,16 @@ LinkingTo:
     StanHeaders (>= 2.18.0)
 SystemRequirements: GNU make
 Collate: 
-    'accuracy.R'
-    'backend.R'
-    'baysesp-package.R'
     'data.R'
     'verification.R'
     'priors.R'
     'models.R'
     'fit.R'
+    'rules.R'
+    'accuracy.R'
+    'backend.R'
+    'baysesp-package.R'
+    'identification.R'
     'simulate.R'
     'stan_data.R'
     'stanmodels.R'

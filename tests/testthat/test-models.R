@@ -63,19 +63,8 @@ test_that("stan_data() requires a prior for each never-verified profile", {
 })
 
 test_that("test_accuracy() computes the accuracy from the profile distributions", {
-  # Example 4.5 of the specification (K = 3), with constant draws
-  theta1 <- c(0.05, 0.08, 0.04, 0.10, 0.03, 0.12, 0.08, 0.50)
-  theta0 <- c(0.80, 0.06, 0.05, 0.02, 0.04, 0.01, 0.01, 0.01)
-  vars <- c(list(prevalence = rep(0.1, 4)),
-            stats::setNames(as.list(theta0), paste0("theta_healthy[", 1:8, "]")),
-            stats::setNames(as.list(theta1), paste0("theta_diseased[", 1:8, "]")))
-  vars[-1] <- lapply(vars[-1], rep, 4)
-  draws <- do.call(posterior::draws_array, vars)
   # every profile verified except (0,0,0)
-  x <- data.frame(expand.grid(A = 0:1, B = 0:1, C = 0:1), V = c(0, rep(1, 7)), D = 1)
-  d <- baysesp_data(x, c("A", "B", "C"), "V", "D")
-  fit <- baysesp_fit(model = saturated(), data = d, draws = draws, backend = "rstan",
-                     stan_fit = NULL)
+  fit <- example_fit(verified = c(FALSE, rep(TRUE, 7)))
 
   acc <- test_accuracy(fit)
   get <- function(q) acc$mean[acc$quantity == q]

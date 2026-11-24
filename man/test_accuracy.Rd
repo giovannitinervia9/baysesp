@@ -34,3 +34,6 @@ d <- baysesp_data(d, tests = c("A", "B"), verified = "verified", disease = "dise
 test_accuracy(baysesp(d, seed = 1), level = 0.9)
 }
 }
+\seealso{
+\code{\link[=rule_accuracy]{rule_accuracy()}} for combinations of tests, \code{\link[=compare_tests]{compare_tests()}}.
+}

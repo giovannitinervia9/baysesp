@@ -1,3 +1,19 @@
+#' @include rules.R fit.R
+NULL
+
+# Accuracy of tests and rules ---------------------------------------------------
+#
+# Every quantity is a function of the prevalence and of the distributions of the
+# profiles in the diseased and in the healthy (specification, section 4): for a
+# rule with vector r, TPR = r' theta_1 and FPR = r' theta_0. Each function
+# computes them draw by draw and summarises the posterior.
+#
+# Identification (specification, Proposition 7.1), with MAR verification:
+# - with no never-verified profile, everything is identified;
+# - otherwise the absolute quantities are not, but for rules that declare no
+#   never-verified profile positive the PPV and the ratios of TPR and FPR
+#   between two such rules are.
+
 #' Accuracy of the individual tests
 #'
 #' Posterior summaries of the prevalence and of the sensitivity (`Se`),
@@ -11,6 +27,7 @@
 #'   `identified`: `TRUE` if the quantity is estimated from the data alone,
 #'   `FALSE` if it also depends on the prior of a parameter that the data cannot
 #'   estimate (the proportion of diseased in never-verified profiles).
+#' @seealso [rule_accuracy()] for combinations of tests, [compare_tests()].
 #' @examples
 #' \donttest{
 #' set.seed(1)
@@ -23,38 +40,134 @@
 #' }
 #' @export
 test_accuracy <- function(fit, level = 0.95) {
+  x <- accuracy_draws(fit, fit@data@tests, level)
+  out <- by_rule(list(Se = x$tpr, Sp = 1 - x$fpr, PPV = x$ppv, NPV = x$npv),
+                 list(x$all, x$all, x$ppv_identified, x$all))
+  summarise_draws(cbind(prevalence = x$prevalence, out$draws), level,
+                  identified = c(x$all[1], out$identified))
+}
+
+#' Accuracy of diagnostic rules
+#'
+#' Posterior summaries of the true positive rate (`TPR`, the sensitivity of the
+#' rule), false positive rate (`FPR`), specificity (`Sp`), positive predictive
+#' value (`PPV`) and negative predictive value (`NPV`) of rules that combine
+#' the tests.
+#'
+#' @inheritParams test_accuracy
+#' @param rules A rule, such as [any_positive()], the name of a test, or a list
+#'   of them.
+#' @return A data frame as in [test_accuracy()].
+#' @examples
+#' \donttest{
+#' set.seed(1)
+#' d <- simulate_study(n = 1000, prevalence = 0.2,
+#'                     sensitivity = c(A = 0.9, B = 0.8),
+#'                     specificity = c(A = 0.85, B = 0.95),
+#'                     verification_prob = c(0.2, 0.9, 0.9, 1))
+#' d <- baysesp_data(d, tests = c("A", "B"), verified = "verified", disease = "disease")
+#' fit <- baysesp(d, seed = 1)
+#' rule_accuracy(fit, list(any_positive(), all_positive()))
+#' }
+#' @export
+rule_accuracy <- function(fit, rules, level = 0.95) {
+  x <- accuracy_draws(fit, rules, level)
+  out <- by_rule(list(TPR = x$tpr, FPR = x$fpr, Sp = 1 - x$fpr, PPV = x$ppv, NPV = x$npv),
+                 list(x$all, x$all, x$all, x$ppv_identified, x$all))
+  summarise_draws(out$draws, level, identified = out$identified)
+}
+
+#' Compare two tests or rules
+#'
+#' Posterior summaries of the differences in sensitivity, specificity and
+#' Youden index (`first` minus `second`) and of the ratios of the true and false
+#' positive rates (`first` over `second`).
+#'
+#' When some profile is never verified, the differences depend on the prior of
+#' its proportion of diseased, but the ratios do not, as long as neither rule
+#' declares a never-verified profile positive. In that case the signs of the
+#' differences in sensitivity and in specificity are also identified: the
+#' `probability` of a ratio being greater than 1 is the probability that the
+#' corresponding difference is positive.
+#'
+#' @inheritParams test_accuracy
+#' @param first,second Two tests (by name) or two rules, see [test_rule].
+#' @return A data frame as in [test_accuracy()], with the additional column
+#'   `probability`: the posterior probability that a difference is positive or
+#'   that a ratio is greater than 1.
+#' @examples
+#' \donttest{
+#' set.seed(1)
+#' d <- simulate_study(n = 1000, prevalence = 0.2,
+#'                     sensitivity = c(A = 0.9, B = 0.8),
+#'                     specificity = c(A = 0.85, B = 0.95),
+#'                     verification_prob = c(0.2, 0.9, 0.9, 1))
+#' d <- baysesp_data(d, tests = c("A", "B"), verified = "verified", disease = "disease")
+#' fit <- baysesp(d, seed = 1)
+#' compare_tests(fit, "A", "B")
+#' compare_tests(fit, any_positive(), "A")
+#' }
+#' @export
+compare_tests <- function(fit, first, second, level = 0.95) {
+  rules <- c(as_rules(first, "first"), as_rules(second, "second"))
+  if (length(rules) != 2L) {
+    stop("`first` and `second` must be one test or rule each.", call. = FALSE)
+  }
+  x <- accuracy_draws(fit, rules, level)
+  tpr <- x$tpr
+  fpr <- x$fpr
+  diff_se <- tpr[, 1] - tpr[, 2]
+  diff_sp <- fpr[, 2] - fpr[, 1]
+  draws <- cbind(diff_se, diff_sp, diff_se + diff_sp, tpr[, 1] / tpr[, 2], fpr[, 1] / fpr[, 2])
+  a <- colnames(tpr)[1]
+  b <- colnames(tpr)[2]
+  colnames(draws) <- c(sprintf("%s[%s] - %s[%s]", c("Se", "Sp", "Youden"), a,
+                               c("Se", "Sp", "Youden"), b),
+                       sprintf("%s[%s] / %s[%s]", c("TPR", "FPR"), a, c("TPR", "FPR"), b))
+  ratios_identified <- all(x$ppv_identified)
+  out <- summarise_draws(draws, level,
+                         identified = c(rep(x$all[1], 3), rep(ratios_identified, 2)))
+  out$probability <- colMeans(sweep(draws, 2, c(0, 0, 0, 1, 1), `>`))
+  out
+}
+
+# Draws of prevalence, TPR, FPR, PPV and NPV of a set of rules, with the
+# identification of each rule.
+accuracy_draws <- function(fit, rules, level) {
   if (!S7::S7_inherits(fit, baysesp_fit)) {
     stop("`fit` must be a model fitted with baysesp().", call. = FALSE)
   }
   check_level(level)
+  rmat <- rule_matrix(as_rules(rules), fit@data)
   d <- core_draws(fit)
-  profiles <- fit@data@profiles
   p <- d$prevalence
-  se <- d$theta_diseased %*% profiles
-  sp <- 1 - d$theta_healthy %*% profiles
-  ppv <- p * se / (p * se + (1 - p) * (1 - sp))
-  npv <- (1 - p) * sp / ((1 - p) * sp + p * (1 - se))
-
-  tests <- fit@data@tests
-  # one block of columns per test: Se, Sp, PPV, NPV
-  x <- cbind(p, do.call(cbind, lapply(seq_along(tests), function(k)
-    cbind(se[, k], sp[, k], ppv[, k], npv[, k]))))
-  colnames(x) <- c("prevalence",
-                   paste0(c("Se", "Sp", "PPV", "NPV"), "[", rep(tests, each = 4), "]"))
-
-  # With MAR, everything is identified unless some profile is never verified.
-  # Even then the PPV of a test is identified if every profile in which the test
-  # is positive has verified subjects: PPV = P(D = 1 | T_k = 1) does not involve
-  # the never-verified profiles (specification, Proposition 7.1).
+  tpr <- d$theta_diseased %*% rmat
+  fpr <- d$theta_healthy %*% rmat
+  colnames(tpr) <- colnames(fpr) <- colnames(rmat)
   mar_model <- S7::S7_inherits(fit@model@verification, mar)
-  never <- fit@data@never_verified
-  ppv_identified <- vapply(seq_along(tests), function(k) !any(never & profiles[, k] == 1L),
-                           logical(1))
-  identified <- c(!any(never), rbind(!any(never), !any(never), ppv_identified, !any(never)))
+  list(
+    prevalence = p, tpr = tpr, fpr = fpr,
+    ppv = p * tpr / (p * tpr + (1 - p) * fpr),
+    npv = (1 - p) * (1 - fpr) / ((1 - p) * (1 - fpr) + p * (1 - tpr)),
+    all = rep(mar_model && !any(fit@data@never_verified), ncol(rmat)),
+    ppv_identified = mar_model & avoids_never(rmat, fit@data)
+  )
+}
 
-  out <- summarise_draws(x, level)
-  out$identified <- mar_model & identified
-  out
+# Rules that declare no never-verified profile positive.
+avoids_never <- function(rmat, data) {
+  colSums(rmat[data@never_verified, , drop = FALSE]) == 0
+}
+
+# Binds draws x rules matrices, one per quantity, into one draws matrix with the
+# columns grouped by rule ("Se[A]", "Sp[A]", ..., "Se[B]", ...).
+by_rule <- function(blocks, identified) {
+  B <- length(blocks)
+  R <- ncol(blocks[[1]])
+  order <- as.vector(outer((seq_len(B) - 1L) * R, seq_len(R), `+`))
+  draws <- do.call(cbind, unname(blocks))[, order, drop = FALSE]
+  colnames(draws) <- paste0(names(blocks), "[", rep(colnames(blocks[[1]]), each = B), "]")
+  list(draws = draws, identified = unlist(identified)[order])
 }
 
 check_level <- function(level) {
@@ -64,7 +177,7 @@ check_level <- function(level) {
 }
 
 # Posterior summaries of the columns of a draws x quantities matrix.
-summarise_draws <- function(x, level) {
+summarise_draws <- function(x, level, identified) {
   tail <- (1 - level) / 2
   data.frame(
     quantity = colnames(x),
@@ -72,6 +185,7 @@ summarise_draws <- function(x, level) {
     median = apply(x, 2, stats::median),
     lower = apply(x, 2, stats::quantile, probs = tail, names = FALSE),
     upper = apply(x, 2, stats::quantile, probs = 1 - tail, names = FALSE),
+    identified = identified,
     row.names = NULL
   )
 }

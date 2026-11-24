@@ -6,6 +6,8 @@
 \alias{baysesp-package}
 \title{baysesp: Bayesian Accuracy of Multiple Diagnostic Tests under Partial Verification}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Bayesian estimation of the sensitivity, specificity and predictive values of one or more binary diagnostic tests performed on the same subjects, when the disease status is ascertained by the reference standard only for a subset of subjects (partial verification). Supports joint modelling of K tests, accuracy of combination rules (any, all, at least k positive), comparisons between tests, structured models for conditional dependence, non-ignorable verification and explicit sensitivity analyses for quantities that the data cannot identify. Models are written in 'Stan' and can be fitted with the 'cmdstanr' or 'rstan' interfaces.
 }
 \seealso{

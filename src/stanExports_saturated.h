@@ -57,8 +57,8 @@ static constexpr std::array<const char*, 94> locations_array__ =
   " (in 'string', line 49, column 2 to column 20)",
   " (in 'string', line 51, column 18 to column 60)",
   " (in 'string', line 51, column 2 to column 60)",
-  " (in 'string', line 52, column 12 to column 47)",
-  " (in 'string', line 52, column 2 to column 47)",
+  " (in 'string', line 52, column 12 to column 46)",
+  " (in 'string', line 52, column 2 to column 46)",
   " (in 'string', line 54, column 2 to column 26)",
   " (in 'string', line 56, column 4 to column 21)",
   " (in 'string', line 57, column 4 to column 42)",
@@ -81,15 +81,15 @@ static constexpr std::array<const char*, 94> locations_array__ =
   " (in 'string', line 14, column 8 to column 9)",
   " (in 'string', line 14, column 2 to column 26)",
   " (in 'string', line 15, column 8 to column 9)",
-  " (in 'string', line 15, column 2 to column 41)",
+  " (in 'string', line 15, column 2 to column 48)",
   " (in 'string', line 16, column 2 to column 29)",
   " (in 'string', line 17, column 18 to column 19)",
   " (in 'string', line 17, column 2 to column 25)",
   " (in 'string', line 18, column 18 to column 19)",
   " (in 'string', line 18, column 2 to column 25)",
-  " (in 'string', line 19, column 2 to column 18)",
+  " (in 'string', line 19, column 2 to column 17)",
   " (in 'string', line 20, column 2 to column 24)",
-  " (in 'string', line 23, column 2 to column 24)",
+  " (in 'string', line 23, column 2 to column 31)",
   " (in 'string', line 24, column 2 to column 18)",
   " (in 'string', line 25, column 8 to column 10)",
   " (in 'string', line 25, column 2 to column 22)",
@@ -103,9 +103,9 @@ static constexpr std::array<const char*, 94> locations_array__ =
   " (in 'string', line 34, column 13 to column 26)",
   " (in 'string', line 34, column 27 to column 34)",
   " (in 'string', line 34, column 11 to column 36)",
-  " (in 'string', line 33, column 29 to column 42)",
-  " (in 'string', line 33, column 43 to column 50)",
-  " (in 'string', line 33, column 27 to column 52)",
+  " (in 'string', line 33, column 36 to column 49)",
+  " (in 'string', line 33, column 50 to column 57)",
+  " (in 'string', line 33, column 34 to column 59)",
   " (in 'string', line 33, column 6 to line 34, column 36)",
   " (in 'string', line 31, column 19 to line 35, column 5)",
   " (in 'string', line 31, column 4 to line 35, column 5)",
@@ -133,11 +133,11 @@ private:
   std::vector<int> n1;
   std::vector<int> n0;
   std::vector<int> u;
-  std::vector<int> mai_ver;
+  std::vector<int> never_verified;
   int mnar;
   Eigen::Matrix<double,-1,1> a_q_data__;
   Eigen::Matrix<double,-1,1> b_q_data__;
-  double beta_media;
+  double beta_mean;
   double beta_sd;
   int J0;
   int J1;
@@ -283,17 +283,19 @@ public:
       current_statement__ = 51;
       stan::math::check_greater_or_equal(function__, "u", u, 0);
       current_statement__ = 52;
-      stan::math::validate_non_negative_index("mai_ver", "J", J);
+      stan::math::validate_non_negative_index("never_verified", "J", J);
       current_statement__ = 53;
-      context__.validate_dims("data initialization", "mai_ver", "int",
+      context__.validate_dims("data initialization", "never_verified", "int",
         std::vector<size_t>{static_cast<size_t>(J)});
-      mai_ver = std::vector<int>(J, std::numeric_limits<int>::min());
+      never_verified = std::vector<int>(J, std::numeric_limits<int>::min());
       current_statement__ = 53;
-      mai_ver = context__.vals_i("mai_ver");
+      never_verified = context__.vals_i("never_verified");
       current_statement__ = 53;
-      stan::math::check_greater_or_equal(function__, "mai_ver", mai_ver, 0);
+      stan::math::check_greater_or_equal(function__, "never_verified",
+        never_verified, 0);
       current_statement__ = 53;
-      stan::math::check_less_or_equal(function__, "mai_ver", mai_ver, 1);
+      stan::math::check_less_or_equal(function__, "never_verified",
+        never_verified, 1);
       current_statement__ = 54;
       context__.validate_dims("data initialization", "mnar", "int",
         std::vector<size_t>{});
@@ -355,11 +357,11 @@ public:
       current_statement__ = 58;
       stan::math::check_greater_or_equal(function__, "b_q", b_q, 0);
       current_statement__ = 59;
-      context__.validate_dims("data initialization", "beta_media", "double",
+      context__.validate_dims("data initialization", "beta_mean", "double",
         std::vector<size_t>{});
-      beta_media = std::numeric_limits<double>::quiet_NaN();
+      beta_mean = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 59;
-      beta_media = context__.vals_r("beta_media")[(1 - 1)];
+      beta_mean = context__.vals_r("beta_mean")[(1 - 1)];
       current_statement__ = 60;
       context__.validate_dims("data initialization", "beta_sd", "double",
         std::vector<size_t>{});
@@ -371,7 +373,7 @@ public:
       current_statement__ = 61;
       J0 = std::numeric_limits<int>::min();
       current_statement__ = 61;
-      J0 = stan::math::sum(mai_ver);
+      J0 = stan::math::sum(never_verified);
       current_statement__ = 62;
       J1 = std::numeric_limits<int>::min();
       current_statement__ = 62;
@@ -405,7 +407,7 @@ public:
             "assigning variable Nt", stan::model::index_uni(j));
           current_statement__ = 78;
           if (stan::math::logical_eq(
-                stan::model::rvalue(mai_ver, "mai_ver",
+                stan::model::rvalue(never_verified, "never_verified",
                   stan::model::index_uni(j)), 1)) {
             current_statement__ = 75;
             stan::model::assign(idx_0, j, "assigning variable idx_0",
@@ -528,7 +530,7 @@ public:
         current_statement__ = 30;
         if (mnar) {
           current_statement__ = 29;
-          lp_accum__.add(stan::math::normal_lpdf<propto__>(beta, beta_media,
+          lp_accum__.add(stan::math::normal_lpdf<propto__>(beta, beta_mean,
                            beta_sd));
         }
         current_statement__ = 31;

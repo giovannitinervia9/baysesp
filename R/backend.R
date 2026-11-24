@@ -1,9 +1,14 @@
-# Gestione dei due backend di Stan.
+# Management of the two Stan backends.
 #
-# I programmi Stan stanno in inst/stan. Con il backend "rstan" sono compilati
-# all'installazione da rstantools e disponibili nella lista `stanmodels`.
-# Con il backend "cmdstanr" sono compilati al primo uso e salvati nella cache
-# dell'utente, in una sottocartella per ogni versione di CmdStan.
+# The Stan programs live in inst/stan.
+# - "rstan" (default): the programs are compiled when the package is installed,
+#   by rstantools, and are available in the `stanmodels` list. No compilation
+#   is needed at run time.
+# - "cmdstanr": the programs are compiled the first time they are used and the
+#   executables are saved in the user cache directory. Each executable is
+#   identified by the CmdStan version and by a hash of the Stan code, so it is
+#   reused across sessions and package reinstallations, and recompiled only
+#   when the Stan code or the CmdStan version changes.
 
 #' Names of the Stan programs shipped with the package
 #' @noRd
@@ -32,7 +37,7 @@ cmdstan_available <- function() {
 
 #' Choose the Stan backend, falling back to rstan when cmdstanr is unavailable
 #' @noRd
-resolve_backend <- function(backend = c("cmdstanr", "rstan")) {
+resolve_backend <- function(backend = c("rstan", "cmdstanr")) {
   backend <- match.arg(backend)
   if (backend == "cmdstanr" && !cmdstan_available()) {
     message("'cmdstanr' or CmdStan is not available: using the 'rstan' backend.")
@@ -50,12 +55,30 @@ cache_dir <- function() {
   dir
 }
 
-#' Compiled cmdstanr model, reused across sessions
+#' Hash of a Stan program, including the files in inst/stan/include
+#' @noRd
+stan_hash <- function(program) {
+  include_files <- list.files(system.file("stan", "include", package = "baysesp"),
+                              full.names = TRUE)
+  files <- c(stan_file(program), sort(include_files))
+  code <- paste(unlist(lapply(files, readLines, warn = FALSE)), collapse = "\n")
+  hash_file <- tempfile()
+  on.exit(unlink(hash_file))
+  writeLines(code, hash_file)
+  substr(unname(tools::md5sum(hash_file)), 1, 12)
+}
+
+#' Compiled cmdstanr model, reused across sessions and reinstallations
 #' @noRd
 cmdstan_program <- function(program) {
+  # The Stan file is copied into the cache under a name that contains its hash:
+  # a reinstalled but unchanged program maps to the same, already compiled, file.
+  cached_file <- file.path(cache_dir(), paste0(program, "_", stan_hash(program), ".stan"))
+  if (!file.exists(cached_file)) {
+    file.copy(stan_file(program), cached_file)
+  }
   cmdstanr::cmdstan_model(
-    stan_file(program),
-    dir = cache_dir(),
+    cached_file,
     include_paths = system.file("stan", "include", package = "baysesp"),
     quiet = TRUE
   )
@@ -63,10 +86,11 @@ cmdstan_program <- function(program) {
 
 #' Compile the Stan programs for the cmdstanr backend
 #'
-#' With the `cmdstanr` backend each Stan program is compiled the first time it
-#' is used and the executable is saved in the user cache directory. Call this
-#' function once after installing or updating the package to compile all
-#' programs in advance.
+#' The default backend, `rstan`, uses programs compiled when the package is
+#' installed. With the optional `cmdstanr` backend each Stan program is
+#' compiled the first time it is used and the executable is saved in the user
+#' cache directory. Call this function once after installing or updating the
+#' package to compile all programs in advance.
 #'
 #' @param programs Names of the Stan programs to compile. By default, all.
 #' @return The paths of the compiled executables, invisibly.

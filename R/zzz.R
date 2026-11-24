@@ -1,4 +1,4 @@
 .onLoad <- function(libname, pkgname) {
-  # registra i metodi S7, compresi quelli per generici di altri pacchetti
+  # register S7 methods, including those for generics of other packages
   S7::methods_register()
 }

@@ -46,14 +46,15 @@ LinkingTo:
 SystemRequirements: GNU make
 Collate: 
     'data.R'
-    'verification.R'
     'priors.R'
+    'verification.R'
     'models.R'
     'fit.R'
     'rules.R'
     'accuracy.R'
     'backend.R'
     'baysesp-package.R'
+    'sensitivity.R'
     'identification.R'
     'simulate.R'
     'stan_data.R'

@@ -18,6 +18,17 @@ S7::method(stan_data, list(saturated, mar)) <- function(model, verification, dat
   saturated_data(model, data)
 }
 
+# In the saturated model beta only links the proportion of diseased among the
+# unverified to that among the verified (specification, Proposition 7.2).
+S7::method(stan_data, list(saturated, mnar)) <- function(model, verification, data) {
+  s <- saturated_data(model, data)
+  beta <- prior_code(verification@odds_ratio_prior)
+  s$n_beta <- if (verification@by_profile) s$J - s$J0 else 1L
+  s$beta_family <- beta$family
+  s$beta_params <- beta$params
+  s
+}
+
 # Data list of saturated.stan, MAR; mnar() changes only the last three elements.
 saturated_data <- function(model, data) {
   J <- length(data@n_diseased)
@@ -38,11 +49,7 @@ saturated_data <- function(model, data) {
          "data: give it a prior with `saturated(unverified_prevalence_prior = )`, ",
          "for example with elicit_beta().", call. = FALSE)
   }
-  if (length(q) > 1L && length(q) != J0) {
-    stop("`unverified_prevalence_prior` must be one prior, or a list with one prior ",
-         "per never-verified profile (", J0, ").", call. = FALSE)
-  }
-  q <- lapply(rep_len(q, J0), prior_code)
+  q <- lapply(q_priors(q, J0, "unverified_prevalence_prior"), prior_code)
   verified <- prior_code(model@verified_prior)
   prevalence <- prior_code(model@profile_prevalence_prior)
 
@@ -60,8 +67,18 @@ saturated_data <- function(model, data) {
     # as.array(): rstan needs arrays of length 1 to be arrays
     q_family = as.array(vapply(q, `[[`, integer(1), "family")),
     q_params = matrix(as.double(unlist(lapply(q, `[[`, "params"))), J0, 3, byrow = TRUE),
-    mnar = 0L,
+    n_beta = 0L,
     beta_family = 1L,
     beta_params = c(0, 1, 0)
   )
+}
+
+# One prior, or a list with one prior per never-verified profile, as a list of
+# length J0.
+q_priors <- function(q, J0, argument) {
+  if (length(q) > 1L && length(q) != J0) {
+    stop("`", argument, "` must be one prior, or a list with one prior ",
+         "per never-verified profile (", J0, ").", call. = FALSE)
+  }
+  rep_len(q, J0)
 }

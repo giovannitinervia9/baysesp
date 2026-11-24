@@ -38,10 +38,13 @@ chain.}
 }
 \value{
 An object of class \code{baysesp_fit}, with properties \verb{@model}, \verb{@data},
-\verb{@draws} (a \code{posterior::draws_array} with \code{prevalence}, \code{theta_healthy}
-and \code{theta_diseased}, the distributions of the profiles in the healthy and
-in the diseased, and \code{q} if some profile is never verified), \verb{@backend} and
-\verb{@stan_fit} (the object returned by the backend).
+\verb{@draws} (a \code{posterior::draws_array}), \verb{@backend} and \verb{@stan_fit} (the
+object returned by the backend). The draws contain \code{prevalence},
+\code{theta_healthy} and \code{theta_diseased} (the distributions of the profiles in
+the healthy and in the diseased) and, for the saturated model, the
+parameters of the transparent parametrization: \code{omega}, \code{v} and \code{phi1}
+(0 for never-verified profiles), \code{q} if some profile is never verified and
+\code{beta} with \code{\link[=mnar]{mnar()}} verification.
 }
 \description{
 Fits a model for the accuracy of one or more binary tests under partial

@@ -38,9 +38,10 @@ test_that("the saturated model reproduces the conjugate posterior (rstan)", {
   fit <- baysesp(d, seed = 1)
   expect_true(S7::S7_inherits(fit, baysesp_fit))
   expect_identical(fit@backend, "rstan")
-  expect_identical(posterior::variables(fit@draws),
-                   c("prevalence", paste0("theta_healthy[", 1:4, "]"),
-                     paste0("theta_diseased[", 1:4, "]")))
+  expect_setequal(posterior::variables(fit@draws),
+                  c("prevalence", paste0("theta_healthy[", 1:4, "]"),
+                    paste0("theta_diseased[", 1:4, "]"), paste0("omega[", 1:4, "]"),
+                    paste0("v[", 1:4, "]"), paste0("phi1[", 1:4, "]")))
   expect_identical(posterior::ndraws(fit@draws), 4000L)
 
   set.seed(1)
@@ -86,4 +87,41 @@ test_that("in never-verified profiles the posterior equals the prior", {
   acc <- test_accuracy(fit)
   # the PPV of T1 involves only verified profiles
   expect_identical(acc$quantity[acc$identified], "PPV[T1]")
+})
+
+test_that("with MNAR the posterior of beta equals its prior and matches the R analysis", {
+  skip_on_cran()
+  set.seed(5)
+  s <- simulate_study(n = 5000, prevalence = 0.2, sensitivity = c(0.85, 0.7),
+                      specificity = c(0.9, 0.95), verification_prob = c(0.2, 0.7, 0.7, 0.9),
+                      odds_ratio = exp(1))
+  d <- baysesp_data(s, c("T1", "T2"), "verified", "disease")
+
+  # beta ~ N(0, 1) is not updated by the data
+  fit <- baysesp(d, saturated(verification = mnar()), seed = 6, iter_sampling = 2000)
+  beta <- as.numeric(posterior::as_draws_matrix(posterior::subset_draws(fit@draws, "beta")))
+  expect_equal(mean(beta), 0, tolerance = 0.05)
+  expect_equal(sd(beta), 1, tolerance = 0.05)
+  expect_false(any(test_accuracy(fit)$identified))
+
+  # an almost fixed beta = 1 in Stan agrees with the analysis at odds ratio e in R
+  fixed <- baysesp(d, saturated(verification = mnar(prior_normal(1, 0.001))), seed = 7)
+  mar_fit <- baysesp(d, seed = 8)
+  a <- test_accuracy(fixed)
+  b <- sensitivity_analysis(mar_fit, odds_ratios = exp(1))
+  expect_equal(a$mean, b$mean, tolerance = 0.01)
+  # and its intervals contain the true values, while those of MAR do not
+  covers <- function(x, q, value) {
+    i <- x$quantity == q
+    x$lower[i] <= value && value <= x$upper[i]
+  }
+  a99 <- test_accuracy(fixed, level = 0.99)
+  m99 <- test_accuracy(mar_fit, level = 0.99)
+  expect_true(covers(a99, "Se[T1]", 0.85) && covers(a99, "prevalence", 0.2))
+  expect_false(covers(m99, "prevalence", 0.2))
+
+  # one beta per verified profile
+  by_profile <- baysesp(d, saturated(verification = mnar(by_profile = TRUE)), seed = 9)
+  expect_identical(sum(startsWith(posterior::variables(by_profile@draws), "beta[")), 4L)
+  expect_no_error(sensitivity_analysis(by_profile))
 })

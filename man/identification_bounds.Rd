@@ -4,13 +4,22 @@
 \alias{identification_bounds}
 \title{Bounds for the accuracy when some profiles are never verified}
 \usage{
-identification_bounds(fit, rules = fit@data@tests, level = 0.95)
+identification_bounds(
+  fit,
+  rules = fit@data@tests,
+  odds_ratio = NULL,
+  level = 0.95
+)
 }
 \arguments{
-\item{fit}{A fitted model, from \code{\link[=baysesp]{baysesp()}}.}
+\item{fit}{A model fitted with \code{\link[=baysesp]{baysesp()}} and \code{\link[=saturated]{saturated()}}.}
 
 \item{rules}{Rules or test names, see \code{\link[=rule_accuracy]{rule_accuracy()}}. By default, the
 individual tests.}
+
+\item{odds_ratio}{Odds ratio of verification between diseased and healthy
+subjects, \eqn{\exp(\beta)}, see \code{\link[=mnar]{mnar()}}. By default 1 (MAR) for a model
+with \code{\link[=mar]{mar()}} verification; required with \code{\link[=mnar]{mnar()}}.}
 
 \item{level}{Probability of the credible intervals.}
 }
@@ -28,17 +37,22 @@ and 1. These are the bounds obtained by letting it vary over the whole range
 given to it.
 }
 \details{
+With \code{\link[=mnar]{mnar()}} verification the bounds also depend on the odds ratio of
+verification between diseased and healthy subjects, which the data cannot
+estimate either: they are computed for a fixed value, \code{odds_ratio}. Repeat
+the computation over a range of values to see how they move.
+
 For a rule \eqn{R} that declares no never-verified profile positive,
 \deqn{A_R / (c + \omega_0) \le TPR_R \le A_R / c, \qquad
   B_R / (1 - c) \le FPR_R \le B_R / (1 - c - \omega_0),}
 and \eqn{c \le \pi \le c + \omega_0}, where \eqn{\omega_0} is the frequency of
 the never-verified profiles. The upper bound of the TPR is the value of the
 naive analysis that considers healthy every subject with a never-verified
-profile. The bounds are functions of identified parameters, so they have a
-posterior distribution: the result gives their posterior medians and a
-credible region that contains the whole identification interval with
-probability at least \code{level}. For rules that declare a never-verified
-profile positive the bounds are \code{NA}.
+profile. The bounds are functions of identified parameters (and of the
+odds ratio), so they have a posterior distribution: the result gives their
+posterior medians and a credible region that contains the whole
+identification interval with probability at least \code{level}. For rules that
+declare a never-verified profile positive the bounds are \code{NA}.
 }
 \examples{
 \donttest{
@@ -52,8 +66,9 @@ d <- baysesp_data(d, tests = c("A", "B"), verified = "verified", disease = "dise
 fit <- baysesp(d, saturated(unverified_prevalence_prior = elicit_beta(0.03, 0.06)),
                seed = 1)
 identification_bounds(fit)
+identification_bounds(fit, odds_ratio = 2)
 }
 }
 \seealso{
-\code{\link[=identified_quantities]{identified_quantities()}}
+\code{\link[=identified_quantities]{identified_quantities()}}, \code{\link[=sensitivity_analysis]{sensitivity_analysis()}}
 }

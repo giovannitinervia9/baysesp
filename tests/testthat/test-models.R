@@ -39,7 +39,7 @@ test_that("stan_data() translates the saturated model with MAR", {
   expect_identical(s$J0, 1L)
   expect_identical(s$q_family, as.array(3L))
   expect_equal(s$q_params, matrix(c(1, 9, 0), 1, 3))
-  expect_identical(s$mnar, 0L)
+  expect_identical(s$n_beta, 0L)
   expect_identical(stan_program(m), "saturated")
 
   # without never-verified profiles the q arrays are empty

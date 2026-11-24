@@ -4,22 +4,31 @@
 \alias{identified_quantities}
 \title{Quantities identified when some profiles are never verified}
 \usage{
-identified_quantities(fit, rules = fit@data@tests, level = 0.95)
+identified_quantities(
+  fit,
+  rules = fit@data@tests,
+  odds_ratio = NULL,
+  level = 0.95
+)
 }
 \arguments{
-\item{fit}{A fitted model, from \code{\link[=baysesp]{baysesp()}}.}
+\item{fit}{A model fitted with \code{\link[=baysesp]{baysesp()}} and \code{\link[=saturated]{saturated()}}.}
 
 \item{rules}{Rules or test names, see \code{\link[=rule_accuracy]{rule_accuracy()}}. By default, the
 individual tests.}
 
+\item{odds_ratio}{Odds ratio of verification between diseased and healthy
+subjects, \eqn{\exp(\beta)}, see \code{\link[=mnar]{mnar()}}. By default 1 (MAR) for a model
+with \code{\link[=mar]{mar()}} verification; required with \code{\link[=mnar]{mnar()}}.}
+
 \item{level}{Probability of the credible intervals.}
 }
 \value{
-A data frame with one row per ratio and pair of rules, columns as in
-\code{\link[=compare_tests]{compare_tests()}}: \code{probability} is the posterior probability that the
-ratio is greater than 1, that is, for TPR, that the first rule is more
-sensitive, and for FPR, that it is less specific. Only the rules that
-declare no never-verified profile positive are compared.
+A data frame with one row per ratio and pair of rules and columns
+\code{quantity}, \code{mean}, \code{median}, \code{lower}, \code{upper} and \code{probability}, the
+posterior probability that the ratio is greater than 1: for TPR, that the
+first rule is more sensitive; for FPR, that it is less specific. Only the
+rules that declare no never-verified profile positive are compared.
 }
 \description{
 When some response profiles are never verified, the absolute accuracy of
@@ -27,7 +36,9 @@ the tests is not identified, but the ratios of the true positive rates and
 of the false positive rates of two rules are, if neither rule declares a
 never-verified profile positive (Proposition 7.1 of the specification). So
 are the signs of the differences in sensitivity and in specificity. These
-results do not depend on the prior on the never-verified profiles.
+results do not depend on the prior on the never-verified profiles. With
+\code{\link[=mnar]{mnar()}} verification they depend on the odds ratio of verification, and
+are computed for a fixed value, \code{odds_ratio}.
 }
 \examples{
 \donttest{

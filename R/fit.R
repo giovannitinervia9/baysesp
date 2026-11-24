@@ -21,10 +21,13 @@ NULL
 #'   `$sample()` method of `cmdstanr`, such as `cores`/`parallel_chains`.
 #'
 #' @return An object of class `baysesp_fit`, with properties `@model`, `@data`,
-#'   `@draws` (a `posterior::draws_array` with `prevalence`, `theta_healthy`
-#'   and `theta_diseased`, the distributions of the profiles in the healthy and
-#'   in the diseased, and `q` if some profile is never verified), `@backend` and
-#'   `@stan_fit` (the object returned by the backend).
+#'   `@draws` (a `posterior::draws_array`), `@backend` and `@stan_fit` (the
+#'   object returned by the backend). The draws contain `prevalence`,
+#'   `theta_healthy` and `theta_diseased` (the distributions of the profiles in
+#'   the healthy and in the diseased) and, for the saturated model, the
+#'   parameters of the transparent parametrization: `omega`, `v` and `phi1`
+#'   (0 for never-verified profiles), `q` if some profile is never verified and
+#'   `beta` with [mnar()] verification.
 #' @seealso [test_accuracy()]
 #' @examples
 #' \donttest{
@@ -51,7 +54,7 @@ baysesp <- function(data, model = saturated(), backend = c("rstan", "cmdstanr"),
   sdata <- stan_data(model, model@verification, data)
   program <- stan_program(model)
   variables <- c("prevalence", "theta_healthy", "theta_diseased",
-                 if (sdata$J0 > 0L) "q", if (sdata$mnar == 1L) "beta")
+                 "omega", "v", "phi1", if (sdata$J0 > 0L) "q", if (sdata$n_beta > 0L) "beta")
 
   if (backend == "rstan") {
     if (is.null(seed)) seed <- sample.int(.Machine$integer.max, 1L)

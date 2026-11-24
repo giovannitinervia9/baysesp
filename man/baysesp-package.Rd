@@ -2,7 +2,6 @@
 % Please edit documentation in R/baysesp-package.R
 \docType{package}
 \name{baysesp-package}
-\alias{baysesp}
 \alias{baysesp-package}
 \title{baysesp: Bayesian Accuracy of Multiple Diagnostic Tests under Partial Verification}
 \description{

@@ -151,12 +151,16 @@ S7::method(as.data.frame, baysesp_data) <- function(x, ...) {
              unverified = x@n_unverified, check.names = FALSE)
 }
 
+# Profiles written as "(0,1)".
+profile_labels <- function(data) {
+  paste0("(", apply(data@profiles, 1, paste, collapse = ","), ")")
+}
+
 S7::method(print, baysesp_data) <- function(x, ...) {
   K <- length(x@tests)
   n_verified <- sum(x@n_diseased + x@n_healthy)
-  never <- x@profiles[x@never_verified, , drop = FALSE]
-  never <- if (nrow(never) == 0L) "none" else
-    paste0("(", apply(never, 1, paste, collapse = ","), ")", collapse = " ")
+  never <- if (!any(x@never_verified)) "none" else
+    paste(profile_labels(x)[x@never_verified], collapse = " ")
   cat("<baysesp_data> ", K, if (K == 1L) " test, " else " tests, ",
       2L^K, " profiles, ",
       sum(x@n_diseased, x@n_healthy, x@n_unverified), " subjects, ",

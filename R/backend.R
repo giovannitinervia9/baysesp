@@ -79,7 +79,7 @@ cmdstan_program <- function(program) {
   }
   cmdstanr::cmdstan_model(
     cached_file,
-    include_paths = system.file("stan", "include", package = "baysesp"),
+    include_paths = system.file("stan", package = "baysesp"),
     quiet = TRUE
   )
 }

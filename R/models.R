@@ -184,3 +184,99 @@ S7::method(print, loglinear) <- function(x, ...) {
       "\n", sep = "")
   invisible(x)
 }
+
+#' Random effects model
+#'
+#' A model for comparison (road 2 in the specification) that explains the
+#' dependence between the tests with a single continuous latent variable
+#' \eqn{Z \sim N(0, 1)}, independent of the disease, such as the severity of the
+#' condition. Given the disease class \eqn{d} and \eqn{Z}, the tests are
+#' independent with \eqn{P(T_k = 1 | D = d, Z = z) = \Phi(a_{dk} + b_{dk} z)}.
+#' The tests are dependent given the disease alone because they share \eqn{Z}.
+#' It has \eqn{2K} parameters per class, fewer than the log-linear model of
+#' order 2 when there are many tests. It needs at least two tests.
+#'
+#' The sign of the conditional dependence between tests \eqn{j} and \eqn{k} is
+#' the sign of \eqn{b_{dj} b_{dk}}. Changing the sign of \eqn{Z} and of all the
+#' loadings of a class leaves the model unchanged, so a constraint is needed.
+#' By default all the loadings are positive: the tests can only be positively
+#' dependent, that is, tend to err together, as is usual for tests that
+#' measure the same condition.
+#'
+#' With `positive_loadings = FALSE` only the first loading of each class is
+#' positive, and any sign of dependence is allowed. Use it with care: the
+#' posterior can then have a second, reflected mode, with the first loading
+#' close to 0 and the others with the opposite sign, which can trap some
+#' chains and give wrong estimates. Run several chains and check that they
+#' agree (R-hat close to 1). For negative dependence, [loglinear()] of order 2
+#' is an alternative.
+#'
+#' As for [loglinear()], the information this model gives on never-verified
+#' profiles comes from the assumed structure, not from the data.
+#'
+#' @param prevalence_prior Prior on the prevalence.
+#' @param intercepts_prior Prior on the marginal probits
+#'   \eqn{m_{dk} = a_{dk} / \sqrt{1 + b_{dk}^2}}, so that
+#'   \eqn{P(T_k = 1 | D = d) = \Phi(m_{dk})}: for the diseased it is a prior on
+#'   the probit of the sensitivity, for the healthy on the probit of one minus
+#'   the specificity. The model is sampled in these parameters, which the data
+#'   inform directly, rather than in the intercepts.
+#' @param loadings_prior Prior on the loadings \eqn{b_{dk}}, truncated to
+#'   positive values where the loadings are positive.
+#' @param positive_loadings If `TRUE` (default), all the loadings are positive
+#'   (only positive dependence between the tests); if `FALSE`, only the first
+#'   loading of each class. See Details.
+#' @param verification Verification mechanism, by default [mar()].
+#' @return An object of class `random_effects`.
+#' @examples
+#' random_effects()
+#' random_effects(positive_loadings = FALSE)
+#' @export
+random_effects <- S7::new_class(
+  "random_effects",
+  parent = accuracy_model,
+  properties = list(
+    prevalence_prior = prior_distribution,
+    intercepts_prior = prior_distribution,
+    loadings_prior = prior_distribution,
+    positive_loadings = S7::class_logical
+  ),
+  constructor = function(prevalence_prior = prior_beta(0.5, 2),
+                         intercepts_prior = prior_normal(0, 1.5),
+                         loadings_prior = prior_normal(0, 1),
+                         positive_loadings = TRUE,
+                         verification = mar()) {
+    S7::new_object(
+      S7::S7_object(),
+      verification = verification,
+      prevalence_prior = prevalence_prior,
+      intercepts_prior = intercepts_prior,
+      loadings_prior = loadings_prior,
+      positive_loadings = positive_loadings
+    )
+  },
+  validator = function(self) {
+    targets <- c(prevalence_prior = "probability", intercepts_prior = "real",
+                 loadings_prior = "real")
+    for (name in names(targets)) {
+      problem <- tryCatch(check_prior(S7::prop(self, name), targets[[name]], name),
+                          error = conditionMessage)
+      if (is.character(problem)) return(problem)
+    }
+    if (length(self@positive_loadings) != 1L || is.na(self@positive_loadings)) {
+      "@positive_loadings must be TRUE or FALSE"
+    }
+  }
+)
+
+S7::method(print, random_effects) <- function(x, ...) {
+  cat("<random_effects> random effects model, Gauss-Hermite quadrature\n",
+      "  prevalence_prior: ", prior_label(x@prevalence_prior), "\n",
+      "  intercepts_prior: ", prior_label(x@intercepts_prior), "\n",
+      "  loadings_prior:   ", prior_label(x@loadings_prior),
+      if (x@positive_loadings) ", all loadings positive" else ", first loading positive",
+      "\n",
+      "  verification:     ", sub("^baysesp::", "", class(x@verification)[1]),
+      "\n", sep = "")
+  invisible(x)
+}

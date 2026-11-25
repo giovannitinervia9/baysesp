@@ -20,7 +20,7 @@ baysesp(
 \item{data}{Study data, created by \code{\link[=baysesp_data]{baysesp_data()}}.}
 
 \item{model}{Model, by default \code{\link[=saturated]{saturated()}} with MAR verification; see
-also \code{\link[=loglinear]{loglinear()}}.}
+also \code{\link[=loglinear]{loglinear()}} and \code{\link[=random_effects]{random_effects()}}.}
 
 \item{backend}{Stan interface: \code{"rstan"} (default; the programs are compiled
 when the package is installed) or \code{"cmdstanr"} (each program is compiled

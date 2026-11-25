@@ -11,6 +11,7 @@
 
 functions {
 #include include/priors.stan
+#include include/likelihood.stan
 }
 
 data {
@@ -32,23 +33,15 @@ data {
   int<lower=0, upper=1> mnar;                    // 0 = MAR, 1 = MNAR
   int<lower=0> n_beta;                           // 0 (MAR or fixed beta), 1, or one per verified profile
   real beta_value;                               // fixed beta, used if mnar and n_beta == 0
-  int intercepts_family;                         // prior on alpha (used only if mnar)
-  vector[3] intercepts_params;
+  int alpha_family;                         // prior on alpha (used only if mnar)
+  vector[3] alpha_params;
   int beta_family;                               // prior on beta (used only if n_beta > 0)
   vector[3] beta_params;
 }
 
 transformed data {
-  int J1 = 0;                                    // profiles with verified subjects
-  array[J] int verified_pos;                     // position among them, 0 if never verified
-  for (j in 1:J) {
-    if (n1[j] + n0[j] > 0) {
-      J1 += 1;
-      verified_pos[j] = J1;
-    } else {
-      verified_pos[j] = 0;
-    }
-  }
+  array[J] int verified_pos = verified_positions(n1, n0);
+  int J1 = max(verified_pos);                    // profiles with verified subjects
   if (n_beta > 1 && n_beta != J1) reject("n_beta must be 0, 1 or the number of verified profiles");
 }
 
@@ -61,11 +54,6 @@ parameters {
 }
 
 model {
-  vector[J] log_theta0 = log_softmax(X * eta0);
-  vector[J] log_theta1 = log_softmax(X * eta1);
-  real log_p1 = log_inv_logit(logit_prevalence);
-  real log_p0 = log1m_inv_logit(logit_prevalence);
-
   logit_prevalence ~ prior(prevalence_family, prevalence_params);
   for (p in 1:P) {
     if (order[p] == 1) {
@@ -76,26 +64,11 @@ model {
       eta1[p] ~ prior(interaction_family, interaction_params);
     }
   }
-  for (a in 1:num_elements(alpha)) alpha[a] ~ prior(intercepts_family, intercepts_params);
+  for (a in 1:num_elements(alpha)) alpha[a] ~ prior(alpha_family, alpha_params);
   for (i in 1:n_beta) beta[i] ~ prior(beta_family, beta_params);
 
-  // aggregated likelihood, one profile at a time (specification, section 3.4)
-  for (j in 1:J) {
-    real lp1 = log_p1 + log_theta1[j];           // log P(D = 1, T = t)
-    real lp0 = log_p0 + log_theta0[j];           // log P(D = 0, T = t)
-    int a = verified_pos[j];
-    if (a == 0) {
-      target += u[j] * log_sum_exp(lp1, lp0);
-    } else if (mnar == 0) {
-      target += n1[j] * lp1 + n0[j] * lp0 + u[j] * log_sum_exp(lp1, lp0);
-    } else {
-      real b = n_beta == 0 ? beta_value : beta[n_beta == 1 ? 1 : a];
-      real v1 = alpha[a] + b;                    // logit lambda_{t,1}
-      real v0 = alpha[a];                        // logit lambda_{t,0}
-      target += n1[j] * (lp1 + log_inv_logit(v1)) + n0[j] * (lp0 + log_inv_logit(v0));
-      target += u[j] * log_sum_exp(lp1 + log1m_inv_logit(v1), lp0 + log1m_inv_logit(v0));
-    }
-  }
+  target += cells_lp(logit_prevalence, log_softmax(X * eta0), log_softmax(X * eta1),
+                     n1, n0, u, verified_pos, mnar, n_beta, beta_value, alpha, beta);
 }
 
 generated quantities {

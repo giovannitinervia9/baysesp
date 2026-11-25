@@ -89,20 +89,28 @@ S7::method(stan_data, list(loglinear, mar)) <- function(model, verification, dat
   loglinear_data(model, data)
 }
 
-# In the structured models beta enters the verification probabilities, with
-# one intercept per verified profile (specification, section 6.1).
 S7::method(stan_data, list(loglinear, mnar)) <- function(model, verification, data) {
-  s <- loglinear_data(model, data)
-  intercepts <- prior_code(verification@intercepts_prior)
+  structured_mnar(loglinear_data(model, data), verification, data)
+}
+
+# In the structured models beta enters the verification probabilities, with
+# one intercept per verified profile (specification, section 6.1). The data
+# lists of loglinear.stan and random_effects.stan share these elements.
+structured_mnar <- function(s, verification, data) {
+  alpha <- prior_code(verification@intercepts_prior)
   beta <- prior_code(verification@odds_ratio_prior)
   s$mnar <- 1L
   s$n_beta <- if (verification@by_profile) sum(!data@never_verified) else 1L
-  s$intercepts_family <- intercepts$family
-  s$intercepts_params <- intercepts$params
+  s$alpha_family <- alpha$family
+  s$alpha_params <- alpha$params
   s$beta_family <- beta$family
   s$beta_params <- beta$params
   s
 }
+
+structured_mar <- list(mnar = 0L, n_beta = 0L, beta_value = 0,
+                       alpha_family = 1L, alpha_params = c(0, 1, 0),
+                       beta_family = 1L, beta_params = c(0, 1, 0))
 
 # Data list of loglinear.stan, MAR.
 loglinear_data <- function(model, data) {
@@ -115,17 +123,14 @@ loglinear_data <- function(model, data) {
   prevalence <- prior_code(model@prevalence_prior)
   main <- prior_code(model@main_effects_prior)
   interaction <- prior_code(model@interactions_prior)
-  list(
+  c(list(
     J = nrow(X), P = ncol(X), X = unname(X),
     order = as.array(attr(X, "order")),
     n1 = data@n_diseased, n0 = data@n_healthy, u = data@n_unverified,
     prevalence_family = prevalence$family, prevalence_params = prevalence$params,
     main_family = main$family, main_params = main$params,
-    interaction_family = interaction$family, interaction_params = interaction$params,
-    mnar = 0L, n_beta = 0L, beta_value = 0,
-    intercepts_family = 1L, intercepts_params = c(0, 1, 0),
-    beta_family = 1L, beta_params = c(0, 1, 0)
-  )
+    interaction_family = interaction$family, interaction_params = interaction$params
+  ), structured_mar)
 }
 
 # Design matrix X_m (specification, section 5.2): one column per subset S of at
@@ -142,4 +147,48 @@ design_matrix <- function(profiles, m) {
                         character(1))
   attr(X, "order") <- lengths(subsets)
   X
+}
+
+S7::method(stan_program, random_effects) <- function(model) "random_effects"
+
+S7::method(stan_data, list(random_effects, mar)) <- function(model, verification, data) {
+  random_effects_data(model, data)
+}
+
+S7::method(stan_data, list(random_effects, mnar)) <- function(model, verification, data) {
+  structured_mnar(random_effects_data(model, data), verification, data)
+}
+
+# Data list of random_effects.stan, MAR.
+random_effects_data <- function(model, data) {
+  K <- length(data@tests)
+  if (K < 2L) {
+    stop("The random effects model needs at least two tests.", call. = FALSE)
+  }
+  gh <- gauss_hermite(32L)
+  prevalence <- prior_code(model@prevalence_prior)
+  intercepts <- prior_code(model@intercepts_prior)
+  loadings <- prior_code(model@loadings_prior)
+  c(list(
+    J = nrow(data@profiles), K = K, profiles = unname(data@profiles * 1),
+    positive_loadings = as.integer(model@positive_loadings),
+    Q = length(gh$nodes), nodes = gh$nodes, log_weights = log(gh$weights),
+    n1 = data@n_diseased, n0 = data@n_healthy, u = data@n_unverified,
+    prevalence_family = prevalence$family, prevalence_params = prevalence$params,
+    intercepts_family = intercepts$family, intercepts_params = intercepts$params,
+    loadings_family = loadings$family, loadings_params = loadings$params
+  ), structured_mar)
+}
+
+# Gauss-Hermite quadrature for the standard normal distribution (Golub-Welsch):
+# the nodes are the eigenvalues of the Jacobi matrix of the probabilists'
+# Hermite polynomials, the weights the squared first components of the
+# eigenvectors. sum(weights * f(nodes)) approximates E f(Z), Z ~ N(0, 1).
+gauss_hermite <- function(n) {
+  jacobi <- matrix(0, n, n)
+  off <- sqrt(seq_len(n - 1L))
+  jacobi[cbind(1:(n - 1L), 2:n)] <- off
+  jacobi[cbind(2:n, 1:(n - 1L))] <- off
+  e <- eigen(jacobi, symmetric = TRUE)
+  list(nodes = rev(e$values), weights = rev(e$vectors[1, ]^2))
 }

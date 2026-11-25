@@ -24,7 +24,7 @@ NULL
 #' so the draws of the identified parameters are reused and only the
 #' assumptions are changed.
 #'
-#' For the structured models ([loglinear()]) the odds ratio enters the
+#' For the structured models ([loglinear()], [random_effects()]) the odds ratio enters the
 #' likelihood, so the model is fitted again for each value, with the odds ratio
 #' fixed; the never-verified profiles have no separate prior to change.
 #'
@@ -74,7 +74,7 @@ sensitivity_analysis <- function(fit, odds_ratios = NULL, unverified_priors = NU
                                 any(odds_ratios <= 0) || any(!is.finite(odds_ratios)))) {
     stop("`odds_ratios` must contain positive finite numbers.", call. = FALSE)
   }
-  if (S7::S7_inherits(fit@model, loglinear)) {
+  if (!S7::S7_inherits(fit@model, saturated)) {
     return(refit_sensitivity(fit, odds_ratios, unverified_priors, rules, level, ...))
   }
   check_saturated_fit(fit, "sensitivity_analysis()")

@@ -49,7 +49,7 @@ so the draws of the identified parameters are reused and only the
 assumptions are changed.
 }
 \details{
-For the structured models (\code{\link[=loglinear]{loglinear()}}) the odds ratio enters the
+For the structured models (\code{\link[=loglinear]{loglinear()}}, \code{\link[=random_effects]{random_effects()}}) the odds ratio enters the
 likelihood, so the model is fitted again for each value, with the odds ratio
 fixed; the never-verified profiles have no separate prior to change.
 

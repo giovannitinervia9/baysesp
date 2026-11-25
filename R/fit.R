@@ -9,7 +9,7 @@ NULL
 #'
 #' @param data Study data, created by [baysesp_data()].
 #' @param model Model, by default [saturated()] with MAR verification; see
-#'   also [loglinear()].
+#'   also [loglinear()] and [random_effects()].
 #' @param backend Stan interface: `"rstan"` (default; the programs are compiled
 #'   when the package is installed) or `"cmdstanr"` (each program is compiled
 #'   the first time it is used, see [compile_models()]). If `cmdstanr` or

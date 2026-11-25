@@ -8,7 +8,8 @@ NULL
 #' mechanism; see [saturated()].
 #'
 #' @param data Study data, created by [baysesp_data()].
-#' @param model Model, by default [saturated()] with MAR verification.
+#' @param model Model, by default [saturated()] with MAR verification; see
+#'   also [loglinear()].
 #' @param backend Stan interface: `"rstan"` (default; the programs are compiled
 #'   when the package is installed) or `"cmdstanr"` (each program is compiled
 #'   the first time it is used, see [compile_models()]). If `cmdstanr` or
@@ -27,7 +28,7 @@ NULL
 #'   the healthy and in the diseased) and, for the saturated model, the
 #'   parameters of the transparent parametrization: `omega`, `v` and `phi1`
 #'   (0 for never-verified profiles), `q` if some profile is never verified and
-#'   `beta` with [mnar()] verification.
+#'   `beta` with [mnar()] verification (also for [loglinear()]).
 #' @seealso [test_accuracy()]
 #' @examples
 #' \donttest{
@@ -52,9 +53,16 @@ baysesp <- function(data, model = saturated(), backend = c("rstan", "cmdstanr"),
   }
   backend <- resolve_backend(backend)
   sdata <- stan_data(model, model@verification, data)
+  fit_stan(model, data, sdata, backend, chains, iter_warmup, iter_sampling, seed, ...)
+}
+
+# Runs the Stan program of the model on a data list and returns a baysesp_fit.
+fit_stan <- function(model, data, sdata, backend, chains, iter_warmup, iter_sampling,
+                     seed, ...) {
   program <- stan_program(model)
   variables <- c("prevalence", "theta_healthy", "theta_diseased",
-                 "omega", "v", "phi1", if (sdata$J0 > 0L) "q", if (sdata$n_beta > 0L) "beta")
+                 if (S7::S7_inherits(model, saturated)) c("omega", "v", "phi1"),
+                 if (isTRUE(sdata$J0 > 0L)) "q", if (sdata$n_beta > 0L) "beta")
 
   if (backend == "rstan") {
     if (is.null(seed)) seed <- sample.int(.Machine$integer.max, 1L)

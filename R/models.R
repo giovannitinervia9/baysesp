@@ -109,3 +109,78 @@ S7::method(print, saturated) <- function(x, ...) {
       "\n", sep = "")
   invisible(x)
 }
+
+#' Log-linear models
+#'
+#' Models for comparison (road 2 in the specification): they assume a
+#' structure for the dependence between the tests. The distribution of the
+#' profiles in each disease class is log-linear with the parameters of the
+#' subsets of at most `interaction_order` tests: order 1 is conditional
+#' independence, order 2 allows the association of each pair of tests, and
+#' order `K` (the number of tests) is the saturated model.
+#'
+#' With order lower than `K`, the structure gives information also on the
+#' proportion of diseased in never-verified profiles, and makes the odds ratio
+#' of [mnar()] verification formally estimable. That information comes from
+#' the assumption, not from the data: use these models as a comparison with
+#' [saturated()].
+#'
+#' @param interaction_order Highest number of tests in an interaction.
+#' @param prevalence_prior Prior on the prevalence.
+#' @param main_effects_prior Prior on the main effects (one per test and class).
+#'   With order 1 the main effects are the logits of the sensitivities and of
+#'   one minus the specificities.
+#' @param interactions_prior Prior on the interactions.
+#' @param verification Verification mechanism, by default [mar()].
+#' @return An object of class `loglinear`.
+#' @examples
+#' loglinear()                       # conditional independence
+#' loglinear(interaction_order = 2)  # pairwise dependence
+#' @export
+loglinear <- S7::new_class(
+  "loglinear",
+  parent = accuracy_model,
+  properties = list(
+    interaction_order = S7::class_integer,
+    prevalence_prior = prior_distribution,
+    main_effects_prior = prior_distribution,
+    interactions_prior = prior_distribution
+  ),
+  constructor = function(interaction_order = 1L,
+                         prevalence_prior = prior_beta(0.5, 2),
+                         main_effects_prior = prior_normal(0, 1.5),
+                         interactions_prior = prior_normal(0, 1),
+                         verification = mar()) {
+    if (!is_scalar_number(interaction_order) || interaction_order < 1 ||
+        interaction_order != round(interaction_order)) {
+      stop("`interaction_order` must be a positive whole number.", call. = FALSE)
+    }
+    S7::new_object(
+      S7::S7_object(),
+      verification = verification,
+      interaction_order = as.integer(interaction_order),
+      prevalence_prior = prevalence_prior,
+      main_effects_prior = main_effects_prior,
+      interactions_prior = interactions_prior
+    )
+  },
+  validator = function(self) {
+    targets <- c(prevalence_prior = "probability", main_effects_prior = "real",
+                 interactions_prior = "real")
+    for (name in names(targets)) {
+      problem <- tryCatch(check_prior(S7::prop(self, name), targets[[name]], name),
+                          error = conditionMessage)
+      if (is.character(problem)) return(problem)
+    }
+  }
+)
+
+S7::method(print, loglinear) <- function(x, ...) {
+  cat("<loglinear> log-linear model of order ", x@interaction_order, "\n",
+      "  prevalence_prior:   ", prior_label(x@prevalence_prior), "\n",
+      "  main_effects_prior: ", prior_label(x@main_effects_prior), "\n",
+      "  interactions_prior: ", prior_label(x@interactions_prior), "\n",
+      "  verification:       ", sub("^baysesp::", "", class(x@verification)[1]),
+      "\n", sep = "")
+  invisible(x)
+}

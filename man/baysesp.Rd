@@ -19,7 +19,8 @@ baysesp(
 \arguments{
 \item{data}{Study data, created by \code{\link[=baysesp_data]{baysesp_data()}}.}
 
-\item{model}{Model, by default \code{\link[=saturated]{saturated()}} with MAR verification.}
+\item{model}{Model, by default \code{\link[=saturated]{saturated()}} with MAR verification; see
+also \code{\link[=loglinear]{loglinear()}}.}
 
 \item{backend}{Stan interface: \code{"rstan"} (default; the programs are compiled
 when the package is installed) or \code{"cmdstanr"} (each program is compiled
@@ -44,7 +45,7 @@ object returned by the backend). The draws contain \code{prevalence},
 the healthy and in the diseased) and, for the saturated model, the
 parameters of the transparent parametrization: \code{omega}, \code{v} and \code{phi1}
 (0 for never-verified profiles), \code{q} if some profile is never verified and
-\code{beta} with \code{\link[=mnar]{mnar()}} verification.
+\code{beta} with \code{\link[=mnar]{mnar()}} verification (also for \code{\link[=loglinear]{loglinear()}}).
 }
 \description{
 Fits a model for the accuracy of one or more binary tests under partial

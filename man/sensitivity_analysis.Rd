@@ -9,11 +9,12 @@ sensitivity_analysis(
   odds_ratios = NULL,
   unverified_priors = NULL,
   rules = NULL,
-  level = 0.95
+  level = 0.95,
+  ...
 )
 }
 \arguments{
-\item{fit}{A model fitted with \code{\link[=baysesp]{baysesp()}} and \code{\link[=saturated]{saturated()}}.}
+\item{fit}{A model fitted with \code{\link[=baysesp]{baysesp()}}.}
 
 \item{odds_ratios}{Values of the odds ratio of verification between diseased
 and healthy subjects, \eqn{\exp(\beta)}; 1 is MAR. \code{NULL} keeps the
@@ -28,6 +29,9 @@ fitted model.}
 as in \code{\link[=test_accuracy]{test_accuracy()}}.}
 
 \item{level}{Probability of the credible intervals.}
+
+\item{...}{For the structured models, arguments passed to \code{\link[=baysesp]{baysesp()}} for
+the new fits, such as \code{chains} and \code{seed}.}
 }
 \value{
 A data frame with the columns \code{odds_ratio} (\code{NA} when it follows the
@@ -45,6 +49,10 @@ so the draws of the identified parameters are reused and only the
 assumptions are changed.
 }
 \details{
+For the structured models (\code{\link[=loglinear]{loglinear()}}) the odds ratio enters the
+likelihood, so the model is fitted again for each value, with the odds ratio
+fixed; the never-verified profiles have no separate prior to change.
+
 The odds ratio is fixed at each value of \code{odds_ratios}: with a grid of
 values this is a tipping-point analysis, which shows at which odds ratio a
 conclusion changes. With \code{odds_ratios = NULL} the odds ratio of the fitted

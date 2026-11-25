@@ -1,4 +1,4 @@
-#' @include accuracy.R
+#' @include accuracy.R stan_data.R
 NULL
 
 # Sensitivity analysis for the saturated model ----------------------------------
@@ -24,6 +24,10 @@ NULL
 #' so the draws of the identified parameters are reused and only the
 #' assumptions are changed.
 #'
+#' For the structured models ([loglinear()]) the odds ratio enters the
+#' likelihood, so the model is fitted again for each value, with the odds ratio
+#' fixed; the never-verified profiles have no separate prior to change.
+#'
 #' The odds ratio is fixed at each value of `odds_ratios`: with a grid of
 #' values this is a tipping-point analysis, which shows at which odds ratio a
 #' conclusion changes. With `odds_ratios = NULL` the odds ratio of the fitted
@@ -31,7 +35,7 @@ NULL
 #' priors in `unverified_priors` are sampled with the random number generator
 #' of R: set the seed for reproducible results.
 #'
-#' @param fit A model fitted with [baysesp()] and [saturated()].
+#' @param fit A model fitted with [baysesp()].
 #' @param odds_ratios Values of the odds ratio of verification between diseased
 #'   and healthy subjects, \eqn{\exp(\beta)}; 1 is MAR. `NULL` keeps the
 #'   assumption of the fitted model.
@@ -42,6 +46,8 @@ NULL
 #' @param rules Rules, see [rule_accuracy()]. By default the individual tests,
 #'   as in [test_accuracy()].
 #' @inheritParams test_accuracy
+#' @param ... For the structured models, arguments passed to [baysesp()] for
+#'   the new fits, such as `chains` and `seed`.
 #' @return A data frame with the columns `odds_ratio` (`NA` when it follows the
 #'   prior of an [mnar()] model) and `unverified_prior`, which describe the
 #'   assumptions, followed by the columns of [test_accuracy()] or
@@ -59,9 +65,19 @@ NULL
 #' }
 #' @export
 sensitivity_analysis <- function(fit, odds_ratios = NULL, unverified_priors = NULL,
-                                 rules = NULL, level = 0.95) {
-  check_saturated_fit(fit, "sensitivity_analysis()")
+                                 rules = NULL, level = 0.95, ...) {
+  if (!S7::S7_inherits(fit, baysesp_fit)) {
+    stop("`fit` must be a model fitted with baysesp().", call. = FALSE)
+  }
   check_level(level)
+  if (!is.null(odds_ratios) && (!is.numeric(odds_ratios) || anyNA(odds_ratios) ||
+                                any(odds_ratios <= 0) || any(!is.finite(odds_ratios)))) {
+    stop("`odds_ratios` must contain positive finite numbers.", call. = FALSE)
+  }
+  if (S7::S7_inherits(fit@model, loglinear)) {
+    return(refit_sensitivity(fit, odds_ratios, unverified_priors, rules, level, ...))
+  }
+  check_saturated_fit(fit, "sensitivity_analysis()")
   t <- transparent_draws(fit)
   S <- nrow(t$omega)
   never <- fit@data@never_verified
@@ -71,10 +87,6 @@ sensitivity_analysis <- function(fit, odds_ratios = NULL, unverified_priors = NU
     betas <- list(t$beta)
     or_labels <- if (S7::S7_inherits(fit@model@verification, mar)) 1 else NA_real_
   } else {
-    if (!is.numeric(odds_ratios) || anyNA(odds_ratios) || any(odds_ratios <= 0) ||
-        any(!is.finite(odds_ratios))) {
-      stop("`odds_ratios` must contain positive finite numbers.", call. = FALSE)
-    }
     betas <- lapply(log(odds_ratios), function(b) matrix(b, S, ncol(t$omega)))
     or_labels <- odds_ratios
   }
@@ -111,6 +123,31 @@ sensitivity_analysis <- function(fit, odds_ratios = NULL, unverified_priors = NU
       rule_accuracy(scenario, rules, level)
     acc$identified <- NULL
     cbind(odds_ratio = or_labels[grid$beta[i]], unverified_prior = q_labels[grid$q[i]], acc)
+  })
+  do.call(rbind, out)
+}
+
+# Structured models: one new fit per odds ratio, with beta fixed in Stan.
+refit_sensitivity <- function(fit, odds_ratios, unverified_priors, rules, level, ...) {
+  if (!is.null(unverified_priors)) {
+    stop("In the structured models the never-verified profiles have no separate ",
+         "prior: `unverified_priors` applies only to saturated().", call. = FALSE)
+  }
+  if (is.null(odds_ratios)) {
+    stop("Give the values of the odds ratio with `odds_ratios`.", call. = FALSE)
+  }
+  model <- fit@model
+  if (!S7::S7_inherits(model@verification, mnar)) model@verification <- mnar()
+  args <- utils::modifyList(list(chains = 4, iter_warmup = 1000, iter_sampling = 1000,
+                                 seed = NULL), list(...))
+  out <- lapply(odds_ratios, function(or) {
+    sdata <- stan_data(model, model@verification, fit@data)
+    sdata$n_beta <- 0L
+    sdata$beta_value <- log(or)
+    refit <- do.call(fit_stan, c(list(model, fit@data, sdata, fit@backend), args))
+    acc <- if (is.null(rules)) test_accuracy(refit, level) else rule_accuracy(refit, rules, level)
+    acc$identified <- NULL
+    cbind(odds_ratio = or, unverified_prior = NA_character_, acc)
   })
   do.call(rbind, out)
 }

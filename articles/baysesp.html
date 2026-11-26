@@ -1416,7 +1416,7 @@ with <code>verification = mnar()</code>. We fit <code>fit_mnar</code> to
 <span>  model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span></span>
 <span>    verification <span class="op">=</span> <span class="fu"><a href="../reference/mnar.html">mnar</a></span><span class="op">(</span></span>
 <span>      odds_ratio_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_normal.html">prior_normal</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">1.5</span><span class="op">)</span>, sd <span class="op">=</span> <span class="fl">0.35</span><span class="op">)</span>,</span>
-<span>      intercepts_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_normal.html">prior_normal</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>,</span>
+<span>      intercepts_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_normal.html">prior_normal</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span>,</span>
 <span>      by_profile <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
@@ -1432,7 +1432,7 @@ ratio near 1.5, between 0.75 and 3 with 95% probability;</li>
 <li>
 <code>intercepts_prior</code>: prior on healthy verification
 probabilities, used only by <a href="#structured">Section 9</a> models
-(<code>prior_normal(mean = 0, sd = 1.5)</code>, the default);</li>
+(<code>prior_normal(mean = 0, sd = 2.5)</code>, the default);</li>
 <li>
 <code>by_profile</code>: if <code>TRUE</code>, each profile has its
 own odds ratio with the same prior; <code>FALSE</code>, the default,
@@ -1949,19 +1949,19 @@ of order 2 where verification may depend on the disease
 <span><span class="co">#&gt; Expected log predictive density of a new subject (leave-one-out)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model           elpd_loo se_loo elpd_diff se_diff p_loo</span></span>
-<span><span class="co">#&gt;  random_effects -18139.04 144.21      0.00    0.00 18.10</span></span>
-<span><span class="co">#&gt;  order_2        -18140.34 144.20     -1.30    1.20 19.79</span></span>
-<span><span class="co">#&gt;  saturated      -18142.39 144.22     -3.35    1.20 21.98</span></span>
-<span><span class="co">#&gt;  order_2_mnar   -18143.59 144.26     -4.55    1.82 20.36</span></span>
-<span><span class="co">#&gt;  independence   -18188.06 144.75    -49.02   10.90 14.05</span></span>
+<span><span class="co">#&gt;  random_effects -18138.91 144.21      0.00    0.00 18.00</span></span>
+<span><span class="co">#&gt;  order_2        -18140.34 144.20     -1.43    1.20 19.79</span></span>
+<span><span class="co">#&gt;  order_2_mnar   -18141.33 144.25     -2.43    1.40 20.34</span></span>
+<span><span class="co">#&gt;  saturated      -18142.39 144.22     -3.48    1.20 21.98</span></span>
+<span><span class="co">#&gt;  independence   -18188.06 144.75    -49.16   10.91 14.05</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Reliability of the estimates and fit to the data</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model          loo_method high_k elpd_waic p_waic ppc_pvalue</span></span>
-<span><span class="co">#&gt;  random_effects psis            0 -18139.02  18.09       0.61</span></span>
+<span><span class="co">#&gt;  random_effects psis            0 -18138.89  17.98       0.62</span></span>
 <span><span class="co">#&gt;  order_2        psis            0 -18140.32  19.76       0.56</span></span>
+<span><span class="co">#&gt;  order_2_mnar   psis            0 -18141.31  20.31       0.52</span></span>
 <span><span class="co">#&gt;  saturated      exact           - -18142.27  21.86       0.49</span></span>
-<span><span class="co">#&gt;  order_2_mnar   psis            0 -18143.56  20.33       0.38</span></span>
 <span><span class="co">#&gt;  independence   psis            0 -18188.05  14.04       0.00</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; elpd_diff: difference from the first model, with standard error se_diff.</span></span>
@@ -2164,8 +2164,8 @@ and compare it with <code>fit3n_sat</code>:</p>
 <span><span class="co">#&gt; Reliability of the estimates and fit to the data</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model      loo_method high_k elpd_waic p_waic ppc_pvalue</span></span>
-<span><span class="co">#&gt;  low_prior  exact           - -16167.87  19.94       0.48</span></span>
-<span><span class="co">#&gt;  high_prior exact           - -16167.78  19.84       0.49</span></span>
+<span><span class="co">#&gt;  low_prior  exact           - -16167.94  20.00       0.48</span></span>
+<span><span class="co">#&gt;  high_prior exact           - -16167.78  19.85       0.49</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; elpd_diff: difference from the first model, with standard error se_diff.</span></span>
 <span><span class="co">#&gt; high_k: cells with Pareto k &gt; 0.7 (- for exact leave-one-out, which has no k).</span></span>

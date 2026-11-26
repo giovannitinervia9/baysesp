@@ -1379,7 +1379,7 @@ fit_mnar <- baysesp(
   model = saturated(
     verification = mnar(
       odds_ratio_prior = prior_normal(mean = log(1.5), sd = 0.35),
-      intercepts_prior = prior_normal(mean = 0, sd = 1.5),
+      intercepts_prior = prior_normal(mean = 0, sd = 2.5),
       by_profile = FALSE
     )
   ),
@@ -1394,7 +1394,7 @@ In `verification = mnar()`, the arguments are:
   1.5, between 0.75 and 3 with 95% probability;
 - `intercepts_prior`: prior on healthy verification probabilities, used
   only by [Section 9](#structured) models
-  (`prior_normal(mean = 0, sd = 1.5)`, the default);
+  (`prior_normal(mean = 0, sd = 2.5)`, the default);
 - `by_profile`: if `TRUE`, each profile has its own odds ratio with the
   same prior; `FALSE`, the default, shares one across profiles.
 
@@ -1895,19 +1895,19 @@ comparison
 #> Expected log predictive density of a new subject (leave-one-out)
 #> 
 #>  model           elpd_loo se_loo elpd_diff se_diff p_loo
-#>  random_effects -18139.04 144.21      0.00    0.00 18.10
-#>  order_2        -18140.34 144.20     -1.30    1.20 19.79
-#>  saturated      -18142.39 144.22     -3.35    1.20 21.98
-#>  order_2_mnar   -18143.59 144.26     -4.55    1.82 20.36
-#>  independence   -18188.06 144.75    -49.02   10.90 14.05
+#>  random_effects -18138.91 144.21      0.00    0.00 18.00
+#>  order_2        -18140.34 144.20     -1.43    1.20 19.79
+#>  order_2_mnar   -18141.33 144.25     -2.43    1.40 20.34
+#>  saturated      -18142.39 144.22     -3.48    1.20 21.98
+#>  independence   -18188.06 144.75    -49.16   10.91 14.05
 #> 
 #> Reliability of the estimates and fit to the data
 #> 
 #>  model          loo_method high_k elpd_waic p_waic ppc_pvalue
-#>  random_effects psis            0 -18139.02  18.09       0.61
+#>  random_effects psis            0 -18138.89  17.98       0.62
 #>  order_2        psis            0 -18140.32  19.76       0.56
+#>  order_2_mnar   psis            0 -18141.31  20.31       0.52
 #>  saturated      exact           - -18142.27  21.86       0.49
-#>  order_2_mnar   psis            0 -18143.56  20.33       0.38
 #>  independence   psis            0 -18188.05  14.04       0.00
 #> 
 #> elpd_diff: difference from the first model, with standard error se_diff.
@@ -2099,8 +2099,8 @@ compare_models(
 #> Reliability of the estimates and fit to the data
 #> 
 #>  model      loo_method high_k elpd_waic p_waic ppc_pvalue
-#>  low_prior  exact           - -16167.87  19.94       0.48
-#>  high_prior exact           - -16167.78  19.84       0.49
+#>  low_prior  exact           - -16167.94  20.00       0.48
+#>  high_prior exact           - -16167.78  19.85       0.49
 #> 
 #> elpd_diff: difference from the first model, with standard error se_diff.
 #> high_k: cells with Pareto k > 0.7 (- for exact leave-one-out, which has no k).

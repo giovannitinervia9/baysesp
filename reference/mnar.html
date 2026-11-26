@@ -61,7 +61,7 @@ across profiles.</p>
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">mnar</span><span class="op">(</span></span>
 <span>  odds_ratio_prior <span class="op">=</span> <span class="fu"><a href="prior_normal.html">prior_normal</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>,</span>
-<span>  intercepts_prior <span class="op">=</span> <span class="fu"><a href="prior_normal.html">prior_normal</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1.5</span><span class="op">)</span>,</span>
+<span>  intercepts_prior <span class="op">=</span> <span class="fu"><a href="prior_normal.html">prior_normal</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2.5</span><span class="op">)</span>,</span>
 <span>  by_profile <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -85,13 +85,16 @@ ratios between about 0.14 and 7.1.</p></dd>
 one for each profile with at least one verified subject. It must act on
 the real line, as for <code>odds_ratio_prior</code>. It is used only by the log-linear
 and the random-effects models; the saturated model does not use it. The
-default <code>prior_normal(0, 1.5)</code> is close to a uniform distribution on the
-verification probability of healthy subjects, \(\mathrm{expit}(\alpha_t)\).
-A wider prior, such as <code>prior_normal(0, 2.5)</code>, puts about a third of its
-mass on probabilities below 0.08 or above 0.92; with profiles in which
-few subjects are verified, it often leads to profiles with subjects but
-no verified subject, which the model treats as never verified (with a
-warning from <code><a href="baysesp.html">baysesp()</a></code>).</p></dd>
+default is <code>prior_normal(0, 2.5)</code>. In profiles where almost all subjects
+are diseased, the data say little about the verification probability of
+the healthy, \(\mathrm{expit}(\alpha_t)\), and the prior pulls it
+towards 0.5; the shared \(\beta\) then absorbs the difference. As a
+result the estimated odds ratio depends on this prior: in simulations
+with verification probabilities of 0.8, <code>prior_normal(0, 1.5)</code> gave a
+posterior median of the odds ratio of about 2.4 when the true value was
+1, the default about 1.7. The sensitivities and specificities changed by
+less than 0.005. Read the odds ratio of the structured models together
+with <code><a href="sensitivity_analysis.html">sensitivity_analysis()</a></code>.</p></dd>
 
 
 <dt id="arg-by-profile">by_profile<a class="anchor" aria-label="anchor" href="#arg-by-profile"></a></dt>
@@ -172,11 +175,11 @@ the data alone, and it is fragile if the structure is wrong (Albert and Dodd, 20
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">mnar</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;mnar&gt; verification depends on the test results and on the disease</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   odds_ratio_prior: Normal(mean = 0, sd = 1)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   intercepts_prior: Normal(mean = 0, sd = 1.5)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   intercepts_prior: Normal(mean = 0, sd = 2.5)</span>
 <span class="r-in"><span><span class="fu">mnar</span><span class="op">(</span>odds_ratio_prior <span class="op">=</span> <span class="fu"><a href="prior_normal.html">prior_normal</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, sd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;mnar&gt; verification depends on the test results and on the disease</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   odds_ratio_prior: Normal(mean = 0.6931, sd = 0.5)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   intercepts_prior: Normal(mean = 0, sd = 1.5)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   intercepts_prior: Normal(mean = 0, sd = 2.5)</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

@@ -1,6 +1,6 @@
 # Fits of saturated.stan. With MAR and every profile verified, the posterior of
 # the saturated model is known in closed form (specification, section 10.2):
-# omega ~ Dirichlet(1 + N), phi1 ~ Beta(1 + n1, 1 + n0), and the prevalence is
+# omega ~ Dirichlet(1 + N), phi1 ~ Beta(1/2 + n1, 1/2 + n0), and the prevalence is
 # sum(omega * phi1). The parameters of the never-verified profiles do not enter
 # the likelihood, so their posterior equals their prior.
 
@@ -20,7 +20,7 @@ conjugate_draws <- function(d, n = 1e5) {
   N <- d@n_diseased + d@n_healthy + d@n_unverified
   g <- matrix(stats::rgamma(n * 4, shape = 1 + N), n, 4, byrow = TRUE)
   omega <- g / rowSums(g)
-  phi1 <- matrix(stats::rbeta(n * 4, 1 + d@n_diseased, 1 + d@n_healthy), n, 4,
+  phi1 <- matrix(stats::rbeta(n * 4, 0.5 + d@n_diseased, 0.5 + d@n_healthy), n, 4,
                  byrow = TRUE)
   prevalence <- rowSums(omega * phi1)
   se1 <- rowSums((omega * phi1)[, c(2, 4)]) / prevalence
@@ -54,6 +54,22 @@ test_that("the saturated model reproduces the conjugate posterior (rstan)", {
   expect_output(print(fit), "saturated model, MAR verification, 4 chains x 1000 draws \\(rstan\\)")
   expect_output(print(fit), "Convergence: max R-hat 1\\.[0-9]{3}, .* 0 divergent transitions")
   expect_output(print(fit), "fixed at 1 \\(MAR\\)")
+})
+
+test_that("saturated() fits use adapt_delta = 0.95 unless it is given", {
+  skip_on_cran()
+  # with the Jeffreys prior on phi1, profile (0,0) with 1 diseased of 50
+  # verified gave divergent transitions at the Stan default 0.8 (validation)
+  d <- example_data()
+  # short runs: only the sampler settings are checked
+  adapt_delta <- function(model = saturated(), ...) {
+    fit <- suppressWarnings(baysesp(d, model, chains = 1, iter_warmup = 100,
+                                    iter_sampling = 100, seed = 1, ...))
+    fit@stan_fit@stan_args[[1]]$control$adapt_delta
+  }
+  expect_equal(adapt_delta(), 0.95)
+  expect_equal(adapt_delta(control = list(adapt_delta = 0.9, max_treedepth = 12)), 0.9)
+  expect_null(adapt_delta(loglinear()))   # Stan default, not passed
 })
 
 test_that("print shows the odds ratio of verification under MNAR", {

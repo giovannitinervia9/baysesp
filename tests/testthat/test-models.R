@@ -5,7 +5,7 @@ test_that("saturated() has the documented defaults", {
   expect_identical(m@frequency_prior@concentration, 1)
   expect_equal(c(m@verified_prior@shape1, m@verified_prior@shape2), c(1, 1))
   expect_equal(c(m@profile_prevalence_prior@shape1, m@profile_prevalence_prior@shape2),
-               c(1, 1))
+               c(0.5, 0.5))   # Jeffreys: the uniform prior biased Se (validation)
   expect_null(m@unverified_prevalence_prior)
   expect_output(print(m), "unverified_prevalence_prior: none")
   expect_error(accuracy_model(), "abstract")

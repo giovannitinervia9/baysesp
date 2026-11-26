@@ -115,7 +115,15 @@ accuracy_model <- S7::new_class(
 #'   verified subject. The same prior is used, independently, for each such
 #'   profile, with the same rules as `verified_prior`: a prior on a probability
 #'   acts on the proportion, a prior on the real line on its logit. Default
-#'   `prior_beta(0.5, 2)`, the uniform distribution on (0, 1).
+#'   `prior_beta(0.5, 1)`, the Jeffreys prior Beta(1/2, 1/2). It matters in
+#'   profiles with few verified subjects and almost all of one class, typically
+#'   the profile with all tests negative when few negatives are verified: there
+#'   the uniform `prior_beta(0.5, 2)` pulls \eqn{\phi^{(1)}_t} towards 0.5 more,
+#'   moving diseased subjects into that profile, so that the sensitivities are
+#'   underestimated. In simulations with 5% to 10% of the negatives verified,
+#'   the Jeffreys prior about halved this bias. With this prior the posterior of
+#'   \eqn{\mathrm{logit}\,\phi^{(1)}_t} can have a long tail, so `baysesp()`
+#'   uses `adapt_delta = 0.95` for this model.
 #' @param unverified_prevalence_prior Prior on \eqn{q_t}, the proportion of
 #'   diseased in each never-verified profile (a profile with no verified
 #'   subject). It has no default prior: its default `NULL` means that no prior
@@ -159,7 +167,7 @@ saturated <- S7::new_class(
   ),
   constructor = function(frequency_prior = prior_dirichlet(1),
                          verified_prior = prior_beta(0.5, 2),
-                         profile_prevalence_prior = prior_beta(0.5, 2),
+                         profile_prevalence_prior = prior_beta(0.5, 1),
                          unverified_prevalence_prior = NULL,
                          verification = mar()) {
     S7::new_object(

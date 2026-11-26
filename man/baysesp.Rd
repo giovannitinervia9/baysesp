@@ -57,7 +57,10 @@ reproducible. A number is used directly as the seed of the sampler.}
 \code{"rstan"} (for example \code{cores}, to run the chains in parallel, or
 \code{control}, for example \code{list(adapt_delta = 0.95)}), or to the \verb{$sample()}
 method of \code{cmdstanr} when \code{backend} is \code{"cmdstanr"} (for example
-\code{parallel_chains}, or \code{adapt_delta}). Do not repeat \code{chains},
+\code{parallel_chains}, or \code{adapt_delta}). With \code{\link[=saturated]{saturated()}} the target
+acceptance rate \code{adapt_delta} is 0.95 unless given here, instead of the
+Stan default 0.8: see the \code{profile_prevalence_prior} argument of
+\code{\link[=saturated]{saturated()}}. Do not repeat \code{chains},
 \code{iter_warmup}, \code{iter_sampling} or \code{seed}, which \code{baysesp()} already passes to
 the backend.}
 }

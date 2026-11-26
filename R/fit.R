@@ -52,7 +52,10 @@ NULL
 #'   `"rstan"` (for example `cores`, to run the chains in parallel, or
 #'   `control`, for example `list(adapt_delta = 0.95)`), or to the `$sample()`
 #'   method of `cmdstanr` when `backend` is `"cmdstanr"` (for example
-#'   `parallel_chains`, or `adapt_delta`). Do not repeat `chains`,
+#'   `parallel_chains`, or `adapt_delta`). With [saturated()] the target
+#'   acceptance rate `adapt_delta` is 0.95 unless given here, instead of the
+#'   Stan default 0.8: see the `profile_prevalence_prior` argument of
+#'   [saturated()]. Do not repeat `chains`,
 #'   `iter_warmup`, `iter_sampling` or `seed`, which `baysesp()` already passes to
 #'   the backend.
 #'
@@ -147,21 +150,30 @@ fit_stan <- function(model, data, sdata, backend, chains, iter_warmup, iter_samp
   if (is.null(seed)) seed <- sample.int(.Machine$integer.max, 1L)
   settings <- c(list(chains = chains, iter_warmup = iter_warmup,
                      iter_sampling = iter_sampling, seed = seed), list(...))
+  dots <- list(...)
+  # Saturated model: with few verified subjects of one class in a profile, the
+  # posterior of logit(phi1) has a long tail against a steep side, which gives
+  # divergent transitions at the default adapt_delta = 0.8
+  if (S7::S7_inherits(model, saturated)) {
+    if (backend == "rstan") {
+      dots$control <- utils::modifyList(list(adapt_delta = 0.95), as.list(dots$control))
+    } else if (is.null(dots$adapt_delta)) {
+      dots$adapt_delta <- 0.95
+    }
+  }
 
   if (backend == "rstan") {
-    stan_fit <- rstan::sampling(
+    stan_fit <- do.call(rstan::sampling, c(list(
       stanmodels[[program]], data = sdata, pars = variables,
       chains = chains, iter = iter_warmup + iter_sampling, warmup = iter_warmup,
-      seed = seed, refresh = 0, ...
-    )
+      seed = seed, refresh = 0), dots))
     draws <- posterior::as_draws_array(rstan::extract(stan_fit, pars = variables,
                                                       permuted = FALSE))
   } else {
-    stan_fit <- cmdstan_program(program)$sample(
+    stan_fit <- do.call(cmdstan_program(program)$sample, c(list(
       data = sdata, chains = chains, iter_warmup = iter_warmup,
       iter_sampling = iter_sampling, seed = seed, refresh = 0,
-      show_messages = FALSE, ...
-    )
+      show_messages = FALSE), dots))
     draws <- stan_fit$draws(variables)
   }
 

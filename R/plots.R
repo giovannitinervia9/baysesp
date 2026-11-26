@@ -16,9 +16,10 @@ colours <- c(posterior = "#2a78d6", prior = "#eb6834")
 #' prior and posterior distributions of the accuracy of the tests (or of
 #' rules) and, for the saturated model, of the parameters the data cannot
 #' estimate: the proportion of diseased in never-verified profiles (`q`) and
-#' the log odds ratio of verification (`beta`). This shows how much each
-#' result depends on the data and how much on the assumptions: a posterior
-#' equal to its prior is not learned from the data. For the structured models
+#' the log odds ratio of verification (`beta`) when `verification = mnar()` (Kosinski and Barnhart, 2003).
+#' This shows how much each result depends on the data and how much on the
+#' assumptions: a posterior equal to its prior is not learned from the data
+#' (Buzoianu and Kadane, 2008; Gustafson, 2015). For the structured models
 #' it is also a prior simulation, which shows the prior that their priors induce on the
 #' accuracy.
 #'
@@ -29,6 +30,16 @@ colours <- c(posterior = "#2a78d6", prior = "#eb6834")
 #' @return A data frame of class `prior_posterior` with columns `quantity`,
 #'   `distribution` (`"prior"` or `"posterior"`), `mean`, `median`, `lower`
 #'   and `upper`. It has a `plot()` method.
+#' @references
+#' Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. *Statistics in Medicine*, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable verification bias in assessment of diagnostic tests. *Biometrics*, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+#'
+#' Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. *Statistics in Medicine*, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+#'
+#' Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968. \doi{10.2307/2530967}
 #' @examples
 #' \donttest{
 #' set.seed(1)

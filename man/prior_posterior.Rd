@@ -27,9 +27,10 @@ Fits the same model again sampling from the prior alone, and compares the
 prior and posterior distributions of the accuracy of the tests (or of
 rules) and, for the saturated model, of the parameters the data cannot
 estimate: the proportion of diseased in never-verified profiles (\code{q}) and
-the log odds ratio of verification (\code{beta}). This shows how much each
-result depends on the data and how much on the assumptions: a posterior
-equal to its prior is not learned from the data. For the structured models
+the log odds ratio of verification (\code{beta}) when \code{verification = mnar()} (Kosinski and Barnhart, 2003).
+This shows how much each result depends on the data and how much on the
+assumptions: a posterior equal to its prior is not learned from the data
+(Buzoianu and Kadane, 2008; Gustafson, 2015). For the structured models
 it is also a prior simulation, which shows the prior that their priors induce on the
 accuracy.
 }
@@ -63,7 +64,7 @@ prevalence; the predictive values describe what a result means for a
 subject, and change with the prevalence of the population. For combined
 rules, such as \code{\link[=any_positive]{any_positive()}}, the accuracy depends on the joint
 distribution of the tests, not only on their individual sensitivities and
-specificities.
+specificities (Torrance-Rynard and Walter, 1997; Vacek, 1985).
 
 Each quantity is computed from every posterior draw of \eqn{\pi},
 \eqn{\theta_0} and \eqn{\theta_1}. The results report its posterior mean
@@ -83,4 +84,15 @@ pp <- prior_posterior(fit, seed = 1)
 pp
 plot(pp)
 }
+}
+\references{
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. \emph{Statistics in Medicine}, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+
+Gustafson, P. (2015). \emph{Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data}. Chapman & Hall/CRC, Boca Raton, FL.
+
+Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable verification bias in assessment of diagnostic tests. \emph{Biometrics}, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+
+Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. \emph{Statistics in Medicine}, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+
+Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. \emph{Biometrics}, 41(4), 959–968. \doi{10.2307/2530967}
 }

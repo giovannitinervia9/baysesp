@@ -22,7 +22,8 @@ An object of class \code{test_rule}.
 A \code{test_rule} object declares each response profile positive or negative,
 starting from the results of one or more tests. The accuracy of a rule
 depends on the joint distribution of the tests, not only on their
-sensitivities and specificities. Common rules are built with \code{single_test()},
+sensitivities and specificities (Torrance-Rynard and Walter, 1997; Vacek,
+1985). Common rules are built with \code{single_test()},
 \code{any_positive()}, \code{all_positive()} and \code{min_positive()}; a custom rule is
 built with \code{test_rule()}.
 }
@@ -54,6 +55,11 @@ both_ct_pcr <- test_rule(
   positive = function(profiles) profiles[, "ct"] == 1 & profiles[, "pcr"] == 1
 )
 both_ct_pcr@name
+}
+\references{
+Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. \emph{Statistics in Medicine}, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+
+Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. \emph{Biometrics}, 41(4), 959–968. \doi{10.2307/2530967}
 }
 \seealso{
 \code{\link[=rule_accuracy]{rule_accuracy()}}, \code{\link[=compare_tests]{compare_tests()}}

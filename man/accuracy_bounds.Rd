@@ -37,8 +37,8 @@ diseased subjects in the response profiles that are never verified.
 When some profiles (combinations of test results) are never verified, the
 data say nothing about how many diseased subjects they contain, and the
 absolute accuracy depends on it. A prior on that proportion gives a single
-answer, which rests entirely on the prior. These bounds instead show what
-the data alone allow: the lowest and highest value of each quantity when the
+answer, which rests entirely on the prior (Buzoianu and Kadane, 2008). These bounds
+instead show what the data alone allow (Gustafson, 2015): the lowest and highest value of each quantity when the
 proportion of diseased in the never-verified profiles ranges from 0 to 1.
 They do not depend on the prior. Wide bounds mean that the absolute accuracy
 is mostly determined by the assumption on the never-verified profiles.
@@ -77,7 +77,7 @@ all of them diseased.
 The bounds are functions of identified parameters (and of the odds ratio),
 so they have a posterior distribution: the result gives their posterior
 medians and a credible region that contains the whole identification
-interval with probability at least \code{level}. For rules that declare a
+interval with probability at least \code{level} (Gustafson, 2015). For rules that declare a
 never-verified profile positive the bounds are \code{NA}.
 
 The accuracy is defined for a \emph{rule} \eqn{R}, which declares a subject
@@ -109,7 +109,7 @@ prevalence; the predictive values describe what a result means for a
 subject, and change with the prevalence of the population. For combined
 rules, such as \code{\link[=any_positive]{any_positive()}}, the accuracy depends on the joint
 distribution of the tests, not only on their individual sensitivities and
-specificities.
+specificities (Torrance-Rynard and Walter, 1997; Vacek, 1985).
 
 Each quantity is computed from every posterior draw of \eqn{\pi},
 \eqn{\theta_0} and \eqn{\theta_1}. The results report its posterior mean
@@ -129,6 +129,15 @@ fit <- baysesp(d, saturated(unverified_prevalence_prior = elicit_beta(0.03, 0.06
 accuracy_bounds(fit)
 accuracy_bounds(fit, odds_ratio = 2)
 }
+}
+\references{
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. \emph{Statistics in Medicine}, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+
+Gustafson, P. (2015). \emph{Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data}. Chapman & Hall/CRC, Boca Raton, FL.
+
+Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. \emph{Statistics in Medicine}, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+
+Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. \emph{Biometrics}, 41(4), 959–968. \doi{10.2307/2530967}
 }
 \seealso{
 \code{\link[=accuracy_ratios]{accuracy_ratios()}}, \code{\link[=sensitivity_analysis]{sensitivity_analysis()}}

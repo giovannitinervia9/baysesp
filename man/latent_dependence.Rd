@@ -33,7 +33,8 @@ changes only how often the tests are right or wrong together. The object is
 passed to \code{\link[=simulate_study]{simulate_study()}} as its \code{dependence} argument.
 }
 \details{
-Each subject has a latent variable \eqn{Z \sim N(0, 1)}, independent of the
+Each subject has a latent variable \eqn{Z \sim N(0, 1)} (Qu et al., 1996;
+Dendukuri and Joseph, 2001), independent of the
 disease status \eqn{D}. Given \eqn{D = d} and \eqn{Z = z} the \eqn{K} tests
 are independent, with
 \deqn{P(T_k = 1 \mid D = d, Z = z) = \Phi(a_{dk} + b_{dk} z),}
@@ -121,6 +122,11 @@ cor(d[sick, c("A", "B", "C")])
 
 # mixed signs: A and B agree, C disagrees with both
 latent_dependence(diseased_loadings = c(1, 1, -1))
+}
+\references{
+Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the conditional dependence between multiple diagnostic tests. \emph{Biometrics}, 57(1), 158–167. \doi{10.1111/j.0006-341X.2001.00158.x}
+
+Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in latent class analysis for evaluating accuracy of diagnostic tests. \emph{Biometrics}, 52(3), 797–810. \doi{10.2307/2533043}
 }
 \seealso{
 \code{\link[=simulate_study]{simulate_study()}}, \code{\link[=independence]{independence()}}, \code{\link[=probit_dependence]{probit_dependence()}},

@@ -19,8 +19,8 @@ NULL
 #' Shows how the accuracy of the tests changes with the two assumptions of the
 #' saturated model that the data cannot check: the odds ratio of verification
 #' between diseased and healthy subjects (set with `verification = mnar()` in the model) and the prior on the
-#' proportion of diseased in the never-verified profiles. For the saturated
-#' model no new fit is needed: these parameters do not enter the likelihood,
+#' proportion of diseased in the never-verified profiles (Buzoianu and Kadane, 2008). For the saturated
+#' model no new fit is needed: these parameters do not enter the likelihood (Gustafson, 2015),
 #' so the draws of the identified parameters are reused and only the
 #' assumptions are changed.
 #'
@@ -30,7 +30,7 @@ NULL
 #'
 #' The odds ratio is fixed at each value of `odds_ratios`: with a grid of
 #' values this is a tipping-point analysis, which shows at which odds ratio a
-#' conclusion changes. With `odds_ratios = NULL` the odds ratio of the fitted
+#' conclusion changes (Kosinski and Barnhart, 2003b). With `odds_ratios = NULL` the odds ratio of the fitted
 #' model is kept (1 with `verification = mar()`, the prior `odds_ratio_prior` with `verification = mnar()`). The new
 #' priors in `unverified_priors` are sampled with the random number generator
 #' of R: set the seed for reproducible results.
@@ -41,7 +41,8 @@ NULL
 #'   the proportion of diseased among them \eqn{\phi^{(1)}_t}. With odds ratio
 #'   of verification \eqn{OR = \exp(\beta)}, the proportion of diseased among
 #'   the unverified is \eqn{\phi^{(0)}_t = \mathrm{expit}(\mathrm{logit}(\phi^{(1)}_t) - \beta)}:
-#'   with \eqn{OR > 1} the unverified are less often diseased than the verified.
+#'   with \eqn{OR > 1} the unverified are less often diseased than the verified
+#'   (Kosinski and Barnhart, 2003a).
 #'   The proportion of diseased in the profile is then
 #'   \deqn{\psi_t = v_t\, \phi^{(1)}_t + (1 - v_t)\, \phi^{(0)}_t,}
 #'   or \eqn{\psi_t = q_t}, drawn from the prior, for a never-verified profile.
@@ -66,6 +67,18 @@ NULL
 #'   prior of a model with `verification = mnar()`) and `unverified_prior`, which describe the
 #'   assumptions, followed by the columns of [test_accuracy()] or
 #'   [rule_accuracy()], without `identified`.
+#' @references
+#' Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. *Statistics in Medicine*, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Kosinski, A. S. and Barnhart, H. X. (2003a). Accounting for nonignorable verification bias in assessment of diagnostic tests. *Biometrics*, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+#'
+#' Kosinski, A. S. and Barnhart, H. X. (2003b). A global sensitivity analysis of performance of a medical diagnostic test when verification bias is present. *Statistics in Medicine*, 22(17), 2711–2721. \doi{10.1002/sim.1517}
+#'
+#' Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. *Statistics in Medicine*, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+#'
+#' Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968. \doi{10.2307/2530967}
 #' @examples
 #' \donttest{
 #' set.seed(1)

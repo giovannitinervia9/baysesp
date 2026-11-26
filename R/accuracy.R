@@ -18,7 +18,7 @@ NULL
 #'
 #' Posterior summaries of the prevalence and of the sensitivity (`Se`),
 #' specificity (`Sp`), positive predictive value (`PPV`) and negative
-#' predictive value (`NPV`) of each test.
+#' predictive value (`NPV`) of each test (Begg and Greenes, 1983; Zhou, 1993; Zhou, 1994).
 #'
 #' @template accuracy
 #' @details The first row is the prevalence \eqn{\pi}, the proportion of
@@ -29,7 +29,22 @@ NULL
 #'   `mean`, `median`, `lower` and `upper` (equal-tailed credible interval) and
 #'   `identified`: `TRUE` if the quantity is estimated from the data alone,
 #'   `FALSE` if it also depends on the prior of a parameter that the data cannot
-#'   estimate (the proportion of diseased in never-verified profiles).
+#'   estimate (the proportion of diseased in never-verified profiles)
+#'   (Buzoianu and Kadane, 2008; Gustafson, 2015).
+#' @references
+#' Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests when disease verification is subject to selection bias. *Biometrics*, 39(1), 207–215. \doi{10.2307/2530820}
+#'
+#' Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. *Statistics in Medicine*, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. *Statistics in Medicine*, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+#'
+#' Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968. \doi{10.2307/2530967}
+#'
+#' Zhou, X.-H. (1993). Maximum likelihood estimators of sensitivity and specificity corrected for verification bias. *Communications in Statistics -- Theory and Methods*, 22(11), 3177–3198. \doi{10.1080/03610929308831209}
+#'
+#' Zhou, X.-H. (1994). Effect of verification bias on positive and negative predictive values. *Statistics in Medicine*, 13(17), 1737–1745. \doi{10.1002/sim.4780131705}
 #' @seealso [rule_accuracy()] for combinations of tests, [compare_tests()].
 #' @examples
 #' \donttest{
@@ -54,7 +69,8 @@ test_accuracy <- function(fit, level = 0.95) {
 #'
 #' Posterior summaries of the sensitivity (`Se`), specificity (`Sp`),
 #' positive predictive value (`PPV`) and negative predictive value (`NPV`) of
-#' rules that combine the tests. For a single test the result is the same as
+#' rules that combine the tests (Begg and Greenes, 1983; Zhou, 1993;
+#' Zhou, 1994). For a single test the result is the same as
 #' in [test_accuracy()].
 #'
 #' @template accuracy
@@ -63,6 +79,16 @@ test_accuracy <- function(fit, level = 0.95) {
 #'   of them.
 #' @return A data frame as in [test_accuracy()], without the row of the
 #'   prevalence.
+#' @references
+#' Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests when disease verification is subject to selection bias. *Biometrics*, 39(1), 207–215. \doi{10.2307/2530820}
+#'
+#' Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. *Statistics in Medicine*, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+#'
+#' Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968. \doi{10.2307/2530967}
+#'
+#' Zhou, X.-H. (1993). Maximum likelihood estimators of sensitivity and specificity corrected for verification bias. *Communications in Statistics -- Theory and Methods*, 22(11), 3177–3198. \doi{10.1080/03610929308831209}
+#'
+#' Zhou, X.-H. (1994). Effect of verification bias on positive and negative predictive values. *Statistics in Medicine*, 13(17), 1737–1745. \doi{10.1002/sim.4780131705}
 #' @examples
 #' \donttest{
 #' set.seed(1)
@@ -86,7 +112,8 @@ rule_accuracy <- function(fit, rules, level = 0.95) {
 #'
 #' Posterior summaries of the differences in sensitivity, specificity and
 #' Youden index (`first` minus `second`) and of the ratios of the true and false
-#' positive rates (`first` over `second`).
+#' positive rates (`first` over `second`) (Alonzo, 2005; Pepe and Alonzo, 2001;
+#' Schatzkin et al., 1987).
 #'
 #' @template accuracy
 #' @details For two rules \eqn{R} (`first`) and \eqn{R'} (`second`):
@@ -108,8 +135,9 @@ rule_accuracy <- function(fit, rules, level = 0.95) {
 #' \eqn{P(\Delta Se > 0)}, and \eqn{P(rFPR > 1)} equals \eqn{P(\Delta Sp < 0)}.
 #'
 #' When some profile is never verified, the differences depend on the prior of
-#' its proportion of diseased, but the ratios do not, as long as neither rule
-#' declares a never-verified profile positive. In that case the signs of the differences in sensitivity
+#' its proportion of diseased (Gustafson, 2015), but the ratios do not, as long as
+#' neither rule declares a never-verified profile positive (Alonzo, 2005; Pepe
+#' and Alonzo, 2001; Schatzkin et al., 1987). In that case the signs of the differences in sensitivity
 #' and in specificity are also identified, through the probabilities of the
 #' ratios.
 #' @inheritParams test_accuracy
@@ -117,6 +145,18 @@ rule_accuracy <- function(fit, rules, level = 0.95) {
 #' @return A data frame as in [test_accuracy()], with the additional column
 #'   `probability`: the posterior probability that a difference is positive or
 #'   that a ratio is greater than 1.
+#' @references
+#' Alonzo, T. A. (2005). Verification bias-corrected estimators of the relative true and false positive rates of two binary screening tests. *Statistics in Medicine*, 24(3), 403–417. \doi{10.1002/sim.1959}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Pepe, M. S. and Alonzo, T. A. (2001). Comparing disease screening tests when true disease status is ascertained only for screen positives. *Biostatistics*, 2(3), 249–260. \doi{10.1093/biostatistics/2.3.249}
+#'
+#' Schatzkin, A., Connor, R. J., Taylor, P. R. and Bunnag, B. (1987). Comparing new and old screening tests when a reference procedure cannot be performed on all screenees. *American Journal of Epidemiology*, 125(4), 672–678. \doi{10.1093/oxfordjournals.aje.a114580}
+#'
+#' Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. *Statistics in Medicine*, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+#'
+#' Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968. \doi{10.2307/2530967}
 #' @examples
 #' \donttest{
 #' set.seed(1)

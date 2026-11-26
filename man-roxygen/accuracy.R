@@ -27,7 +27,7 @@
 #' subject, and change with the prevalence of the population. For combined
 #' rules, such as [any_positive()], the accuracy depends on the joint
 #' distribution of the tests, not only on their individual sensitivities and
-#' specificities.
+#' specificities (Torrance-Rynard and Walter, 1997; Vacek, 1985).
 #'
 #' Each quantity is computed from every posterior draw of \eqn{\pi},
 #' \eqn{\theta_0} and \eqn{\theta_1}. The results report its posterior mean

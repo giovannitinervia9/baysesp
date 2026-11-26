@@ -43,8 +43,8 @@ assumptions, followed by the columns of \code{\link[=test_accuracy]{test_accurac
 Shows how the accuracy of the tests changes with the two assumptions of the
 saturated model that the data cannot check: the odds ratio of verification
 between diseased and healthy subjects (set with \code{verification = mnar()} in the model) and the prior on the
-proportion of diseased in the never-verified profiles. For the saturated
-model no new fit is needed: these parameters do not enter the likelihood,
+proportion of diseased in the never-verified profiles (Buzoianu and Kadane, 2008). For the saturated
+model no new fit is needed: these parameters do not enter the likelihood (Gustafson, 2015),
 so the draws of the identified parameters are reused and only the
 assumptions are changed.
 }
@@ -55,7 +55,7 @@ fixed; the never-verified profiles have no separate prior to change.
 
 The odds ratio is fixed at each value of \code{odds_ratios}: with a grid of
 values this is a tipping-point analysis, which shows at which odds ratio a
-conclusion changes. With \code{odds_ratios = NULL} the odds ratio of the fitted
+conclusion changes (Kosinski and Barnhart, 2003b). With \code{odds_ratios = NULL} the odds ratio of the fitted
 model is kept (1 with \code{verification = mar()}, the prior \code{odds_ratio_prior} with \code{verification = mnar()}). The new
 priors in \code{unverified_priors} are sampled with the random number generator
 of R: set the seed for reproducible results.
@@ -65,7 +65,8 @@ frequency \eqn{\omega_t}, the fraction of verified subjects \eqn{v_t} and
 the proportion of diseased among them \eqn{\phi^{(1)}_t}. With odds ratio
 of verification \eqn{OR = \exp(\beta)}, the proportion of diseased among
 the unverified is \eqn{\phi^{(0)}_t = \mathrm{expit}(\mathrm{logit}(\phi^{(1)}_t) - \beta)}:
-with \eqn{OR > 1} the unverified are less often diseased than the verified.
+with \eqn{OR > 1} the unverified are less often diseased than the verified
+(Kosinski and Barnhart, 2003a).
 The proportion of diseased in the profile is then
 \deqn{\psi_t = v_t\, \phi^{(1)}_t + (1 - v_t)\, \phi^{(0)}_t,}
 or \eqn{\psi_t = q_t}, drawn from the prior, for a never-verified profile.
@@ -103,7 +104,7 @@ prevalence; the predictive values describe what a result means for a
 subject, and change with the prevalence of the population. For combined
 rules, such as \code{\link[=any_positive]{any_positive()}}, the accuracy depends on the joint
 distribution of the tests, not only on their individual sensitivities and
-specificities.
+specificities (Torrance-Rynard and Walter, 1997; Vacek, 1985).
 
 Each quantity is computed from every posterior draw of \eqn{\pi},
 \eqn{\theta_0} and \eqn{\theta_1}. The results report its posterior mean
@@ -120,4 +121,17 @@ d <- baysesp_data(d, tests = c("A", "B"), verified = "verified", disease = "dise
 fit <- baysesp(d, seed = 1)
 sensitivity_analysis(fit, odds_ratios = c(1, 1.5, 2, 3))
 }
+}
+\references{
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. \emph{Statistics in Medicine}, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+
+Gustafson, P. (2015). \emph{Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data}. Chapman & Hall/CRC, Boca Raton, FL.
+
+Kosinski, A. S. and Barnhart, H. X. (2003a). Accounting for nonignorable verification bias in assessment of diagnostic tests. \emph{Biometrics}, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+
+Kosinski, A. S. and Barnhart, H. X. (2003b). A global sensitivity analysis of performance of a medical diagnostic test when verification bias is present. \emph{Statistics in Medicine}, 22(17), 2711–2721. \doi{10.1002/sim.1517}
+
+Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. \emph{Statistics in Medicine}, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+
+Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. \emph{Biometrics}, 41(4), 959–968. \doi{10.2307/2530967}
 }

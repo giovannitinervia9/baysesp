@@ -7,3 +7,5 @@
 # be found. The S7 methods are therefore assigned to these copies instead.
 print_generic <- base::print
 plot_generic <- base::plot
+update_generic <- stats::update
+summary_generic <- base::summary

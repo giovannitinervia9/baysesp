@@ -20,6 +20,8 @@ reference:
   - random_effects
   - accuracy_model
   - compile_models
+  - summary.baysesp_fit
+  - update.baysesp_fit
 - title: Verification
   contents:
   - mar
@@ -52,6 +54,10 @@ reference:
   - sensitivity_analysis
   - prior_posterior
   - plot.prior_posterior
+- title: Model comparison
+  contents:
+  - compare_models
+  - plot.model_comparison
 
 articles:
 - title: Articles

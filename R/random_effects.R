@@ -17,7 +17,9 @@ NULL
 #' where \eqn{\Phi} is the standard normal distribution function, \eqn{a_{dk}}
 #' is an intercept and \eqn{b_{dk}} a loading, for each test \eqn{k} and class
 #' \eqn{d}. The model has \eqn{2K} intercepts and loadings per class, plus the
-#' prevalence \eqn{\pi = P(D = 1)}.
+#' prevalence \eqn{\pi = P(D = 1)}. This is the Gaussian random effects (probit
+#' latent variable) model for conditional dependence between tests
+#' (Qu et al., 1996; Dendukuri and Joseph, 2001).
 #'
 #' Integrating out \eqn{Z} gives the probability of each profile in class
 #' \eqn{d}, \eqn{\theta_{d,t} = P(T = t \mid D = d)}:
@@ -51,15 +53,17 @@ NULL
 #' \lambda_{t,d}) + u_t \log \sum_{d} \pi_d\,\theta_{d,t}\,(1 - \lambda_{t,d})\Big],}
 #' where \eqn{\lambda_{t,d} = P(V = 1 \mid T = t, D = d)} is the probability of
 #' verification.
+#' Dependence models with partial verification of this kind are discussed by
+#' Albert and Dodd (2008).
 #'
 #' With `verification = mar()` (missing at random) the verification probability does not depend on the
-#' disease status, so the verification terms carry no information on the
+#' disease status (Rubin, 1976), so the verification terms carry no information on the
 #' parameters and are dropped:
 #' \deqn{\ell = \sum_t \Big[\sum_{d} n_{t,d} \log(\pi_d\,\theta_{d,t}) +
 #' u_t \log \sum_{d} \pi_d\,\theta_{d,t}\Big] + \textrm{const.}}
 #'
 #' With `verification = mnar()` (missing not at random) the verification probability depends on the disease
-#' status: \eqn{\mathrm{logit}\,\lambda_{t,d} = \alpha_t + \beta d} for every
+#' status (Kosinski and Barnhart, 2003): \eqn{\mathrm{logit}\,\lambda_{t,d} = \alpha_t + \beta d} for every
 #' profile with at least one verified subject, while \eqn{\lambda_{t,d} = 0}
 #' for profiles that are never verified. The parameter \eqn{\beta} is the log
 #' odds ratio of verification between diseased and healthy subjects with the
@@ -73,7 +77,7 @@ NULL
 #' only by the assumed latent structure, and under MNAR the parameter
 #' \eqn{\beta} is also informed only by that structure. Both depend on the
 #' correctness of the model, so the results on these quantities are fragile
-#' if the structure is wrong.
+#' if the structure is wrong (Albert and Dodd, 2004).
 #'
 #' **Constraint on the signs of the loadings.** Since \eqn{Z} and \eqn{-Z}
 #' have the same distribution, changing the sign of all the loadings of a class
@@ -130,6 +134,18 @@ NULL
 #'   (for example `verification = mnar(odds_ratio_prior = prior_normal(0, 1), by_profile = TRUE)`) are set in
 #'   that object, not in this function.
 #' @return An object of class `random_effects`.
+#' @references
+#' Albert, P. S. and Dodd, L. E. (2004). A cautionary note on the robustness of latent class models for estimating diagnostic error without a gold standard. *Biometrics*, 60(2), 427–435. \doi{10.1111/j.0006-341X.2004.00187.x}
+#'
+#' Albert, P. S. and Dodd, L. E. (2008). On estimating diagnostic accuracy from studies with multiple raters and partial gold standard evaluation. *Journal of the American Statistical Association*, 103(481), 61–73. \doi{10.1198/016214507000000329}
+#'
+#' Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the conditional dependence between multiple diagnostic tests. *Biometrics*, 57(1), 158–167. \doi{10.1111/j.0006-341X.2001.00158.x}
+#'
+#' Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable verification bias in assessment of diagnostic tests. *Biometrics*, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+#'
+#' Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in latent class analysis for evaluating accuracy of diagnostic tests. *Biometrics*, 52(3), 797–810. \doi{10.2307/2533043}
+#'
+#' Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3), 581–592. \doi{10.1093/biomet/63.3.581}
 #' @examples
 #' random_effects()
 #' random_effects(positive_loadings = FALSE)

@@ -13,7 +13,7 @@ NULL
 #'
 #' Summarises a study in which `K` binary tests are performed on every subject
 #' and the disease status is ascertained by the reference standard only for the
-#' verified subjects. The data are reduced, without loss of information, to the
+#' verified subjects (Begg and Greenes, 1983; Baker, 1995). The data are reduced, without loss of information, to the
 #' counts of verified diseased, verified healthy and unverified subjects for
 #' each of the `J = 2^K` response profiles.
 #'
@@ -38,6 +38,10 @@ NULL
 #'   aggregated table.
 #'
 #' @return An object of class `baysesp_data`.
+#' @references
+#' Baker, S. G. (1995). Evaluating multiple diagnostic tests with partial verification. *Biometrics*, 51(1), 330–337. \doi{10.2307/2533339}
+#'
+#' Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests when disease verification is subject to selection bias. *Biometrics*, 39(1), 207–215. \doi{10.2307/2530820}
 #' @examples
 #' d <- simulate_study(n = 1000, prevalence = 0.1,
 #'                     sensitivity = c(A = 0.9, B = 0.8),

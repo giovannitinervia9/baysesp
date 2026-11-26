@@ -28,7 +28,7 @@ the priors on the model parameters and the verification mechanism, which is
 \code{saturated()}, with MAR verification. Any other object gives an error.}
 
 \item{backend}{Stan interface, a single value: \code{"rstan"} (default) or
-\code{"cmdstanr"}. With \code{"rstan"}, the Stan programs are the ones compiled when
+\code{"cmdstanr"}. With \code{"rstan"} (Stan Development Team, 2025), the Stan programs are the ones compiled when
 the package is installed, so nothing is compiled at run time. With
 \code{"cmdstanr"}, each program is compiled the first time it is used and the
 executable is kept in the user cache directory, so the first run is slower
@@ -72,6 +72,9 @@ listed below.
 \item \code{backend}: the backend used, \code{"rstan"} or \code{"cmdstanr"}.
 \item \code{stan_fit}: the object returned by the backend: a \code{stanfit} object for
 \code{"rstan"}, a \code{CmdStanMCMC} object for \code{"cmdstanr"}.
+\item \code{settings}: a list with \code{chains}, \code{iter_warmup}, \code{iter_sampling}, the
+seed actually used and the arguments given in \code{...}. \code{update()} reuses
+them to fit a different model to the same data.
 }
 
 The profiles are the \eqn{J = 2^K} response profiles of the \eqn{K} tests,
@@ -93,22 +96,25 @@ verified subjects.
 profile that has no verified subjects. Present only if some profile has no
 verified subjects.
 \item \code{beta}: the log odds ratio of verification between diseased and healthy
-subjects with the same profile, present only with MNAR verification. Without
+subjects with the same profile, present only with MNAR verification (Kosinski and Barnhart, 2003). Without
 \code{by_profile = TRUE} it is a single value. With \code{by_profile = TRUE} there is
 one value, named \code{beta[i]}, for each profile with verified subjects, in
 binary order.
+\item \code{alpha[i]}, only for \code{\link[=loglinear]{loglinear()}} and \code{\link[=random_effects]{random_effects()}} with MNAR
+verification: the log odds of verification of the healthy subjects with
+the \eqn{i}-th profile that has verified subjects, in binary order.
 }
 }
 \description{
 Fits a Bayesian model for the sensitivity and specificity of one or more
 binary tests when not all subjects have been verified with the reference
-standard. The objects of the model classes passed to \code{model} contain the
+standard (Baker, 1995; Buzoianu and Kadane, 2008; Martinez et al., 2006). The objects of the model classes passed to \code{model} contain the
 specification of the priors and of the verification mechanism.
 }
 \details{
 The posterior distribution of the parameters of \code{model}, given \code{data}, is
 approximated with the No-U-Turn sampler of Stan, a form of Hamiltonian Monte
-Carlo that adapts its step size and mass matrix during the warmup iterations.
+Carlo that adapts its step size and mass matrix during the warmup iterations (Carpenter et al., 2017).
 The likelihood and the priors are coded in a Stan program specific to the
 model class and to the verification mechanism. Each chain runs
 \code{iter_warmup} warmup iterations, which are discarded, followed by
@@ -127,6 +133,19 @@ d <- baysesp_data(d, tests = c("A", "B"), verified = "verified", disease = "dise
 fit <- baysesp(d, seed = 1)
 test_accuracy(fit)
 }
+}
+\references{
+Baker, S. G. (1995). Evaluating multiple diagnostic tests with partial verification. \emph{Biometrics}, 51(1), 330–337. \doi{10.2307/2533339}
+
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. \emph{Statistics in Medicine}, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+
+Carpenter, B., Gelman, A., Hoffman, M. D., Lee, D., Goodrich, B., Betancourt, M., Brubaker, M., Guo, J., Li, P. and Riddell, A. (2017). Stan: A probabilistic programming language. \emph{Journal of Statistical Software}, 76(1), 1–32. \doi{10.18637/jss.v076.i01}
+
+Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable verification bias in assessment of diagnostic tests. \emph{Biometrics}, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+
+Martinez, E. Z., Achcar, J. A. and Louzada-Neto, F. (2006). Estimators of sensitivity and specificity in the presence of verification bias: A Bayesian approach. \emph{Computational Statistics & Data Analysis}, 51(2), 601–611. \doi{10.1016/j.csda.2005.12.021}
+
+Stan Development Team (2025). RStan: The R interface to Stan. R package. \url{https://CRAN.R-project.org/package=rstan}
 }
 \seealso{
 \code{\link[=test_accuracy]{test_accuracy()}}

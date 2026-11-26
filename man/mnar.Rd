@@ -38,7 +38,7 @@ An object of class \code{mnar}.
 }
 \description{
 \code{mnar()} is the assumption that verification depends on the test results and
-also on the disease status: among subjects with the same profile, diseased
+also on the disease status (Kosinski and Barnhart, 2003a): among subjects with the same profile, diseased
 and healthy subjects can be verified with different probabilities. Its
 arguments are the prior on the log odds ratio of verification, the prior on
 the verification intercepts and the choice of whether the odds ratio varies
@@ -79,18 +79,35 @@ subjects of each profile, but not \eqn{\beta}. The proportion of diseased
 among unverified subjects with a verified profile \eqn{t} is
 \eqn{\mathrm{expit}(\mathrm{logit}\,\phi_t - \beta)}, where \eqn{\phi_t} is
 the proportion among verified subjects, so \eqn{\beta} links the two groups
-but the data say nothing about it: its posterior equals its prior. The prior
+but the data say nothing about it: its posterior equals its prior (Gustafson, 2015). The prior
 on \eqn{\beta} is then an explicit assumption, and varying it, or fixing
-\eqn{\beta} at a range of values, shows how much the results depend on it.
+\eqn{\beta} at a range of values, shows how much the results depend on it (Buzoianu and Kadane, 2008; Kosinski and Barnhart, 2003b).
 
-With the log-linear and random-effects disease models, \eqn{\beta} is
+With the log-linear (Baker, 1995) and random-effects (Dendukuri and Joseph, 2001; Qu et al., 1996) disease models, \eqn{\beta} is
 identified through the restrictions that these models place on the disease
 distribution. This information comes from the assumed structure, not from
-the data alone, and it is fragile if the structure is wrong.
+the data alone, and it is fragile if the structure is wrong (Albert and Dodd, 2004).
 }
 \examples{
 mnar()
 mnar(odds_ratio_prior = prior_normal(mean = log(2), sd = 0.5))
+}
+\references{
+Albert, P. S. and Dodd, L. E. (2004). A cautionary note on the robustness of latent class models for estimating diagnostic error without a gold standard. \emph{Biometrics}, 60(2), 427–435. \doi{10.1111/j.0006-341X.2004.00187.x}
+
+Baker, S. G. (1995). Evaluating multiple diagnostic tests with partial verification. \emph{Biometrics}, 51(1), 330–337. \doi{10.2307/2533339}
+
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. \emph{Statistics in Medicine}, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+
+Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the conditional dependence between multiple diagnostic tests. \emph{Biometrics}, 57(1), 158–167. \doi{10.1111/j.0006-341X.2001.00158.x}
+
+Gustafson, P. (2015). \emph{Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data}. Chapman & Hall/CRC, Boca Raton, FL.
+
+Kosinski, A. S. and Barnhart, H. X. (2003a). Accounting for nonignorable verification bias in assessment of diagnostic tests. \emph{Biometrics}, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+
+Kosinski, A. S. and Barnhart, H. X. (2003b). A global sensitivity analysis of performance of a medical diagnostic test when verification bias is present. \emph{Statistics in Medicine}, 22(17), 2711–2721. \doi{10.1002/sim.1517}
+
+Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in latent class analysis for evaluating accuracy of diagnostic tests. \emph{Biometrics}, 52(3), 797–810. \doi{10.2307/2533043}
 }
 \seealso{
 \code{\link[=mar]{mar()}}, \link{verification_mechanism}, \code{\link[=sensitivity_analysis]{sensitivity_analysis()}}

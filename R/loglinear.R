@@ -19,7 +19,8 @@ NULL
 #' \eqn{m} tests, and \eqn{\eta_d} is the vector of the corresponding
 #' class-specific parameters \eqn{\eta_{d,S}}. Equivalently,
 #' \deqn{\theta_{d,t} \propto \exp\Big(\sum_{S} \eta_{d,S}\, x_S(t)\Big),}
-#' where the normalisation runs over all \eqn{2^K} profiles.
+#' where the normalisation runs over all \eqn{2^K} profiles. Log-linear models
+#' of this kind are used for multiple tests with partial verification (Baker, 1995).
 #'
 #' The order controls the structure of the dependence:
 #' \itemize{
@@ -41,6 +42,8 @@ NULL
 #' orders it is the value when the other tests are negative): zero means that the two tests are
 #' independent within that class, positive values mean that they are positively
 #' associated among the diseased (\eqn{d = 1}) or among the healthy (\eqn{d = 0}).
+#' Ignoring the dependence between tests given the disease status biases the
+#' accuracy (Vacek, 1985; Torrance-Rynard and Walter, 1997; Dendukuri and Joseph, 2001).
 #'
 #' The log-likelihood of the data, with \eqn{n_{t,d}} verified subjects of
 #' profile \eqn{t} and disease status \eqn{d}, \eqn{u_t} unverified subjects of
@@ -48,12 +51,15 @@ NULL
 #' is
 #' \deqn{\ell = \sum_t \Big[\sum_d n_{t,d} \log(\pi_d\,\theta_{d,t}\,\lambda_{t,d}) + u_t \log \sum_d \pi_d\,\theta_{d,t}\,(1 - \lambda_{t,d})\Big],}
 #' where \eqn{\lambda_{t,d}} is the probability of verification.
+#' Dependence models with partial verification of this kind are discussed by
+#' Albert and Dodd (2008).
 #' With `verification = mar()` the verification probability does not depend on the disease
-#' status given the profile, so the verification term is separated from the
+#' status given the profile (Rubin, 1976), so the verification term is separated from the
 #' disease model and can be ignored:
 #' \deqn{\ell = \sum_t \Big[\sum_d n_{t,d} \log(\pi_d\,\theta_{d,t}) + u_t \log \sum_d \pi_d\,\theta_{d,t}\Big]}
 #' plus a term that depends only on the verification probabilities.
-#' With `verification = mnar()` the verification probability may depend on the disease status:
+#' With `verification = mnar()` the verification probability may depend on the disease status
+#' (Baker, 1995; Kosinski and Barnhart, 2003):
 #' \deqn{\mathrm{logit}\,\lambda_{t,d} = \alpha_t + \beta d,}
 #' with one \eqn{\alpha_t} for each verified profile. The parameter \eqn{\beta}
 #' is the log odds ratio of verification between diseased and healthy subjects
@@ -65,8 +71,8 @@ NULL
 #' With order lower than \eqn{K} the restricted structure also determines the
 #' disease proportion in the never-verified profiles, and makes \eqn{\beta}
 #' formally estimable. This information comes from the assumed structure, not
-#' from the data, and it is fragile if the structure is wrong. With order
-#' \eqn{K} the model imposes no restriction and \eqn{\beta} is not identified.
+#' from the data, and it is fragile if the structure is wrong (Albert and Dodd, 2004). With order
+#' \eqn{K} the model imposes no restriction and \eqn{\beta} is not identified (Gustafson, 2015).
 #'
 #' @param interaction_order A single whole number from 1 to the number of tests
 #'   \eqn{K}, the largest number of tests in an interaction. Default `1L`
@@ -88,6 +94,24 @@ NULL
 #'   verification that depends only on the test profile, or `mnar()`, with
 #'   verification that may also depend on the disease status.
 #' @return An object of class `loglinear`.
+#' @references
+#' Albert, P. S. and Dodd, L. E. (2004). A cautionary note on the robustness of latent class models for estimating diagnostic error without a gold standard. *Biometrics*, 60(2), 427–435. \doi{10.1111/j.0006-341X.2004.00187.x}
+#'
+#' Albert, P. S. and Dodd, L. E. (2008). On estimating diagnostic accuracy from studies with multiple raters and partial gold standard evaluation. *Journal of the American Statistical Association*, 103(481), 61–73. \doi{10.1198/016214507000000329}
+#'
+#' Baker, S. G. (1995). Evaluating multiple diagnostic tests with partial verification. *Biometrics*, 51(1), 330–337. \doi{10.2307/2533339}
+#'
+#' Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the conditional dependence between multiple diagnostic tests. *Biometrics*, 57(1), 158–167. \doi{10.1111/j.0006-341X.2001.00158.x}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable verification bias in assessment of diagnostic tests. *Biometrics*, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+#'
+#' Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3), 581–592. \doi{10.1093/biomet/63.3.581}
+#'
+#' Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. *Statistics in Medicine*, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+#'
+#' Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968. \doi{10.2307/2530967}
 #' @seealso [saturated()] for the model without restrictions on the profile
 #'   distribution, [mar()] and [mnar()] for the verification mechanisms.
 #' @examples

@@ -6,7 +6,8 @@ NULL
 #' A `test_rule` object declares each response profile positive or negative,
 #' starting from the results of one or more tests. The accuracy of a rule
 #' depends on the joint distribution of the tests, not only on their
-#' sensitivities and specificities. Common rules are built with `single_test()`,
+#' sensitivities and specificities (Torrance-Rynard and Walter, 1997; Vacek,
+#' 1985). Common rules are built with `single_test()`,
 #' `any_positive()`, `all_positive()` and `min_positive()`; a custom rule is
 #' built with `test_rule()`.
 #'
@@ -36,6 +37,10 @@ NULL
 #'   the matrix, and it is applied to the matrix of the data at the moment the
 #'   rule is used.
 #' @return An object of class `test_rule`.
+#' @references
+#' Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. *Statistics in Medicine*, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+#'
+#' Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968. \doi{10.2307/2530967}
 #' @seealso [rule_accuracy()], [compare_tests()]
 #' @examples
 #' # Positive if the tests named "ct" and "pcr" are both positive

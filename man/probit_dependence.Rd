@@ -43,7 +43,8 @@ and correlation matrix \eqn{R_d} (\code{diseased_correlation} for \eqn{d = 1},
 Y_k < \Phi^{-1}(1 - Sp_k) \textrm{ if } d = 0,}
 where \eqn{\Phi} is the standard normal distribution function, so that
 \eqn{P(T_k = 1 \mid D = 1) = Se_k} and \eqn{P(T_k = 0 \mid D = 0) = Sp_k}
-exactly, whatever the correlations.
+exactly, whatever the correlations. Probit models of this kind for conditional
+dependence are studied by Qu et al. (1996) and Dendukuri and Joseph (2001).
 
 The element \eqn{R_{d,jk}} is the correlation between the latent variables
 of tests \eqn{j} and \eqn{k} in class \eqn{d} (known as the tetrachoric
@@ -80,6 +81,11 @@ cor(d[sick, c("A", "B", "C")])
 
 # every pair negatively correlated: possible with three tests if r > -1/2
 probit_dependence(diseased_correlation = -0.3)
+}
+\references{
+Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the conditional dependence between multiple diagnostic tests. \emph{Biometrics}, 57(1), 158–167. \doi{10.1111/j.0006-341X.2001.00158.x}
+
+Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in latent class analysis for evaluating accuracy of diagnostic tests. \emph{Biometrics}, 52(3), 797–810. \doi{10.2307/2533043}
 }
 \seealso{
 \code{\link[=simulate_study]{simulate_study()}}, \code{\link[=independence]{independence()}}, \code{\link[=latent_dependence]{latent_dependence()}}

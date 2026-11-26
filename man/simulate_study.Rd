@@ -92,7 +92,7 @@ probability of a diseased subject with the same profile is
 \eqn{\lambda_{t,1} = \mathrm{expit}(\mathrm{logit}\,\lambda_{t,0} +
 \log(\mathrm{odds\_ratio}))}, so that the odds of verification of diseased
 subjects are \code{odds_ratio} times the odds for healthy subjects with the same
-profile.
+profile (Kosinski and Barnhart, 2003).
 
 \strong{Dependence between the tests.} The argument \code{dependence} sets the joint
 distribution of the \code{K} results within each disease class, that is the
@@ -100,13 +100,15 @@ probabilities \eqn{\theta_{d,t} = P(T = t \mid D = d)} of the response
 profiles \eqn{t} among the diseased (\eqn{d = 1}) and among the healthy
 (\eqn{d = 0}). Every mechanism keeps the sensitivities and specificities
 given in \code{sensitivity} and \code{specificity} as the marginal probabilities, and
-changes only how often the tests are right or wrong together:
+changes only how often the tests are right or wrong together (Vacek, 1985;
+Torrance-Rynard and Walter, 1997):
 \itemize{
 \item \code{dependence = independence()}:
 \eqn{\theta_{1,t} = \prod_k Se_k^{t_k}(1 - Se_k)^{1 - t_k}} and
 \eqn{\theta_{0,t} = \prod_k (1 - Sp_k)^{t_k} Sp_k^{1 - t_k}};
 \item \code{dependence = latent_dependence(diseased_loadings, healthy_loadings)}:
-each subject has a latent variable \eqn{Z \sim N(0, 1)}, independent of
+each subject has a latent variable \eqn{Z \sim N(0, 1)} (Qu et al., 1996;
+Dendukuri and Joseph, 2001), independent of
 \eqn{D}, and given \eqn{D = d} and \eqn{Z = z} the tests are independent
 with \eqn{P(T_k = 1 \mid D = d, Z = z) = \Phi(a_{dk} + b_{dk} z)}, where
 \eqn{b_{dk}} is the loading of test \eqn{k} in class \eqn{d} and
@@ -118,7 +120,8 @@ dependent when \eqn{b_{dj} b_{dk} > 0} and negatively dependent when
 given \eqn{D = d}, test \eqn{k} is positive when a standard normal latent
 variable \eqn{Y_k} falls below a threshold that gives the required
 sensitivity or specificity, and the latent variables of the \code{K} tests are
-jointly normal with correlation matrix \eqn{R_d}. The element
+jointly normal with correlation matrix \eqn{R_d} (Qu et al., 1996;
+Dendukuri and Joseph, 2001). The element
 \eqn{R_{d,jk}} is the correlation, of any sign, between tests \eqn{j} and
 \eqn{k} in class \eqn{d}.
 }
@@ -139,9 +142,10 @@ probability per profile. A value 0 means that the profile is never
 verified, a value 1 that it is always verified (for healthy subjects; see
 \code{odds_ratio} for diseased subjects);
 \item missing at random verification (\code{odds_ratio = 1}), where verification
-depends only on the profile, and missing not at random verification
+depends only on the profile (Rubin, 1976), and missing not at random verification
 (\code{odds_ratio} different from 1), where the odds of verification also
-depend on the disease status through the same odds ratio for all profiles.
+depend on the disease status through the same odds ratio for all profiles
+(Kosinski and Barnhart, 2003).
 Profiles with verification probability 0 or 1 are never verified, or
 always verified, whatever \code{odds_ratio} is.
 }
@@ -220,6 +224,19 @@ d_probit <- simulate_study(n = 5000, prevalence = 0.2,
                            dependence = probit_dependence(
                              diseased_correlation = 0.4,
                              healthy_correlation = -0.2))
+}
+\references{
+Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the conditional dependence between multiple diagnostic tests. \emph{Biometrics}, 57(1), 158–167. \doi{10.1111/j.0006-341X.2001.00158.x}
+
+Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable verification bias in assessment of diagnostic tests. \emph{Biometrics}, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+
+Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in latent class analysis for evaluating accuracy of diagnostic tests. \emph{Biometrics}, 52(3), 797–810. \doi{10.2307/2533043}
+
+Rubin, D. B. (1976). Inference and missing data. \emph{Biometrika}, 63(3), 581–592. \doi{10.1093/biomet/63.3.581}
+
+Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. \emph{Statistics in Medicine}, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+
+Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. \emph{Biometrics}, 41(4), 959–968. \doi{10.2307/2530967}
 }
 \seealso{
 \code{\link[=independence]{independence()}}, \code{\link[=latent_dependence]{latent_dependence()}}, \code{\link[=probit_dependence]{probit_dependence()}}

@@ -26,7 +26,7 @@ An object of class \code{baysesp_data}.
 \description{
 Summarises a study in which \code{K} binary tests are performed on every subject
 and the disease status is ascertained by the reference standard only for the
-verified subjects. The data are reduced, without loss of information, to the
+verified subjects (Begg and Greenes, 1983; Baker, 1995). The data are reduced, without loss of information, to the
 counts of verified diseased, verified healthy and unverified subjects for
 each of the \code{J = 2^K} response profiles.
 }
@@ -55,4 +55,9 @@ agg <- data.frame(T1 = c(0, 1, 0, 1, 0, 1),
                   D  = c(0, 0, 1, 1, NA, NA),
                   n  = c(40, 5, 2, 30, 300, 20))
 baysesp_data(agg, tests = "T1", verified = "V", disease = "D", counts = "n")
+}
+\references{
+Baker, S. G. (1995). Evaluating multiple diagnostic tests with partial verification. \emph{Biometrics}, 51(1), 330–337. \doi{10.2307/2533339}
+
+Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests when disease verification is subject to selection bias. \emph{Biometrics}, 39(1), 207–215. \doi{10.2307/2530820}
 }

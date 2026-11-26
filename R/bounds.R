@@ -23,8 +23,8 @@ NULL
 #' When some profiles (combinations of test results) are never verified, the
 #' data say nothing about how many diseased subjects they contain, and the
 #' absolute accuracy depends on it. A prior on that proportion gives a single
-#' answer, which rests entirely on the prior. These bounds instead show what
-#' the data alone allow: the lowest and highest value of each quantity when the
+#' answer, which rests entirely on the prior (Buzoianu and Kadane, 2008). These bounds
+#' instead show what the data alone allow (Gustafson, 2015): the lowest and highest value of each quantity when the
 #' proportion of diseased in the never-verified profiles ranges from 0 to 1.
 #' They do not depend on the prior. Wide bounds mean that the absolute accuracy
 #' is mostly determined by the assumption on the never-verified profiles.
@@ -64,7 +64,7 @@ NULL
 #'   The bounds are functions of identified parameters (and of the odds ratio),
 #'   so they have a posterior distribution: the result gives their posterior
 #'   medians and a credible region that contains the whole identification
-#'   interval with probability at least `level`. For rules that declare a
+#'   interval with probability at least `level` (Gustafson, 2015). For rules that declare a
 #'   never-verified profile positive the bounds are `NA`.
 #' @inheritParams test_accuracy
 #' @param fit A model fitted with [baysesp()] and [saturated()].
@@ -81,6 +81,14 @@ NULL
 #' @return A data frame with columns `quantity`, `lower_bound`, `upper_bound`
 #'   (posterior medians of the bounds), `lower` and `upper` (the lower quantile
 #'   of the lower bound and the upper quantile of the upper bound).
+#' @references
+#' Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. *Statistics in Medicine*, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. *Statistics in Medicine*, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+#'
+#' Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968. \doi{10.2307/2530967}
 #' @seealso [accuracy_ratios()], [sensitivity_analysis()]
 #' @examples
 #' \donttest{
@@ -126,10 +134,11 @@ accuracy_bounds <- function(fit, rules = fit@data@tests, odds_ratio = NULL,
 #' Gives, for each pair of tests (or rules), the ratio of their sensitivities
 #' and the ratio of their false positive rates (one minus the specificity).
 #' Unlike the absolute accuracy, these ratios are estimated by the data even
-#' when some response profiles are never verified.
+#' when some response profiles are never verified (Alonzo, 2005; Pepe and Alonzo,
+#' 2001; Schatzkin et al., 1987).
 #'
 #' When some profiles (combinations of test results) are never verified, the
-#' data say nothing about how many diseased subjects they contain, and the
+#' data say nothing about how many diseased subjects they contain (Gustafson, 2015), and the
 #' sensitivities and specificities depend on it. If neither test declares a
 #' never-verified profile positive, however, the unknown diseased subjects are
 #' missed by both tests: they lower the two sensitivities by the same factor,
@@ -159,7 +168,8 @@ accuracy_bounds <- function(fit, rules = fit@data@tests, odds_ratio = NULL,
 #'   For two such rules the unknown prevalence cancels out in the ratios
 #'   \deqn{rTPR = \frac{Se_R}{Se_{R'}} = \frac{A_R}{A_{R'}}, \qquad
 #'   rFPR = \frac{1 - Sp_R}{1 - Sp_{R'}} = \frac{B_R}{B_{R'}},}
-#'   which are therefore estimated from the data alone. \eqn{rTPR > 1} means
+#'   which are therefore estimated from the data alone (Alonzo, 2005; Pepe and Alonzo, 2001; Schatzkin
+#'   et al., 1987). \eqn{rTPR > 1} means
 #'   that \eqn{R} is more sensitive than \eqn{R'}, \eqn{rFPR > 1} that it is
 #'   less specific, whatever the proportion of diseased in the never-verified
 #'   profiles.
@@ -169,6 +179,18 @@ accuracy_bounds <- function(fit, rules = fit@data@tests, odds_ratio = NULL,
 #'   posterior probability that the ratio is greater than 1: for rTPR, that the
 #'   first rule is more sensitive; for rFPR, that it is less specific. Only the
 #'   rules that declare no never-verified profile positive are compared.
+#' @references
+#' Alonzo, T. A. (2005). Verification bias-corrected estimators of the relative true and false positive rates of two binary screening tests. *Statistics in Medicine*, 24(3), 403–417. \doi{10.1002/sim.1959}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Pepe, M. S. and Alonzo, T. A. (2001). Comparing disease screening tests when true disease status is ascertained only for screen positives. *Biostatistics*, 2(3), 249–260. \doi{10.1093/biostatistics/2.3.249}
+#'
+#' Schatzkin, A., Connor, R. J., Taylor, P. R. and Bunnag, B. (1987). Comparing new and old screening tests when a reference procedure cannot be performed on all screenees. *American Journal of Epidemiology*, 125(4), 672–678. \doi{10.1093/oxfordjournals.aje.a114580}
+#'
+#' Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. *Statistics in Medicine*, 16(19), 2157–2175. \doi{10.1002/(SICI)1097-0258(19971015)16:19<2157::AID-SIM653>3.0.CO;2-X}
+#'
+#' Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968. \doi{10.2307/2530967}
 #' @seealso [accuracy_bounds()], [compare_tests()]
 #' @examples
 #' \donttest{

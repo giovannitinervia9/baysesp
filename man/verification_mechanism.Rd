@@ -12,10 +12,15 @@ how subjects are selected for verification by the reference standard. It
 cannot be instantiated: the concrete assumptions are the missing at random
 assumption, in which verification depends only on the test results, and the
 missing not at random assumption, in which verification also depends on the
-disease status. Each concrete assumption has its own page.
+disease status (Rubin, 1976; Little and Rubin, 2002). Each concrete assumption has its own page.
 }
 \examples{
 S7::S7_inherits(mar(), verification_mechanism)
+}
+\references{
+Little, R. J. A. and Rubin, D. B. (2002). \emph{Statistical Analysis with Missing Data} (2nd ed.). Wiley.
+
+Rubin, D. B. (1976). Inference and missing data. \emph{Biometrika}, 63(3), 581–592. \doi{10.1093/biomet/63.3.581}
 }
 \seealso{
 \code{\link[=mar]{mar()}}, \code{\link[=mnar]{mnar()}}

@@ -8,8 +8,12 @@ NULL
 #' cannot be instantiated: the concrete assumptions are the missing at random
 #' assumption, in which verification depends only on the test results, and the
 #' missing not at random assumption, in which verification also depends on the
-#' disease status. Each concrete assumption has its own page.
+#' disease status (Rubin, 1976; Little and Rubin, 2002). Each concrete assumption has its own page.
 #'
+#' @references
+#' Little, R. J. A. and Rubin, D. B. (2002). *Statistical Analysis with Missing Data* (2nd ed.). Wiley.
+#'
+#' Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3), 581–592. \doi{10.1093/biomet/63.3.581}
 #' @seealso [mar()], [mnar()]
 #' @examples
 #' S7::S7_inherits(mar(), verification_mechanism)
@@ -36,7 +40,7 @@ verification_mechanism <- S7::new_class("verification_mechanism", abstract = TRU
 #' test results.
 #'
 #' Under this assumption the verification process is ignorable and can be left
-#' out of the likelihood. Let \eqn{n_{t,d}} be the number of verified subjects
+#' out of the likelihood (Rubin, 1976; Little and Rubin, 2002). Let \eqn{n_{t,d}} be the number of verified subjects
 #' with profile \eqn{t} and disease status \eqn{d}, \eqn{u_t} the number of
 #' unverified subjects with profile \eqn{t}, \eqn{\pi = P(D = 1)} the
 #' prevalence, \eqn{\pi_1 = \pi}, \eqn{\pi_0 = 1 - \pi}, and
@@ -49,7 +53,7 @@ verification_mechanism <- S7::new_class("verification_mechanism", abstract = TRU
 #' The verification probabilities \eqn{\lambda_t} appear only in \eqn{\ell_V}.
 #' Inference on the prevalence and on the test distributions is based on
 #' \eqn{\ell_D}, and the unverified subjects contribute to it through the
-#' totals \eqn{u_t}.
+#' totals \eqn{u_t} (Begg and Greenes, 1983; Zhou, 1993).
 #'
 #' MAR is plausible when the choice of who undergoes the reference standard is
 #' made from the test results alone, for example when a protocol prescribes the
@@ -68,17 +72,29 @@ verification_mechanism <- S7::new_class("verification_mechanism", abstract = TRU
 #' Profiles that are never verified are compatible with MAR, but for them the
 #' data give no information on the proportion of diseased: there are no
 #' verified subjects from which to estimate it. What is concluded about it
-#' comes entirely from an assumption: a prior on that proportion, or a
+#' comes entirely from an assumption: a prior on that proportion (Buzoianu and Kadane, 2008; Gustafson, 2015), or a
 #' structure imposed on the dependence between the tests.
 #'
 #' @return An object of class `mar`.
+#' @references
+#' Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests when disease verification is subject to selection bias. *Biometrics*, 39(1), 207–215. \doi{10.2307/2530820}
+#'
+#' Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. *Statistics in Medicine*, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Little, R. J. A. and Rubin, D. B. (2002). *Statistical Analysis with Missing Data* (2nd ed.). Wiley.
+#'
+#' Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3), 581–592. \doi{10.1093/biomet/63.3.581}
+#'
+#' Zhou, X.-H. (1993). Maximum likelihood estimators of sensitivity and specificity corrected for verification bias. *Communications in Statistics -- Theory and Methods*, 22(11), 3177–3198. \doi{10.1080/03610929308831209}
 #' @seealso [mnar()], [verification_mechanism]
 #' @examples
 #' mar()
 #' @export
 mar <- S7::new_class("mar", parent = verification_mechanism)
 
-S7::method(print, mar) <- function(x, ...) {
+S7::method(print_generic, mar) <- function(x, ...) {
   cat("<mar> verification depends only on the test results\n")
   invisible(x)
 }
@@ -86,7 +102,7 @@ S7::method(print, mar) <- function(x, ...) {
 #' Missing not at random verification
 #'
 #' `mnar()` is the assumption that verification depends on the test results and
-#' also on the disease status: among subjects with the same profile, diseased
+#' also on the disease status (Kosinski and Barnhart, 2003a): among subjects with the same profile, diseased
 #' and healthy subjects can be verified with different probabilities. Its
 #' arguments are the prior on the log odds ratio of verification, the prior on
 #' the verification intercepts and the choice of whether the odds ratio varies
@@ -127,14 +143,14 @@ S7::method(print, mar) <- function(x, ...) {
 #' among unverified subjects with a verified profile \eqn{t} is
 #' \eqn{\mathrm{expit}(\mathrm{logit}\,\phi_t - \beta)}, where \eqn{\phi_t} is
 #' the proportion among verified subjects, so \eqn{\beta} links the two groups
-#' but the data say nothing about it: its posterior equals its prior. The prior
+#' but the data say nothing about it: its posterior equals its prior (Gustafson, 2015). The prior
 #' on \eqn{\beta} is then an explicit assumption, and varying it, or fixing
-#' \eqn{\beta} at a range of values, shows how much the results depend on it.
+#' \eqn{\beta} at a range of values, shows how much the results depend on it (Buzoianu and Kadane, 2008; Kosinski and Barnhart, 2003b).
 #'
-#' With the log-linear and random-effects disease models, \eqn{\beta} is
+#' With the log-linear (Baker, 1995) and random-effects (Dendukuri and Joseph, 2001; Qu et al., 1996) disease models, \eqn{\beta} is
 #' identified through the restrictions that these models place on the disease
 #' distribution. This information comes from the assumed structure, not from
-#' the data alone, and it is fragile if the structure is wrong.
+#' the data alone, and it is fragile if the structure is wrong (Albert and Dodd, 2004).
 #'
 #' @param odds_ratio_prior Prior on \eqn{\beta}, the log odds ratio of
 #'   verification between diseased and healthy subjects with the same profile.
@@ -156,6 +172,22 @@ S7::method(print, mar) <- function(x, ...) {
 #'   differ across profiles. Profiles with no verified subject have no
 #'   \eqn{\beta}.
 #' @return An object of class `mnar`.
+#' @references
+#' Albert, P. S. and Dodd, L. E. (2004). A cautionary note on the robustness of latent class models for estimating diagnostic error without a gold standard. *Biometrics*, 60(2), 427–435. \doi{10.1111/j.0006-341X.2004.00187.x}
+#'
+#' Baker, S. G. (1995). Evaluating multiple diagnostic tests with partial verification. *Biometrics*, 51(1), 330–337. \doi{10.2307/2533339}
+#'
+#' Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. *Statistics in Medicine*, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+#'
+#' Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the conditional dependence between multiple diagnostic tests. *Biometrics*, 57(1), 158–167. \doi{10.1111/j.0006-341X.2001.00158.x}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Kosinski, A. S. and Barnhart, H. X. (2003a). Accounting for nonignorable verification bias in assessment of diagnostic tests. *Biometrics*, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+#'
+#' Kosinski, A. S. and Barnhart, H. X. (2003b). A global sensitivity analysis of performance of a medical diagnostic test when verification bias is present. *Statistics in Medicine*, 22(17), 2711–2721. \doi{10.1002/sim.1517}
+#'
+#' Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in latent class analysis for evaluating accuracy of diagnostic tests. *Biometrics*, 52(3), 797–810. \doi{10.2307/2533043}
 #' @seealso [mar()], [verification_mechanism], [sensitivity_analysis()]
 #' @examples
 #' mnar()
@@ -187,7 +219,7 @@ mnar <- S7::new_class(
   }
 )
 
-S7::method(print, mnar) <- function(x, ...) {
+S7::method(print_generic, mnar) <- function(x, ...) {
   cat("<mnar> verification depends on the test results and on the disease\n",
       "  odds_ratio_prior: ", prior_label(x@odds_ratio_prior),
       if (x@by_profile) ", one per profile", "\n",

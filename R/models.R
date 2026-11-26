@@ -40,7 +40,7 @@ accuracy_model <- S7::new_class(
 #' - not identified: the proportion of diseased among the unverified subjects
 #'   of each such profile, which is fixed by the verification mechanism, and
 #'   the proportion of diseased in each never-verified profile, whose posterior
-#'   equals its prior.
+#'   equals its prior (Gustafson, 2015).
 #'
 #' @details
 #' With \eqn{K} tests there are \eqn{J = 2^K} response profiles \eqn{t}. For
@@ -59,8 +59,8 @@ accuracy_model <- S7::new_class(
 #' log-likelihood is
 #' \deqn{\ell = \sum_t \Big[N_t \log \omega_t + (n_{t,1} + n_{t,0}) \log v_t + u_t \log(1 - v_t) + n_{t,1} \log \phi^{(1)}_t + n_{t,0} \log(1 - \phi^{(1)}_t)\Big].}
 #' The unverified subjects enter only through \eqn{N_t} and \eqn{u_t}, because
-#' their disease status is not observed. The proportion \eqn{\phi^{(0)}_t}
-#' does not enter the log-likelihood: the data carry no information on it, so
+#' their disease status is not observed (Begg and Greenes, 1983; Zhou, 1993). The proportion \eqn{\phi^{(0)}_t}
+#' does not enter the log-likelihood: the data carry no information on it (Gustafson, 2015), so
 #' it is determined by the verification mechanism and by \eqn{\phi^{(1)}_t}.
 #' A never-verified profile has no verified subject, so \eqn{v_t = 0} and only
 #' its first term remains.
@@ -71,7 +71,7 @@ accuracy_model <- S7::new_class(
 #' \eqn{\phi^{(0)}_t = \phi^{(1)}_t}.
 #'
 #' With `verification = mnar()` (missing not at random) verification may also depend on the
-#' disease status:
+#' disease status (Kosinski and Barnhart, 2003a):
 #' \deqn{\mathrm{logit}\,\phi^{(0)}_t = \mathrm{logit}\,\phi^{(1)}_t - \beta,}
 #' where \eqn{\beta} is the log odds ratio of verification between diseased and
 #' healthy subjects with the same profile. Equivalently, \eqn{\exp(-\beta)} is
@@ -81,7 +81,7 @@ accuracy_model <- S7::new_class(
 #' subjects, or one per profile with `verification = mnar(by_profile = TRUE)`. Since
 #' \eqn{\beta} does not enter the log-likelihood, its posterior equals its
 #' prior, and the results depend on the assumed value: they should be examined
-#' over a range of plausible values.
+#' over a range of plausible values (Gustafson, 2015; Kosinski and Barnhart, 2003b).
 #'
 #' The quantities of interest are obtained as follows. For each profile,
 #' \deqn{\psi_t = v_t \phi^{(1)}_t + (1 - v_t) \phi^{(0)}_t}
@@ -133,6 +133,16 @@ accuracy_model <- S7::new_class(
 #'   verification depends only on the test results, or `mnar()`, where it also
 #'   depends on the disease status. See Details for what changes.
 #' @return An object of class `saturated`.
+#' @references
+#' Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests when disease verification is subject to selection bias. *Biometrics*, 39(1), 207–215. \doi{10.2307/2530820}
+#'
+#' Gustafson, P. (2015). *Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca Raton, FL.
+#'
+#' Kosinski, A. S. and Barnhart, H. X. (2003a). Accounting for nonignorable verification bias in assessment of diagnostic tests. *Biometrics*, 59(1), 163–171. \doi{10.1111/1541-0420.00019}
+#'
+#' Kosinski, A. S. and Barnhart, H. X. (2003b). A global sensitivity analysis of performance of a medical diagnostic test when verification bias is present. *Statistics in Medicine*, 22(17), 2711–2721. \doi{10.1002/sim.1517}
+#'
+#' Zhou, X.-H. (1993). Maximum likelihood estimators of sensitivity and specificity corrected for verification bias. *Communications in Statistics -- Theory and Methods*, 22(11), 3177–3198. \doi{10.1080/03610929308831209}
 #' @examples
 #' saturated()
 #' saturated(unverified_prevalence_prior = elicit_beta(mean = 0.005, upper = 0.015))

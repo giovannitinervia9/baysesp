@@ -3,11 +3,23 @@
 \docType{package}
 \name{baysesp-package}
 \alias{baysesp-package}
-\title{baysesp: Bayesian Accuracy of Multiple Diagnostic Tests under Partial Verification}
+\title{Bayesian Accuracy of Multiple Diagnostic Tests under Partial Verification}
 \description{
-\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+\code{{baysesp}} estimates the sensitivity, specificity and predictive values of one
+or more binary diagnostic tests performed on the same subjects, when the
+disease status is ascertained by the reference standard only for a subset of
+them. Verification that depends on the test results produces verification
+bias if it is ignored (Begg and Greenes, 1983). The package takes a Bayesian
+approach, which places priors on the parameters that are not
+identified (Buzoianu and Kadane, 2008). The models are computed in Stan
+(Carpenter et al., 2017).
+}
+\references{
+Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests when disease verification is subject to selection bias. \emph{Biometrics}, 39(1), 207–215. \doi{10.2307/2530820}
 
-Bayesian estimation of the sensitivity, specificity and predictive values of one or more binary diagnostic tests performed on the same subjects, when the disease status is ascertained by the reference standard only for a subset of subjects (partial verification). Supports joint modelling of K tests, accuracy of combination rules (any, all, at least k positive), comparisons between tests, structured models for conditional dependence, non-ignorable verification and explicit sensitivity analyses for quantities that the data cannot identify. Models are written in 'Stan' and can be fitted with the 'cmdstanr' or 'rstan' interfaces.
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. \emph{Statistics in Medicine}, 27(13), 2453–2473. \doi{10.1002/sim.3099}
+
+Carpenter, B., Gelman, A., Hoffman, M. D., Lee, D., Goodrich, B., Betancourt, M., Brubaker, M., Guo, J., Li, P. and Riddell, A. (2017). Stan: A probabilistic programming language. \emph{Journal of Statistical Software}, 76(1), 1–32. \doi{10.18637/jss.v076.i01}
 }
 \seealso{
 Useful links:

@@ -2066,27 +2066,27 @@ from 0 (such as 0.3 or 0.6) indicate no detectable misfit rather than
 the probability that a model is true.</li>
 </ul>
 <p>In the output, <code>random_effects</code>—the model that simulated
-<code>d3</code>—ranks first (<code>elpd_loo</code> -18138.99), and
-<code>order_2</code> (<code>elpd_diff</code> -1.36, <code>se_diff</code>
-1.22) predicts essentially as well. <code>saturated</code> is 3.40 lower
+<code>d3</code>—ranks first (<code>elpd_loo</code> -18139.12). Both
+<code>order_2</code> (<code>elpd_diff</code> -1.23, <code>se_diff</code>
+1.22) and <code>order_2_mnar</code> (-2.21, <code>se_diff</code> 1.42)
+predict essentially as well. <code>saturated</code> is 3.27 lower
 (<code>se_diff</code> 1.21), more than twice <code>se_diff</code>: it
 reproduces the table just as well but uses more parameters
-(<code>p_loo</code> 21.98 versus 18.09), and here the extra parameters
+(<code>p_loo</code> 21.98 versus 18.19), and here the extra parameters
 cost some predictive accuracy. The difference is still small on the
 scale of <code>elpd_loo</code> (about 3 units over 10000 subjects), so
 it is a preference for the structured models, not a sign that
-<code>saturated</code> misfits. <code>order_2_mnar</code> trails by 4.26
-(<code>se_diff</code> 1.78): allowing verification to depend on the
-disease does not improve predictions, though this does not confirm MAR
-because in structured models the verification odds ratio is driven by
-the assumed dependence structure rather than directly by the data.
-<code>independence</code> is clearly worse, trailing by 49.01
-(<code>se_diff</code> 10.93). Across the structured models,
-<code>high_k</code> is 0 so no refits were needed,
+<code>saturated</code> misfits. <code>independence</code> is clearly
+worse, trailing by 48.88 (<code>se_diff</code> 10.93). Across the
+structured models, <code>high_k</code> is 0 so no refits were needed,
 <code>elpd_waic</code> agrees with <code>elpd_loo</code> within 0.2 for
-all five models, and <code>ppc_pvalue</code> lies between 0.41 and 0.63
+all five models, and <code>ppc_pvalue</code> lies between 0.48 and 0.61
 for four models but drops to 0.00 for <code>independence</code>:
-conditional independence fails to reproduce the observed table.</p>
+conditional independence fails to reproduce the observed table. Allowing
+verification to depend on the disease (<code>order_2_mnar</code>) does
+not improve predictions, though this does not confirm MAR because in
+structured models the verification odds ratio is driven by the assumed
+dependence structure rather than directly by the data.</p>
 <p>To see which cells <code>independence</code> misses, we inspect the
 <code>checks</code> data frame inside <code>comparison</code> (one row
 per model and cell) and filter for <code>p_value &lt; 0.05</code>:</p>

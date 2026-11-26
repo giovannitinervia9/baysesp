@@ -1993,23 +1993,24 @@ each model reproduces the observed counts:
   probability that a model is true.
 
 In the output, `random_effects`—the model that simulated `d3`—ranks
-first (`elpd_loo` -18138.99), and `order_2` (`elpd_diff` -1.36,
-`se_diff` 1.22) predicts essentially as well. `saturated` is 3.40 lower
-(`se_diff` 1.21), more than twice `se_diff`: it reproduces the table
-just as well but uses more parameters (`p_loo` 21.98 versus 18.09), and
-here the extra parameters cost some predictive accuracy. The difference
-is still small on the scale of `elpd_loo` (about 3 units over 10000
-subjects), so it is a preference for the structured models, not a sign
-that `saturated` misfits. `order_2_mnar` trails by 4.26 (`se_diff`
-1.78): allowing verification to depend on the disease does not improve
-predictions, though this does not confirm MAR because in structured
-models the verification odds ratio is driven by the assumed dependence
-structure rather than directly by the data. `independence` is clearly
-worse, trailing by 49.01 (`se_diff` 10.93). Across the structured
-models, `high_k` is 0 so no refits were needed, `elpd_waic` agrees with
-`elpd_loo` within 0.2 for all five models, and `ppc_pvalue` lies between
-0.41 and 0.63 for four models but drops to 0.00 for `independence`:
-conditional independence fails to reproduce the observed table.
+first (`elpd_loo` -18139.12). Both `order_2` (`elpd_diff` -1.23,
+`se_diff` 1.22) and `order_2_mnar` (-2.21, `se_diff` 1.42) predict
+essentially as well. `saturated` is 3.27 lower (`se_diff` 1.21), more
+than twice `se_diff`: it reproduces the table just as well but uses more
+parameters (`p_loo` 21.98 versus 18.19), and here the extra parameters
+cost some predictive accuracy. The difference is still small on the
+scale of `elpd_loo` (about 3 units over 10000 subjects), so it is a
+preference for the structured models, not a sign that `saturated`
+misfits. `independence` is clearly worse, trailing by 48.88 (`se_diff`
+10.93). Across the structured models, `high_k` is 0 so no refits were
+needed, `elpd_waic` agrees with `elpd_loo` within 0.2 for all five
+models, and `ppc_pvalue` lies between 0.48 and 0.61 for four models but
+drops to 0.00 for `independence`: conditional independence fails to
+reproduce the observed table. Allowing verification to depend on the
+disease (`order_2_mnar`) does not improve predictions, though this does
+not confirm MAR because in structured models the verification odds ratio
+is driven by the assumed dependence structure rather than directly by
+the data.
 
 To see which cells `independence` misses, we inspect the `checks` data
 frame inside `comparison` (one row per model and cell) and filter for

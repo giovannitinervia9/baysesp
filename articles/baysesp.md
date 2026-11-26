@@ -1379,7 +1379,7 @@ fit_mnar <- baysesp(
   model = saturated(
     verification = mnar(
       odds_ratio_prior = prior_normal(mean = log(1.5), sd = 0.35),
-      intercepts_prior = prior_normal(mean = 0, sd = 2.5),
+      intercepts_prior = prior_normal(mean = 0, sd = 1.5),
       by_profile = FALSE
     )
   ),
@@ -1394,7 +1394,7 @@ In `verification = mnar()`, the arguments are:
   1.5, between 0.75 and 3 with 95% probability;
 - `intercepts_prior`: prior on healthy verification probabilities, used
   only by [Section 9](#structured) models
-  (`prior_normal(mean = 0, sd = 2.5)` here);
+  (`prior_normal(mean = 0, sd = 1.5)`, the default);
 - `by_profile`: if `TRUE`, each profile has its own odds ratio with the
   same prior; `FALSE`, the default, shares one across profiles.
 
@@ -1895,19 +1895,19 @@ comparison
 #> Expected log predictive density of a new subject (leave-one-out)
 #> 
 #>  model           elpd_loo se_loo elpd_diff se_diff p_loo
-#>  random_effects -18138.91 144.21      0.00    0.00 18.00
-#>  order_2        -18140.34 144.20     -1.43    1.20 19.79
-#>  order_2_mnar   -18141.33 144.25     -2.43    1.40 20.34
-#>  saturated      -18142.39 144.22     -3.48    1.20 21.98
-#>  independence   -18188.06 144.75    -49.16   10.91 14.05
+#>  random_effects -18139.04 144.21      0.00    0.00 18.10
+#>  order_2        -18140.34 144.20     -1.30    1.20 19.79
+#>  saturated      -18142.39 144.22     -3.35    1.20 21.98
+#>  order_2_mnar   -18143.59 144.26     -4.55    1.82 20.36
+#>  independence   -18188.06 144.75    -49.02   10.90 14.05
 #> 
 #> Reliability of the estimates and fit to the data
 #> 
 #>  model          loo_method high_k elpd_waic p_waic ppc_pvalue
-#>  random_effects psis            0 -18138.89  17.98       0.62
+#>  random_effects psis            0 -18139.02  18.09       0.61
 #>  order_2        psis            0 -18140.32  19.76       0.56
-#>  order_2_mnar   psis            0 -18141.31  20.31       0.52
 #>  saturated      exact           - -18142.27  21.86       0.49
+#>  order_2_mnar   psis            0 -18143.56  20.33       0.38
 #>  independence   psis            0 -18188.05  14.04       0.00
 #> 
 #> elpd_diff: difference from the first model, with standard error se_diff.
@@ -1993,24 +1993,23 @@ each model reproduces the observed counts:
   probability that a model is true.
 
 In the output, `random_effects`—the model that simulated `d3`—ranks
-first (`elpd_loo` -18139.12). Both `order_2` (`elpd_diff` -1.23,
-`se_diff` 1.22) and `order_2_mnar` (-2.21, `se_diff` 1.42) predict
-essentially as well. `saturated` is 3.27 lower (`se_diff` 1.21), more
-than twice `se_diff`: it reproduces the table just as well but uses more
-parameters (`p_loo` 21.98 versus 18.19), and here the extra parameters
-cost some predictive accuracy. The difference is still small on the
-scale of `elpd_loo` (about 3 units over 10000 subjects), so it is a
-preference for the structured models, not a sign that `saturated`
-misfits. `independence` is clearly worse, trailing by 48.88 (`se_diff`
-10.93). Across the structured models, `high_k` is 0 so no refits were
-needed, `elpd_waic` agrees with `elpd_loo` within 0.2 for all five
-models, and `ppc_pvalue` lies between 0.48 and 0.61 for four models but
-drops to 0.00 for `independence`: conditional independence fails to
-reproduce the observed table. Allowing verification to depend on the
-disease (`order_2_mnar`) does not improve predictions, though this does
-not confirm MAR because in structured models the verification odds ratio
-is driven by the assumed dependence structure rather than directly by
-the data.
+first (`elpd_loo` -18138.99), and `order_2` (`elpd_diff` -1.36,
+`se_diff` 1.22) predicts essentially as well. `saturated` is 3.40 lower
+(`se_diff` 1.21), more than twice `se_diff`: it reproduces the table
+just as well but uses more parameters (`p_loo` 21.98 versus 18.09), and
+here the extra parameters cost some predictive accuracy. The difference
+is still small on the scale of `elpd_loo` (about 3 units over 10000
+subjects), so it is a preference for the structured models, not a sign
+that `saturated` misfits. `order_2_mnar` trails by 4.26 (`se_diff`
+1.78): allowing verification to depend on the disease does not improve
+predictions, though this does not confirm MAR because in structured
+models the verification odds ratio is driven by the assumed dependence
+structure rather than directly by the data. `independence` is clearly
+worse, trailing by 49.01 (`se_diff` 10.93). Across the structured
+models, `high_k` is 0 so no refits were needed, `elpd_waic` agrees with
+`elpd_loo` within 0.2 for all five models, and `ppc_pvalue` lies between
+0.41 and 0.63 for four models but drops to 0.00 for `independence`:
+conditional independence fails to reproduce the observed table.
 
 To see which cells `independence` misses, we inspect the `checks` data
 frame inside `comparison` (one row per model and cell) and filter for
@@ -2100,8 +2099,8 @@ compare_models(
 #> Reliability of the estimates and fit to the data
 #> 
 #>  model      loo_method high_k elpd_waic p_waic ppc_pvalue
-#>  low_prior  exact           - -16167.94  20.00       0.48
-#>  high_prior exact           - -16167.78  19.85       0.49
+#>  low_prior  exact           - -16167.87  19.94       0.48
+#>  high_prior exact           - -16167.78  19.84       0.49
 #> 
 #> elpd_diff: difference from the first model, with standard error se_diff.
 #> high_k: cells with Pareto k > 0.7 (- for exact leave-one-out, which has no k).

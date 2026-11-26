@@ -13,7 +13,7 @@ profiles.
 ``` r
 mnar(
   odds_ratio_prior = prior_normal(0, 1),
-  intercepts_prior = prior_normal(0, 2.5),
+  intercepts_prior = prior_normal(0, 1.5),
   by_profile = FALSE
 )
 ```
@@ -40,7 +40,15 @@ mnar(
   profile with at least one verified subject. It must act on the real
   line, as for `odds_ratio_prior`. It is used only by the log-linear and
   the random-effects models; the saturated model does not use it. The
-  default is `prior_normal(0, 2.5)`.
+  default `prior_normal(0, 1.5)` is close to a uniform distribution on
+  the verification probability of healthy subjects,
+  \\\mathrm{expit}(\alpha_t)\\. A wider prior, such as
+  `prior_normal(0, 2.5)`, puts about a third of its mass on
+  probabilities below 0.08 or above 0.92; with profiles in which few
+  subjects are verified, it often leads to profiles with subjects but no
+  verified subject, which the model treats as never verified (with a
+  warning from
+  [`baysesp()`](https://giovannitinervia9.github.io/baysesp/reference/baysesp.md)).
 
 - by_profile:
 
@@ -66,7 +74,10 @@ with at least one verified subject, \\\alpha_t\\ is the log odds of
 verification for healthy subjects with profile \\t\\, and \\\alpha_t +
 \beta\\ is the log odds of verification for diseased subjects with the
 same profile. Profiles with no verified subject have \\\lambda\_{t,d} =
-0\\ and no intercept.
+0\\ and no intercept; in the log-linear and random effects models
+[`baysesp()`](https://giovannitinervia9.github.io/baysesp/reference/baysesp.md)
+warns when such a profile has subjects, because for it verification is
+then not missing not at random.
 
 \\\beta\\ is the log odds ratio of verification between diseased and
 healthy subjects with the same profile: \$\$\beta = \log
@@ -158,9 +169,9 @@ latent class analysis for evaluating accuracy of diagnostic tests.
 mnar()
 #> <mnar> verification depends on the test results and on the disease
 #>   odds_ratio_prior: Normal(mean = 0, sd = 1)
-#>   intercepts_prior: Normal(mean = 0, sd = 2.5)
+#>   intercepts_prior: Normal(mean = 0, sd = 1.5)
 mnar(odds_ratio_prior = prior_normal(mean = log(2), sd = 0.5))
 #> <mnar> verification depends on the test results and on the disease
 #>   odds_ratio_prior: Normal(mean = 0.6931, sd = 0.5)
-#>   intercepts_prior: Normal(mean = 0, sd = 2.5)
+#>   intercepts_prior: Normal(mean = 0, sd = 1.5)
 ```

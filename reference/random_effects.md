@@ -159,7 +159,18 @@ available:
   The mirror image is excluded entirely, and every pair of tests is
   positively dependent within each class: the tests tend to err
   together, as is usual for tests that measure the same condition.
-  Negative dependence cannot be represented.
+  Negative dependence cannot be represented, and independence (all
+  loadings 0) is on the boundary of the parameter space: when the tests
+  are in fact conditionally independent, the posterior keeps some
+  positive dependence. The accuracy of each test is then estimated well,
+  but quantities driven by the dependence are not: in simulations with
+  independent tests, the 95% interval for the sensitivity of the rule
+  "any test positive" covered the true value in only about 75% of the
+  datasets, because the true value lies at the edge of what the model
+  can represent. Compare the model with
+  `loglinear(interaction_order = 1)` in
+  [`compare_models()`](https://giovannitinervia9.github.io/baysesp/reference/compare_models.md)
+  before relying on such quantities.
 
 - `positive_loadings = FALSE`: only the first loading of each class is
   positive, the others can take any sign, so any sign of dependence is

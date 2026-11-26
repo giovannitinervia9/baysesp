@@ -2,7 +2,7 @@ test_that("mnar() has the documented defaults and checks its priors", {
   v <- mnar()
   expect_true(S7::S7_inherits(v, verification_mechanism))
   expect_identical(v@odds_ratio_prior@sd, 1)
-  expect_identical(v@intercepts_prior@sd, 2.5)
+  expect_identical(v@intercepts_prior@sd, 1.5)
   expect_false(v@by_profile)
   expect_output(print(mnar(by_profile = TRUE)), "one per profile")
   expect_error(mnar(odds_ratio_prior = prior_beta()), "odds_ratio_prior")

@@ -6,7 +6,7 @@
 \usage{
 mnar(
   odds_ratio_prior = prior_normal(0, 1),
-  intercepts_prior = prior_normal(0, 2.5),
+  intercepts_prior = prior_normal(0, 1.5),
   by_profile = FALSE
 )
 }
@@ -23,7 +23,13 @@ ratios between about 0.14 and 7.1.}
 one for each profile with at least one verified subject. It must act on
 the real line, as for \code{odds_ratio_prior}. It is used only by the log-linear
 and the random-effects models; the saturated model does not use it. The
-default is \code{prior_normal(0, 2.5)}.}
+default \code{prior_normal(0, 1.5)} is close to a uniform distribution on the
+verification probability of healthy subjects, \eqn{\mathrm{expit}(\alpha_t)}.
+A wider prior, such as \code{prior_normal(0, 2.5)}, puts about a third of its
+mass on probabilities below 0.08 or above 0.92; with profiles in which
+few subjects are verified, it often leads to profiles with subjects but
+no verified subject, which the model treats as never verified (with a
+warning from \code{\link[=baysesp]{baysesp()}}).}
 
 \item{by_profile}{A single logical value, \code{TRUE} or \code{FALSE}, with default
 \code{FALSE}. If \code{FALSE}, one \eqn{\beta} is shared by all profiles with at
@@ -53,7 +59,9 @@ For each profile \eqn{t} with at least one verified subject, \eqn{\alpha_t}
 is the log odds of verification for healthy subjects with profile \eqn{t},
 and \eqn{\alpha_t + \beta} is the log odds of verification for diseased
 subjects with the same profile. Profiles with no verified subject have
-\eqn{\lambda_{t,d} = 0} and no intercept.
+\eqn{\lambda_{t,d} = 0} and no intercept; in the log-linear and random
+effects models \code{baysesp()} warns when such a profile has subjects, because
+for it verification is then not missing not at random.
 
 \eqn{\beta} is the log odds ratio of verification between diseased and
 healthy subjects with the same profile:

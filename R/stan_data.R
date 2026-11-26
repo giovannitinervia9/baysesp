@@ -98,6 +98,16 @@ S7::method(stan_data, list(loglinear, mnar)) <- function(model, verification, da
 # one intercept per verified profile (specification, section 6.1). The data
 # lists of loglinear.stan and random_effects.stan share these elements.
 structured_mnar <- function(s, verification, data) {
+  # A profile with subjects but none verified has no intercept: lambda = 0 for
+  # both classes, so for it the model is not MNAR (validation: frequent with
+  # intercepts far from 0)
+  unverified <- data@never_verified & data@n_unverified > 0L
+  if (any(unverified)) {
+    warning("Under `mnar()`, profiles with subjects but no verified subject are ",
+            "treated as never verified, with verification probability fixed at 0 ",
+            "for diseased and healthy subjects: ",
+            paste(profile_labels(data)[unverified], collapse = " "), ".", call. = FALSE)
+  }
   alpha <- prior_code(verification@intercepts_prior)
   beta <- prior_code(verification@odds_ratio_prior)
   s$mnar <- 1L

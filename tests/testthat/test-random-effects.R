@@ -31,7 +31,7 @@ test_that("stan_data() translates the random effects model", {
   expect_identical(s$positive_loadings, 1L)
   expect_identical(stan_data(random_effects(positive_loadings = FALSE), mar(), d)$positive_loadings, 0L)
   m <- random_effects(verification = mnar())
-  s <- stan_data(m, m@verification, d)
+  expect_warning(s <- stan_data(m, m@verification, d), "no verified subject")
   expect_identical(c(s$mnar, s$n_beta), c(1L, 1L))
   expect_identical(stan_program(m), "random_effects")
 

@@ -110,7 +110,7 @@ verification probability of a diseased subject with the same profile is
 \\\lambda\_{t,1} = \mathrm{expit}(\mathrm{logit}\\\lambda\_{t,0} +
 \log(\mathrm{odds\\ratio}))\\, so that the odds of verification of
 diseased subjects are `odds_ratio` times the odds for healthy subjects
-with the same profile.
+with the same profile (Kosinski and Barnhart, 2003).
 
 **Dependence between the tests.** The argument `dependence` sets the
 joint distribution of the `K` results within each disease class, that is
@@ -119,29 +119,30 @@ response profiles \\t\\ among the diseased (\\d = 1\\) and among the
 healthy (\\d = 0\\). Every mechanism keeps the sensitivities and
 specificities given in `sensitivity` and `specificity` as the marginal
 probabilities, and changes only how often the tests are right or wrong
-together:
+together (Vacek, 1985; Torrance-Rynard and Walter, 1997):
 
 - `dependence = independence()`: \\\theta\_{1,t} = \prod_k
   Se_k^{t_k}(1 - Se_k)^{1 - t_k}\\ and \\\theta\_{0,t} = \prod_k (1 -
   Sp_k)^{t_k} Sp_k^{1 - t_k}\\;
 
 - `dependence = latent_dependence(diseased_loadings, healthy_loadings)`:
-  each subject has a latent variable \\Z \sim N(0, 1)\\, independent of
-  \\D\\, and given \\D = d\\ and \\Z = z\\ the tests are independent
-  with \\P(T_k = 1 \mid D = d, Z = z) = \Phi(a\_{dk} + b\_{dk} z)\\,
-  where \\b\_{dk}\\ is the loading of test \\k\\ in class \\d\\ and
-  \\a\_{dk}\\ is chosen so that the marginal probabilities are the
-  sensitivities and specificities. Tests \\j\\ and \\k\\ are positively
-  dependent when \\b\_{dj} b\_{dk} \> 0\\ and negatively dependent when
-  \\b\_{dj} b\_{dk} \< 0\\;
+  each subject has a latent variable \\Z \sim N(0, 1)\\ (Qu et al.,
+  1996; Dendukuri and Joseph, 2001), independent of \\D\\, and given \\D
+  = d\\ and \\Z = z\\ the tests are independent with \\P(T_k = 1 \mid D
+  = d, Z = z) = \Phi(a\_{dk} + b\_{dk} z)\\, where \\b\_{dk}\\ is the
+  loading of test \\k\\ in class \\d\\ and \\a\_{dk}\\ is chosen so that
+  the marginal probabilities are the sensitivities and specificities.
+  Tests \\j\\ and \\k\\ are positively dependent when \\b\_{dj} b\_{dk}
+  \> 0\\ and negatively dependent when \\b\_{dj} b\_{dk} \< 0\\;
 
 - `dependence = probit_dependence(diseased_correlation, healthy_correlation)`:
   given \\D = d\\, test \\k\\ is positive when a standard normal latent
   variable \\Y_k\\ falls below a threshold that gives the required
   sensitivity or specificity, and the latent variables of the `K` tests
-  are jointly normal with correlation matrix \\R_d\\. The element
-  \\R\_{d,jk}\\ is the correlation, of any sign, between tests \\j\\ and
-  \\k\\ in class \\d\\.
+  are jointly normal with correlation matrix \\R_d\\ (Qu et al., 1996;
+  Dendukuri and Joseph, 2001). The element \\R\_{d,jk}\\ is the
+  correlation, of any sign, between tests \\j\\ and \\k\\ in class
+  \\d\\.
 
 The size of the loadings or of the correlation matrices is checked here
 against the number of tests `K`, which the dependence mechanism does not
@@ -161,11 +162,12 @@ definite for `K` tests gives an error.
   see `odds_ratio` for diseased subjects);
 
 - missing at random verification (`odds_ratio = 1`), where verification
-  depends only on the profile, and missing not at random verification
-  (`odds_ratio` different from 1), where the odds of verification also
-  depend on the disease status through the same odds ratio for all
-  profiles. Profiles with verification probability 0 or 1 are never
-  verified, or always verified, whatever `odds_ratio` is.
+  depends only on the profile (Rubin, 1976), and missing not at random
+  verification (`odds_ratio` different from 1), where the odds of
+  verification also depend on the disease status through the same odds
+  ratio for all profiles (Kosinski and Barnhart, 2003). Profiles with
+  verification probability 0 or 1 are never verified, or always
+  verified, whatever `odds_ratio` is.
 
 **Not supported:** dependence between the tests given the disease status
 other than through the two latent mechanisms above (for example
@@ -173,6 +175,36 @@ log-linear interactions given as odds ratios), covariates, verification
 that depends on something other than the response profile and the
 disease status, and a disease-dependent verification whose odds ratio
 differs across profiles.
+
+## References
+
+Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the
+conditional dependence between multiple diagnostic tests. *Biometrics*,
+57(1), 158–167.
+[doi:10.1111/j.0006-341X.2001.00158.x](https://doi.org/10.1111/j.0006-341X.2001.00158.x)
+
+Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable
+verification bias in assessment of diagnostic tests. *Biometrics*,
+59(1), 163–171.
+[doi:10.1111/1541-0420.00019](https://doi.org/10.1111/1541-0420.00019)
+
+Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in
+latent class analysis for evaluating accuracy of diagnostic tests.
+*Biometrics*, 52(3), 797–810.
+[doi:10.2307/2533043](https://doi.org/10.2307/2533043)
+
+Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3),
+581–592.
+[doi:10.1093/biomet/63.3.581](https://doi.org/10.1093/biomet/63.3.581)
+
+Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent
+errors in the assessment of diagnostic test performance. *Statistics in
+Medicine*, 16(19), 2157–2175.
+[doi:10.1002/(SICI)1097-0258(19971015)16:19\<2157::AID-SIM653\>3.0.CO;2-X](https://doi.org/10.1002/%28SICI%291097-0258%2819971015%2916%3A19%3C2157%3A%3AAID-SIM653%3E3.0.CO%3B2-X)
+
+Vacek, P. M. (1985). The effect of conditional dependence on the
+evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968.
+[doi:10.2307/2530967](https://doi.org/10.2307/2530967)
 
 ## See also
 

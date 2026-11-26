@@ -82,7 +82,9 @@ for a positive result, and \\d \in \\0, 1\\\\ the disease status. Given
 is the standard normal distribution function, \\a\_{dk}\\ is an
 intercept and \\b\_{dk}\\ a loading, for each test \\k\\ and class
 \\d\\. The model has \\2K\\ intercepts and loadings per class, plus the
-prevalence \\\pi = P(D = 1)\\.
+prevalence \\\pi = P(D = 1)\\. This is the Gaussian random effects
+(probit latent variable) model for conditional dependence between tests
+(Qu et al., 1996; Dendukuri and Joseph, 2001).
 
 Integrating out \\Z\\ gives the probability of each profile in class
 \\d\\, \\\theta\_{d,t} = P(T = t \mid D = d)\\: \$\$\theta\_{d,t} = \int
@@ -114,16 +116,19 @@ unverified subjects with profile \\t\\, \\\pi_1 = \pi\\ and \\\pi_0 =
 \sum_t \Big\[\sum\_{d} n\_{t,d} \log(\pi_d\\\theta\_{d,t}\\
 \lambda\_{t,d}) + u_t \log \sum\_{d} \pi_d\\\theta\_{d,t}\\(1 -
 \lambda\_{t,d})\Big\],\$\$ where \\\lambda\_{t,d} = P(V = 1 \mid T = t,
-D = d)\\ is the probability of verification.
+D = d)\\ is the probability of verification. Dependence models with
+partial verification of this kind are discussed by Albert and Dodd
+(2008).
 
 With `verification = mar()` (missing at random) the verification
-probability does not depend on the disease status, so the verification
-terms carry no information on the parameters and are dropped: \$\$\ell =
-\sum_t \Big\[\sum\_{d} n\_{t,d} \log(\pi_d\\\theta\_{d,t}) + u_t \log
-\sum\_{d} \pi_d\\\theta\_{d,t}\Big\] + \textrm{const.}\$\$
+probability does not depend on the disease status (Rubin, 1976), so the
+verification terms carry no information on the parameters and are
+dropped: \$\$\ell = \sum_t \Big\[\sum\_{d} n\_{t,d}
+\log(\pi_d\\\theta\_{d,t}) + u_t \log \sum\_{d}
+\pi_d\\\theta\_{d,t}\Big\] + \textrm{const.}\$\$
 
 With `verification = mnar()` (missing not at random) the verification
-probability depends on the disease status:
+probability depends on the disease status (Kosinski and Barnhart, 2003):
 \\\mathrm{logit}\\\lambda\_{t,d} = \alpha_t + \beta d\\ for every
 profile with at least one verified subject, while \\\lambda\_{t,d} = 0\\
 for profiles that are never verified. The parameter \\\beta\\ is the log
@@ -139,7 +144,7 @@ The data do not inform every parameter directly. The probabilities
 only by the assumed latent structure, and under MNAR the parameter
 \\\beta\\ is also informed only by that structure. Both depend on the
 correctness of the model, so the results on these quantities are fragile
-if the structure is wrong.
+if the structure is wrong (Albert and Dodd, 2004).
 
 **Constraint on the signs of the loadings.** Since \\Z\\ and \\-Z\\ have
 the same distribution, changing the sign of all the loadings of a class
@@ -169,6 +174,37 @@ available:
   this happens in most fits. Use this option only when negative
   dependence is plausible, with several chains, and check that the
   chains agree.
+
+## References
+
+Albert, P. S. and Dodd, L. E. (2004). A cautionary note on the
+robustness of latent class models for estimating diagnostic error
+without a gold standard. *Biometrics*, 60(2), 427–435.
+[doi:10.1111/j.0006-341X.2004.00187.x](https://doi.org/10.1111/j.0006-341X.2004.00187.x)
+
+Albert, P. S. and Dodd, L. E. (2008). On estimating diagnostic accuracy
+from studies with multiple raters and partial gold standard evaluation.
+*Journal of the American Statistical Association*, 103(481), 61–73.
+[doi:10.1198/016214507000000329](https://doi.org/10.1198/016214507000000329)
+
+Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the
+conditional dependence between multiple diagnostic tests. *Biometrics*,
+57(1), 158–167.
+[doi:10.1111/j.0006-341X.2001.00158.x](https://doi.org/10.1111/j.0006-341X.2001.00158.x)
+
+Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable
+verification bias in assessment of diagnostic tests. *Biometrics*,
+59(1), 163–171.
+[doi:10.1111/1541-0420.00019](https://doi.org/10.1111/1541-0420.00019)
+
+Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in
+latent class analysis for evaluating accuracy of diagnostic tests.
+*Biometrics*, 52(3), 797–810.
+[doi:10.2307/2533043](https://doi.org/10.2307/2533043)
+
+Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3),
+581–592.
+[doi:10.1093/biomet/63.3.581](https://doi.org/10.1093/biomet/63.3.581)
 
 ## Examples
 

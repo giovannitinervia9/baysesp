@@ -2,7 +2,8 @@
 
 Fits a Bayesian model for the sensitivity and specificity of one or more
 binary tests when not all subjects have been verified with the reference
-standard. The objects of the model classes passed to `model` contain the
+standard (Baker, 1995; Buzoianu and Kadane, 2008; Martinez et al.,
+2006). The objects of the model classes passed to `model` contain the
 specification of the priors and of the verification mechanism.
 
 ## Usage
@@ -45,14 +46,15 @@ baysesp(
 - backend:
 
   Stan interface, a single value: `"rstan"` (default) or `"cmdstanr"`.
-  With `"rstan"`, the Stan programs are the ones compiled when the
-  package is installed, so nothing is compiled at run time. With
-  `"cmdstanr"`, each program is compiled the first time it is used and
-  the executable is kept in the user cache directory, so the first run
-  is slower and later runs reuse the compiled program. If `cmdstanr` or
-  CmdStan is not available, `"rstan"` is used and a message is printed.
-  The `backend` element of the result reports the backend that was
-  actually used. Any other value gives an error.
+  With `"rstan"` (Stan Development Team, 2025), the Stan programs are
+  the ones compiled when the package is installed, so nothing is
+  compiled at run time. With `"cmdstanr"`, each program is compiled the
+  first time it is used and the executable is kept in the user cache
+  directory, so the first run is slower and later runs reuse the
+  compiled program. If `cmdstanr` or CmdStan is not available, `"rstan"`
+  is used and a message is printed. The `backend` element of the result
+  reports the backend that was actually used. Any other value gives an
+  error.
 
 - chains:
 
@@ -109,6 +111,11 @@ An object of class `baysesp_fit` with the following properties:
 - `stan_fit`: the object returned by the backend: a `stanfit` object for
   `"rstan"`, a `CmdStanMCMC` object for `"cmdstanr"`.
 
+- `settings`: a list with `chains`, `iter_warmup`, `iter_sampling`, the
+  seed actually used and the arguments given in `...`.
+  [`update()`](https://rdrr.io/r/stats/update.html) reuses them to fit a
+  different model to the same data.
+
 The profiles are the \\J = 2^K\\ response profiles of the \\K\\ tests,
 indexed in binary order: profile \\j\\ is the pattern of results with
 index \\j = 1 + \sum_k t_k 2^{k-1}\\, where \\t_k = 1\\ for a positive
@@ -134,22 +141,62 @@ are:
 
 - `beta`: the log odds ratio of verification between diseased and
   healthy subjects with the same profile, present only with MNAR
-  verification. Without `by_profile = TRUE` it is a single value. With
-  `by_profile = TRUE` there is one value, named `beta[i]`, for each
-  profile with verified subjects, in binary order.
+  verification (Kosinski and Barnhart, 2003). Without
+  `by_profile = TRUE` it is a single value. With `by_profile = TRUE`
+  there is one value, named `beta[i]`, for each profile with verified
+  subjects, in binary order.
+
+- `alpha[i]`, only for
+  [`loglinear()`](https://giovannitinervia9.github.io/baysesp/reference/loglinear.md)
+  and
+  [`random_effects()`](https://giovannitinervia9.github.io/baysesp/reference/random_effects.md)
+  with MNAR verification: the log odds of verification of the healthy
+  subjects with the \\i\\-th profile that has verified subjects, in
+  binary order.
 
 ## Details
 
 The posterior distribution of the parameters of `model`, given `data`,
 is approximated with the No-U-Turn sampler of Stan, a form of
 Hamiltonian Monte Carlo that adapts its step size and mass matrix during
-the warmup iterations. The likelihood and the priors are coded in a Stan
-program specific to the model class and to the verification mechanism.
-Each chain runs `iter_warmup` warmup iterations, which are discarded,
-followed by `iter_sampling` sampling iterations, which are kept as
-draws. The draws therefore form `chains * iter_sampling` joint samples
-of the parameters of the model, and every quantity reported by the
-package is computed from them.
+the warmup iterations (Carpenter et al., 2017). The likelihood and the
+priors are coded in a Stan program specific to the model class and to
+the verification mechanism. Each chain runs `iter_warmup` warmup
+iterations, which are discarded, followed by `iter_sampling` sampling
+iterations, which are kept as draws. The draws therefore form
+`chains * iter_sampling` joint samples of the parameters of the model,
+and every quantity reported by the package is computed from them.
+
+## References
+
+Baker, S. G. (1995). Evaluating multiple diagnostic tests with partial
+verification. *Biometrics*, 51(1), 330–337.
+[doi:10.2307/2533339](https://doi.org/10.2307/2533339)
+
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias
+in diagnostic test evaluation: A Bayesian approach. *Statistics in
+Medicine*, 27(13), 2453–2473.
+[doi:10.1002/sim.3099](https://doi.org/10.1002/sim.3099)
+
+Carpenter, B., Gelman, A., Hoffman, M. D., Lee, D., Goodrich, B.,
+Betancourt, M., Brubaker, M., Guo, J., Li, P. and Riddell, A. (2017).
+Stan: A probabilistic programming language. *Journal of Statistical
+Software*, 76(1), 1–32.
+[doi:10.18637/jss.v076.i01](https://doi.org/10.18637/jss.v076.i01)
+
+Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable
+verification bias in assessment of diagnostic tests. *Biometrics*,
+59(1), 163–171.
+[doi:10.1111/1541-0420.00019](https://doi.org/10.1111/1541-0420.00019)
+
+Martinez, E. Z., Achcar, J. A. and Louzada-Neto, F. (2006). Estimators
+of sensitivity and specificity in the presence of verification bias: A
+Bayesian approach. *Computational Statistics & Data Analysis*, 51(2),
+601–611.
+[doi:10.1016/j.csda.2005.12.021](https://doi.org/10.1016/j.csda.2005.12.021)
+
+Stan Development Team (2025). RStan: The R interface to Stan. R package.
+<https://CRAN.R-project.org/package=rstan>
 
 ## See also
 

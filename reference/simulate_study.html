@@ -155,18 +155,20 @@ probability of a diseased subject with the same profile is
 \(\lambda_{t,1} = \mathrm{expit}(\mathrm{logit}\,\lambda_{t,0} +
 \log(\mathrm{odds\_ratio}))\), so that the odds of verification of diseased
 subjects are <code>odds_ratio</code> times the odds for healthy subjects with the same
-profile.</p>
+profile (Kosinski and Barnhart, 2003).</p>
 <p><strong>Dependence between the tests.</strong> The argument <code>dependence</code> sets the joint
 distribution of the <code>K</code> results within each disease class, that is the
 probabilities \(\theta_{d,t} = P(T = t \mid D = d)\) of the response
 profiles \(t\) among the diseased (\(d = 1\)) and among the healthy
 (\(d = 0\)). Every mechanism keeps the sensitivities and specificities
 given in <code>sensitivity</code> and <code>specificity</code> as the marginal probabilities, and
-changes only how often the tests are right or wrong together:</p><ul><li><p><code>dependence = independence()</code>:
+changes only how often the tests are right or wrong together (Vacek, 1985;
+Torrance-Rynard and Walter, 1997):</p><ul><li><p><code>dependence = independence()</code>:
 \(\theta_{1,t} = \prod_k Se_k^{t_k}(1 - Se_k)^{1 - t_k}\) and
 \(\theta_{0,t} = \prod_k (1 - Sp_k)^{t_k} Sp_k^{1 - t_k}\);</p></li>
 <li><p><code>dependence = latent_dependence(diseased_loadings, healthy_loadings)</code>:
-each subject has a latent variable \(Z \sim N(0, 1)\), independent of
+each subject has a latent variable \(Z \sim N(0, 1)\) (Qu et al., 1996;
+Dendukuri and Joseph, 2001), independent of
 \(D\), and given \(D = d\) and \(Z = z\) the tests are independent
 with \(P(T_k = 1 \mid D = d, Z = z) = \Phi(a_{dk} + b_{dk} z)\), where
 \(b_{dk}\) is the loading of test \(k\) in class \(d\) and
@@ -178,7 +180,8 @@ dependent when \(b_{dj} b_{dk} &gt; 0\) and negatively dependent when
 given \(D = d\), test \(k\) is positive when a standard normal latent
 variable \(Y_k\) falls below a threshold that gives the required
 sensitivity or specificity, and the latent variables of the <code>K</code> tests are
-jointly normal with correlation matrix \(R_d\). The element
+jointly normal with correlation matrix \(R_d\) (Qu et al., 1996;
+Dendukuri and Joseph, 2001). The element
 \(R_{d,jk}\) is the correlation, of any sign, between tests \(j\) and
 \(k\) in class \(d\).</p></li>
 </ul><p>The size of the loadings or of the correlation matrices is checked here
@@ -194,9 +197,10 @@ probability per profile. A value 0 means that the profile is never
 verified, a value 1 that it is always verified (for healthy subjects; see
 <code>odds_ratio</code> for diseased subjects);</p></li>
 <li><p>missing at random verification (<code>odds_ratio = 1</code>), where verification
-depends only on the profile, and missing not at random verification
+depends only on the profile (Rubin, 1976), and missing not at random verification
 (<code>odds_ratio</code> different from 1), where the odds of verification also
-depend on the disease status through the same odds ratio for all profiles.
+depend on the disease status through the same odds ratio for all profiles
+(Kosinski and Barnhart, 2003).
 Profiles with verification probability 0 or 1 are never verified, or
 always verified, whatever <code>odds_ratio</code> is.</p></li>
 </ul><p><strong>Not supported:</strong> dependence between the tests given the disease status
@@ -204,6 +208,15 @@ other than through the two latent mechanisms above (for example log-linear
 interactions given as odds ratios), covariates, verification that depends on something other
 than the response profile and the disease status, and a disease-dependent
 verification whose odds ratio differs across profiles.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the conditional dependence between multiple diagnostic tests. <em>Biometrics</em>, 57(1), 158–167. <a href="https://doi.org/10.1111/j.0006-341X.2001.00158.x" class="external-link">doi:10.1111/j.0006-341X.2001.00158.x</a></p>
+<p>Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable verification bias in assessment of diagnostic tests. <em>Biometrics</em>, 59(1), 163–171. <a href="https://doi.org/10.1111/1541-0420.00019" class="external-link">doi:10.1111/1541-0420.00019</a></p>
+<p>Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in latent class analysis for evaluating accuracy of diagnostic tests. <em>Biometrics</em>, 52(3), 797–810. <a href="https://doi.org/10.2307/2533043" class="external-link">doi:10.2307/2533043</a></p>
+<p>Rubin, D. B. (1976). Inference and missing data. <em>Biometrika</em>, 63(3), 581–592. <a href="https://doi.org/10.1093/biomet/63.3.581" class="external-link">doi:10.1093/biomet/63.3.581</a></p>
+<p>Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. <em>Statistics in Medicine</em>, 16(19), 2157–2175. <a href="https://doi.org/10.1002/%28SICI%291097-0258%2819971015%2916%3A19%3C2157%3A%3AAID-SIM653%3E3.0.CO%3B2-X" class="external-link">doi:10.1002/(SICI)1097-0258(19971015)16:19&lt;2157::AID-SIM653&gt;3.0.CO;2-X</a></p>
+<p>Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. <em>Biometrics</em>, 41(4), 959–968. <a href="https://doi.org/10.2307/2530967" class="external-link">doi:10.2307/2530967</a></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

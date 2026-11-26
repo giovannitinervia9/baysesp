@@ -12,7 +12,7 @@ parameters from the non-identified ones:
 - not identified: the proportion of diseased among the unverified
   subjects of each such profile, which is fixed by the verification
   mechanism, and the proportion of diseased in each never-verified
-  profile, whose posterior equals its prior.
+  profile, whose posterior equals its prior (Gustafson, 2015).
 
 ## Usage
 
@@ -118,8 +118,9 @@ log-likelihood is \$\$\ell = \sum_t \Big\[N_t \log \omega_t +
 (n\_{t,1} + n\_{t,0}) \log v_t + u_t \log(1 - v_t) + n\_{t,1} \log
 \phi^{(1)}\_t + n\_{t,0} \log(1 - \phi^{(1)}\_t)\Big\].\$\$ The
 unverified subjects enter only through \\N_t\\ and \\u_t\\, because
-their disease status is not observed. The proportion \\\phi^{(0)}\_t\\
-does not enter the log-likelihood: the data carry no information on it,
+their disease status is not observed (Begg and Greenes, 1983; Zhou,
+1993). The proportion \\\phi^{(0)}\_t\\ does not enter the
+log-likelihood: the data carry no information on it (Gustafson, 2015),
 so it is determined by the verification mechanism and by
 \\\phi^{(1)}\_t\\. A never-verified profile has no verified subject, so
 \\v_t = 0\\ and only its first term remains.
@@ -130,17 +131,18 @@ and unverified subjects have the same proportion of diseased, so
 \\\phi^{(0)}\_t = \phi^{(1)}\_t\\.
 
 With `verification = mnar()` (missing not at random) verification may
-also depend on the disease status: \$\$\mathrm{logit}\\\phi^{(0)}\_t =
-\mathrm{logit}\\\phi^{(1)}\_t - \beta,\$\$ where \\\beta\\ is the log
-odds ratio of verification between diseased and healthy subjects with
-the same profile. Equivalently, \\\exp(-\beta)\\ is the odds ratio of
-disease between unverified and verified subjects with the same profile:
-\\\beta \> 0\\ means that the unverified are less often diseased. There
-is one \\\beta\\ common to all profiles with verified subjects, or one
-per profile with `verification = mnar(by_profile = TRUE)`. Since
-\\\beta\\ does not enter the log-likelihood, its posterior equals its
-prior, and the results depend on the assumed value: they should be
-examined over a range of plausible values.
+also depend on the disease status (Kosinski and Barnhart, 2003a):
+\$\$\mathrm{logit}\\\phi^{(0)}\_t = \mathrm{logit}\\\phi^{(1)}\_t -
+\beta,\$\$ where \\\beta\\ is the log odds ratio of verification between
+diseased and healthy subjects with the same profile. Equivalently,
+\\\exp(-\beta)\\ is the odds ratio of disease between unverified and
+verified subjects with the same profile: \\\beta \> 0\\ means that the
+unverified are less often diseased. There is one \\\beta\\ common to all
+profiles with verified subjects, or one per profile with
+`verification = mnar(by_profile = TRUE)`. Since \\\beta\\ does not enter
+the log-likelihood, its posterior equals its prior, and the results
+depend on the assumed value: they should be examined over a range of
+plausible values (Gustafson, 2015; Kosinski and Barnhart, 2003b).
 
 The quantities of interest are obtained as follows. For each profile,
 \$\$\psi_t = v_t \phi^{(1)}\_t + (1 - v_t) \phi^{(0)}\_t\$\$ is the
@@ -156,6 +158,31 @@ for that test, and its specificity the sum of \\\theta\_{0,t}\\ over the
 profiles with a negative result. Under both mechanisms the
 never-verified profiles enter \\\pi\\ through \\q_t\\, whose posterior
 equals its prior.
+
+## References
+
+Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests
+when disease verification is subject to selection bias. *Biometrics*,
+39(1), 207–215. [doi:10.2307/2530820](https://doi.org/10.2307/2530820)
+
+Gustafson, P. (2015). *Bayesian Inference for Partially Identified
+Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca
+Raton, FL.
+
+Kosinski, A. S. and Barnhart, H. X. (2003a). Accounting for nonignorable
+verification bias in assessment of diagnostic tests. *Biometrics*,
+59(1), 163–171.
+[doi:10.1111/1541-0420.00019](https://doi.org/10.1111/1541-0420.00019)
+
+Kosinski, A. S. and Barnhart, H. X. (2003b). A global sensitivity
+analysis of performance of a medical diagnostic test when verification
+bias is present. *Statistics in Medicine*, 22(17), 2711–2721.
+[doi:10.1002/sim.1517](https://doi.org/10.1002/sim.1517)
+
+Zhou, X.-H. (1993). Maximum likelihood estimators of sensitivity and
+specificity corrected for verification bias. *Communications in
+Statistics – Theory and Methods*, 22(11), 3177–3198.
+[doi:10.1080/03610929308831209](https://doi.org/10.1080/03610929308831209)
 
 ## Examples
 

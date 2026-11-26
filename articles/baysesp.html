@@ -83,15 +83,16 @@ tests are over-represented among the verified, computing
 <em>sensitivity</em> (how often diseased subjects test positive) and
 <em>specificity</em> (how often healthy subjects test negative) from
 verified subjects alone distorts both estimates: this is
-<em>verification bias</em>.</p>
+<em>verification bias</em> <span class="citation">(Begg and Greenes
+1983; Zhou 1998)</span>.</p>
 <p><a href="https://github.com/giovannitinervia9/baysesp" class="external-link">baysesp</a> corrects for verification bias when estimating
 sensitivity, specificity, and <em>predictive values</em> (disease or
 health probabilities given a test result) of binary tests and combined
-rules. It models all subjects—verified or not—in a Bayesian model fitted
-with Stan, sampling parameters from their <em>posterior
-distributions</em> (combining priors with data). For every subject, you
-need all test results, verification status, and, if verified, disease
-status.</p>
+rules. It models all subjects—verified or not—in a Bayesian model <span class="citation">(Martinez et al. 2006; Buzoianu and Kadane 2008)</span>
+fitted with Stan <span class="citation">(Carpenter et al. 2017)</span>,
+sampling parameters from their <em>posterior distributions</em>
+(combining priors with data). For every subject, you need all test
+results, verification status, and, if verified, disease status.</p>
 <p>The shortest analysis takes three steps—preparing data, fitting the
 model, and reading accuracy—as previewed below (not evaluated before
 <code>study</code> exists):</p>
@@ -126,6 +127,8 @@ disease;</li>
 <li>
 <a href="#structured">Section 9</a>: models assuming how the tests
 depend on each other;</li>
+<li>
+<a href="#comparison">Section 10</a>: comparing models;</li>
 </ul>
 <p>First, we load <a href="https://github.com/giovannitinervia9/baysesp" class="external-link">baysesp</a> for the walkthrough:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -337,8 +340,9 @@ This upward bias occurs because diseased subjects missed by both tests
 are verified with probability 0.1 instead of 0.8 or 1, leaving verified
 diseased subjects disproportionately positive on <code>A</code>.</p>
 <p>To correct this bias using both verified and unverified counts in
-<code>d</code>, we fit the Bayesian model with <code><a href="../reference/baysesp.html">baysesp()</a></code>
-and store the result in <code>fit</code>:</p>
+<code>d</code> <span class="citation">(Begg and Greenes 1983; Zhou
+1993)</span>, we fit the Bayesian model with <code><a href="../reference/baysesp.html">baysesp()</a></code> and
+store the result in <code>fit</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">d</span>,</span>
@@ -357,7 +361,7 @@ and store the result in <code>fit</code>:</p>
 <code>model</code>: the model, setting the priors and the
 verification assumption; <code><a href="../reference/saturated.html">saturated()</a></code> makes no assumption on
 how tests depend on each other given disease status, and
-<code>verification = mar()</code> (<em>missing at random</em>) assumes
+<code>verification = mar()</code> (<em>missing at random</em>) <span class="citation">(Rubin 1976; Little and Rubin 2002)</span> assumes
 verification depends only on test results
 (<code>model = saturated(verification = mar())</code> is the
 default);</li>
@@ -414,7 +418,8 @@ good mixing), smallest bulk and tail effective sample sizes 5602 and
 posterior; values above a few hundred are desirable), and 0 divergent
 transitions (a nonzero count warns of numerical sampling trouble). All
 four checks look healthy; <a href="#sampler">Section 4</a> shows how to
-inspect diagnostics per parameter and tune the sampler if needed.</p>
+check a fit with <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>, inspect diagnostics per
+parameter, and tune the sampler if needed.</p>
 <p>Third, the table gives one row per accuracy quantity:</p>
 <ul>
 <li>
@@ -494,12 +499,68 @@ converged. Because <code><a href="../reference/baysesp.html">baysesp()</a></code
 (chains of correlated posterior draws), poor mixing or numerical trouble
 can bias results. <a href="https://mc-stan.org/rstan/" class="external-link">rstan</a> warns about divergent transitions
 (step-size errors), high R-hat, or low effective sample size; no warning
-appeared for <code>fit</code>. The <code>Convergence:</code> line
-printed with <code>fit</code> (<a href="#fitting">Section 3</a>) is the
-first check, and <code><a href="https://mc-stan.org/posterior/reference/draws_summary.html" class="external-link">posterior::summarise_draws()</a></code> gives the
-same diagnostics for every parameter from the <a href="https://mc-stan.org/posterior/" class="external-link">posterior</a>
-object <code>fit@draws</code>:</p>
+appeared for <code>fit</code>.</p>
+<p>The first and simplest way to check a fit is <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>:
+one call gathers the model, the verification assumption, the priors, the
+never-verified profiles, the sampler diagnostics, and the accuracy
+table:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">fit</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Model:          saturated model, transparent parametrization</span></span>
+<span><span class="co">#&gt; Verification:   MAR</span></span>
+<span><span class="co">#&gt; Never verified: none</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Priors:</span></span>
+<span><span class="co">#&gt;   frequency_prior           Dirichlet(concentration = 1)</span></span>
+<span><span class="co">#&gt;   verified_prior            Beta(mean = 0.5, precision = 2)</span></span>
+<span><span class="co">#&gt;   profile_prevalence_prior  Beta(mean = 0.5, precision = 2)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Sampling: 4 chains x 1000 draws (rstan)</span></span>
+<span><span class="co">#&gt;   max R-hat 1.004, min bulk ESS 4124, min tail ESS 2138, divergent transitions 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Accuracy (95% credible intervals):</span></span>
+<span><span class="co">#&gt;    quantity  mean median lower upper identified</span></span>
+<span><span class="co">#&gt;  prevalence 0.150  0.150 0.135 0.167       TRUE</span></span>
+<span><span class="co">#&gt;       Se[A] 0.845  0.849 0.775 0.893       TRUE</span></span>
+<span><span class="co">#&gt;       Sp[A] 0.902  0.903 0.891 0.914       TRUE</span></span>
+<span><span class="co">#&gt;      PPV[A] 0.605  0.605 0.565 0.645       TRUE</span></span>
+<span><span class="co">#&gt;      NPV[A] 0.970  0.971 0.954 0.981       TRUE</span></span>
+<span><span class="co">#&gt;       Se[B] 0.703  0.704 0.641 0.756       TRUE</span></span>
+<span><span class="co">#&gt;       Sp[B] 0.951  0.951 0.941 0.959       TRUE</span></span>
+<span><span class="co">#&gt;      PPV[B] 0.715  0.716 0.672 0.757       TRUE</span></span>
+<span><span class="co">#&gt;      NPV[B] 0.947  0.948 0.931 0.959       TRUE</span></span></code></pre></div>
+<ul>
+<li>
+<code>object</code>: the fitted model returned by
+<code><a href="../reference/baysesp.html">baysesp()</a></code>;</li>
+<li>
+<code>level</code>: probability of the credible intervals (default
+0.95).</li>
+</ul>
+<p>The summary confirms that <code>fit</code> is a saturated model
+(transparent parametrization) under <code>MAR</code> verification with
+no never-verified profiles, using the three default priors of
+<code><a href="../reference/saturated.html">saturated()</a></code> (<code>Dirichlet(concentration = 1)</code> for
+<code>frequency_prior</code>, and
+<code>Beta(mean = 0.5, precision = 2)</code> for
+<code>verified_prior</code> and <code>profile_prevalence_prior</code>).
+Under <code>Sampling:</code>, the 4 chains of 1000 draws each converged
+cleanly: the largest R-hat is 1.004 (below the 1.01 threshold), the
+smallest effective sample sizes are 5602 in the bulk and 2433 in the
+tails (well above the usual target of at least 100 per chain), and there
+are 0 divergent transitions <span class="citation">(Vehtari et al.
+2021)</span>. Below the diagnostics, <code>Accuracy</code> repeats the
+95% credible interval table of <code><a href="../reference/test_accuracy.html">test_accuracy()</a></code>, such as
+<code>prevalence</code> 0.150 (0.136 to 0.167), <code>Se[A]</code> 0.845
+(0.775 to 0.893), and <code>Sp[A]</code> 0.902 (0.891 to 0.914). The
+returned object is also a list: <code>summary(fit)$diagnostics</code>
+extracts the sampler diagnostics as a one-row data frame, and
+<code>summary(fit)$priors</code> returns the priors as a data frame.</p>
+<p>For a detailed check across individual parameters,
+<code><a href="https://mc-stan.org/posterior/reference/draws_summary.html" class="external-link">posterior::summarise_draws()</a></code> computes the same diagnostics
+for every parameter in the <a href="https://mc-stan.org/posterior/" class="external-link">posterior</a> object
+<code>fit@draws</code>:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">diagnostics</span> <span class="op">&lt;-</span> <span class="fu">posterior</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/posterior/reference/draws_summary.html" class="external-link">summarise_draws</a></span><span class="op">(</span><span class="va">fit</span><span class="op">@</span><span class="va">draws</span>, <span class="st">"rhat"</span>, <span class="st">"ess_bulk"</span>, <span class="st">"ess_tail"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">diagnostics</span>, n <span class="op">=</span> <span class="cn">Inf</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 21 × 4</span></span></span>
@@ -570,8 +631,8 @@ all of them.</p>
 ideally below 1.01) is at most 1.004, while <code>ess_bulk</code> and
 <code>ess_tail</code> (effective independent draws in the center and in
 the tails of the posterior, ideally above a few hundred) are at least
-5602 and 2433, the values already reported by the
-<code>Convergence:</code> line.</p>
+5602 and 2433, matching the values reported by
+<code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>.</p>
 <p>If divergent transitions occur, pass
 <code>control = list(adapt_delta = 0.95)</code> (or 0.99) to
 <code><a href="../reference/baysesp.html">baysesp()</a></code> for a smaller step size; if effective sample
@@ -604,9 +665,9 @@ probabilities summing to 1.</p>
 probability, <code><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot()</a></code> shows both the real-line prior and the
 distribution it induces on <code>(0, 1)</code>. Below, we plot
 <code>prior_normal(mean = 0, sd = 1.5)</code>:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fu"><a href="../reference/prior_normal.html">prior_normal</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="baysesp_files/figure-html/unnamed-chunk-12-1.png" class="r-plt" alt="" width="672"></p>
+<p><img src="baysesp_files/figure-html/unnamed-chunk-13-1.png" class="r-plt" alt="" width="672"></p>
 <p>Compare the induced probability curve with the Normal density to
 check that <code>mean = 0</code> and <code>sd = 1.5</code> spread mass
 across <code>(0, 1)</code> rather than piling up near 0 and 1.</p>
@@ -617,7 +678,7 @@ that profile is verified (<code>v</code>), and how many of the verified
 subjects with that profile are diseased (<code>phi1</code>). Each step
 has its own prior, and these are the arguments of
 <code><a href="../reference/saturated.html">saturated()</a></code>, shown here with their default values:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span></span>
 <span>  frequency_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_dirichlet.html">prior_dirichlet</a></span><span class="op">(</span>concentration <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  verified_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
@@ -662,7 +723,7 @@ proportion of diseased in profiles that are never verified. It is
 <code><a href="../reference/prior_posterior.html">prior_posterior()</a></code>. It fits the same model again without the
 data, so that the draws come from the prior alone, and puts the prior
 and posterior intervals of each accuracy measure side by side:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prior_posterior.html">prior_posterior</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, rules <span class="op">=</span> <span class="cn">NULL</span>, level <span class="op">=</span> <span class="fl">0.95</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <ul>
 <li>
@@ -679,9 +740,9 @@ default);</li>
 <code>level</code>, to the fit without the data.</li>
 </ul>
 <p><code>plot(pp)</code> draws the two sets of intervals:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span></code></pre></div>
-<p><img src="baysesp_files/figure-html/unnamed-chunk-15-1.png" class="r-plt" alt="" width="672"></p>
+<p><img src="baysesp_files/figure-html/unnamed-chunk-16-1.png" class="r-plt" alt="" width="672"></p>
 <p>For every measure the prior interval is wide and the posterior
 interval narrow: with the default priors, the estimates come from the
 data. This plot, however, shows the accuracy measures and not
@@ -695,7 +756,7 @@ profile that both tests miss, and changes the prevalence and the
 sensitivities. To see this, we fit the model again with two other values
 of <code>precision</code> in <code>profile_prevalence_prior</code>, one
 smaller and one much larger than the default:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_weak</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">d</span>,</span>
 <span>  model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span>profile_prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -709,7 +770,7 @@ smaller and one much larger than the default:</p>
 <p>The other arguments keep their default values, as in <a href="#fitting">Section 3</a>. For each fit we take the posterior mean
 of <code>phi1[1]</code>, of the prevalence and of the sensitivity of
 <code>A</code>:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">prior_effect</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">acc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/test_accuracy.html">test_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">f</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>phi1_00 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu">posterior</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/posterior/reference/extract_variable.html" class="external-link">extract_variable</a></span><span class="op">(</span><span class="va">f</span><span class="op">@</span><span class="va">draws</span>, <span class="st">"phi1[1]"</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -739,9 +800,11 @@ default is, unless there is real knowledge about the proportion of
 diseased in each profile; with more verified subjects in profile (0,0)
 the differences between the three fits would shrink.</p>
 <p>By contrast, priors on <em>not identified</em> quantities—whose
-posteriors stay governed by the prior regardless of sample size—decide
-the results: prevalence in never-verified profiles (<a href="#never-verified">Section 7</a>) and the dependence of verification
-on disease (<a href="#mnar">Section 8</a>). Before those cases, <a href="#rules">Section 6</a> shows how to combine and compare tests.</p>
+posteriors stay governed by the prior regardless of sample size <span class="citation">(Gustafson 2015)</span>—decide the results: prevalence
+in never-verified profiles (<a href="#never-verified">Section 7</a>) and
+the dependence of verification on disease (<a href="#mnar">Section
+8</a>). Before those cases, <a href="#rules">Section 6</a> shows how to
+combine and compare tests.</p>
 </div>
 <div class="section level2">
 <h2 id="rules">6. Combining and comparing tests<a class="anchor" aria-label="anchor" href="#rules"></a>
@@ -763,7 +826,7 @@ the saturated model estimates directly. Below, we call
 <code><a href="../reference/rule_accuracy.html">rule_accuracy()</a></code> on <code>fit = fit</code> with
 <code>rules = list(any_positive(), all_positive())</code> and
 <code>level = 0.95</code>:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/rule_accuracy.html">rule_accuracy</a></span><span class="op">(</span></span>
 <span>  fit <span class="op">=</span> <span class="va">fit</span>,</span>
 <span>  rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="../reference/any_positive.html">any_positive</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="../reference/all_positive.html">all_positive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -802,7 +865,7 @@ to 0.996 and <code>PPV</code> to 0.964 at the cost of sensitivity
 the joint posterior draws. Here we compare <code>first = "A"</code>
 against <code>second = "B"</code> on <code>fit = fit</code> at
 <code>level = 0.95</code>:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/compare_tests.html">compare_tests</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, first <span class="op">=</span> <span class="st">"A"</span>, second <span class="op">=</span> <span class="st">"B"</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                quantity        mean      median       lower       upper</span></span>
 <span><span class="co">#&gt; 1         Se[A] - Se[B]  0.14212266  0.14259040  0.08520127  0.19984813</span></span>
@@ -898,7 +961,7 @@ subjects from the same population (<code>prevalence = 0.15</code>,
 <code>verification_prob = c(0, 0.9, 0.9, 1)</code> so <code>(0,0)</code>
 has verification probability 0, and build <code>d_never</code> with
 <code><a href="../reference/baysesp_data.html">baysesp_data()</a></code>:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
 <span><span class="va">study_never</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_study.html">simulate_study</a></span><span class="op">(</span></span>
 <span>  n <span class="op">=</span> <span class="fl">5000</span>,</span>
@@ -934,7 +997,7 @@ negative? Nobody in <code>(0,0)</code> was verified, so the data say
 nothing about it, yet prevalence, sensitivities, and specificities all
 depend on it. Running <code>baysesp(data = d_never)</code> with default
 settings stops and says so:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">d_never</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> No subject is verified in the profiles (0,0). The proportion of diseased in these profiles cannot be estimated from the data: give it a prior with `saturated(unverified_prevalence_prior = )`, for example with elicit_beta().</span></span></code></pre></div>
@@ -957,25 +1020,26 @@ called <code>q</code>, with <code>q[1]</code>, <code>q[2]</code>, … when
 several profiles are never verified, and we use the same name below.</p>
 <p>No verified subject carries information on <code>q</code>, so its
 posterior equals its prior whatever the sample size: <code>q</code> is
-<em>not identified</em>, and the prior given to
-<code>unverified_prevalence_prior</code> is the assumption on which the
-results rest. For this reason the argument has no default, and
-<code><a href="../reference/baysesp.html">baysesp()</a></code> stops, as above, when a profile is never verified
-and no prior is given. It takes one prior, used for every never-verified
-profile, or a list with one prior per never-verified profile, in the
-order of the profiles. The prior should come from outside the study:
-from studies that verified every subject, from a follow-up of the
-unverified subjects, or from expert judgment.</p>
+<em>not identified</em> <span class="citation">(Gustafson 2015)</span>,
+and the prior given to <code>unverified_prevalence_prior</code> is the
+assumption on which the results rest. For this reason the argument has
+no default, and <code><a href="../reference/baysesp.html">baysesp()</a></code> stops, as above, when a profile
+is never verified and no prior is given. It takes one prior, used for
+every never-verified profile, or a list with one prior per
+never-verified profile, in the order of the profiles. The prior should
+come from outside the study: from studies that verified every subject,
+from a follow-up of the unverified subjects, or from expert
+judgment.</p>
 <p>When the knowledge is a judgment such as “the proportion is about 1%,
 and almost certainly below 3%”, <code><a href="../reference/elicit_beta.html">elicit_beta()</a></code> turns it into
 a Beta prior. We build this prior, print it and plot its density:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q_prior</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/elicit_beta.html">elicit_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.01</span>, upper <span class="op">=</span> <span class="fl">0.03</span>, prob <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span><span class="va">q_prior</span></span>
 <span><span class="co">#&gt; &lt;prior_beta&gt; Beta(mean = 0.01, precision = 98.19)</span></span>
 <span><span class="co">#&gt;   acts on a probability</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">q_prior</span><span class="op">)</span></span></code></pre></div>
-<p><img src="baysesp_files/figure-html/unnamed-chunk-22-1.png" class="r-plt" alt="" width="672"></p>
+<p><img src="baysesp_files/figure-html/unnamed-chunk-23-1.png" class="r-plt" alt="" width="672"></p>
 <ul>
 <li>
 <code>mean</code>: the most plausible value of the proportion;</li>
@@ -993,7 +1057,7 @@ density concentrated near 0.01 with little mass above 0.03.</p>
 <code>unverified_prevalence_prior = q_prior</code>. The other arguments
 of <code><a href="../reference/saturated.html">saturated()</a></code> are written out with their default values,
 so that the whole model is visible:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_never</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">d_never</span>,</span>
 <span>  model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span></span>
@@ -1006,7 +1070,7 @@ so that the whole model is visible:</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>and look at the accuracy with <code><a href="../reference/test_accuracy.html">test_accuracy()</a></code>:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/test_accuracy.html">test_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit_never</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity      mean    median     lower     upper identified</span></span>
 <span><span class="co">#&gt; 1 prevalence 0.1492075 0.1481261 0.1357520 0.1694881      FALSE</span></span>
@@ -1034,10 +1098,11 @@ shrink their intervals to a point. Only <code>PPV[A]</code> (0.578) and
 subjects in <code>(0,0)</code> are missed by both tests, lowering both
 sensitivities by the same factor, which cancels in their <em>ratio</em>;
 the same holds for the ratio of false positive rates (1 minus
-specificity). Below, <code><a href="../reference/accuracy_ratios.html">accuracy_ratios()</a></code> computes these
-ratios for <code>"A"</code>, <code>"B"</code>, and
+specificity) <span class="citation">(Schatzkin et al. 1987; Pepe and
+Alonzo 2001; Alonzo 2005)</span>. Below, <code><a href="../reference/accuracy_ratios.html">accuracy_ratios()</a></code>
+computes these ratios for <code>"A"</code>, <code>"B"</code>, and
 <code><a href="../reference/any_positive.html">any_positive()</a></code> on <code>fit = fit_never</code>:</p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/accuracy_ratios.html">accuracy_ratios</a></span><span class="op">(</span></span>
 <span>  fit <span class="op">=</span> <span class="va">fit_never</span>,</span>
 <span>  rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span>, <span class="fu"><a href="../reference/any_positive.html">any_positive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -1082,7 +1147,7 @@ more specific.</p>
 <p>Absolute accuracy is only bounded without a prior on <code>q</code>.
 Letting <code>q</code> vary from 0 to 1 yields bounds that hold under
 any prior via <code><a href="../reference/accuracy_bounds.html">accuracy_bounds()</a></code>:</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/accuracy_bounds.html">accuracy_bounds</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit_never</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, odds_ratio <span class="op">=</span> <span class="cn">NULL</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity lower_bound upper_bound     lower     upper</span></span>
 <span><span class="co">#&gt; 1 prevalence   0.1421057   0.8647442 0.1321628 0.8742058</span></span>
@@ -1111,7 +1176,7 @@ priors without refitting. Setting <code>set.seed(1)</code> (R’s random
 number generator samples the new priors), we compare priors at
 <code>mean = 0.005</code>, 0.01, and 0.03 on <code>prevalence</code>,
 <code>Se[A]</code>, and <code>Se[B]</code>:</p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">sens</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_analysis.html">sensitivity_analysis</a></span><span class="op">(</span></span>
 <span>  fit <span class="op">=</span> <span class="va">fit_never</span>,</span>
@@ -1171,13 +1236,13 @@ subjects in <code>(0,0)</code> raises <code>prevalence</code> (0.146 to
 <p>To see this graphically, we call <code><a href="../reference/prior_posterior.html">prior_posterior()</a></code> on
 <code>fit = fit_never</code> (<code>rules = NULL</code>,
 <code>level = 0.95</code>, <code>seed = 1</code>):</p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pp_never</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prior_posterior.html">prior_posterior</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit_never</span>, rules <span class="op">=</span> <span class="cn">NULL</span>, level <span class="op">=</span> <span class="fl">0.95</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p><code>plot(pp_never)</code> places prior and posterior densities side
 by side:</p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pp_never</span><span class="op">)</span></span></code></pre></div>
-<p><img src="baysesp_files/figure-html/unnamed-chunk-29-1.png" class="r-plt" alt="" width="672"></p>
+<p><img src="baysesp_files/figure-html/unnamed-chunk-30-1.png" class="r-plt" alt="" width="672"></p>
 <p>The prior and posterior of <code>q[1]</code> overlap
 completely—confirming <code>q</code> is <em>not identified</em>—while
 the other quantities are learned from the data up to the uncertainty in
@@ -1202,19 +1267,20 @@ more symptoms, may be sent to the reference standard more often. Unlike
 the problem of <a href="#never-verified">Section 7</a>, this can happen
 even when every profile has verified subjects.</p>
 <p><code>verification = mnar()</code> (<em>missing not at random</em>)
-describes this with an odds ratio: among subjects with the same test
-results, the odds of being verified are <code>odds_ratio</code> times
-higher for a diseased subject than for a healthy one. When
-<code>odds_ratio</code> is greater than 1, the unverified subjects are
-less often diseased than the verified subjects with the same results,
-and an analysis that assumes MAR overestimates the number of diseased
-among them.</p>
+describes this with an odds ratio <span class="citation">(Kosinski and
+Barnhart 2003b; Buzoianu and Kadane 2008)</span>: among subjects with
+the same test results, the odds of being verified are
+<code>odds_ratio</code> times higher for a diseased subject than for a
+healthy one. When <code>odds_ratio</code> is greater than 1, the
+unverified subjects are less often diseased than the verified subjects
+with the same results, and an analysis that assumes MAR overestimates
+the number of diseased among them.</p>
 <p>To see this bias, we simulate <code>n = 5000</code> subjects from the
 same population (<code>prevalence = 0.15</code>,
 <code>verification_prob = c(0.2, 0.7, 0.7, 0.9)</code>) with
 <code>odds_ratio = 2</code> and build <code>d_mnar</code> via
 <code><a href="../reference/baysesp_data.html">baysesp_data()</a></code>:</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
 <span><span class="va">study_mnar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_study.html">simulate_study</a></span><span class="op">(</span></span>
 <span>  n <span class="op">=</span> <span class="fl">5000</span>,</span>
@@ -1234,11 +1300,11 @@ same population (<code>prevalence = 0.15</code>,
 <span><span class="op">)</span></span></code></pre></div>
 <p>Next, we fit the saturated model to <code>d_mnar</code> while
 mistakenly keeping <code>verification = mar()</code>:</p>
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_mar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">d_mnar</span>, model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span>verification <span class="op">=</span> <span class="fu"><a href="../reference/mar.html">mar</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <p>We call <code>test_accuracy(fit = fit_mar)</code> to inspect the
 posterior estimates under MAR:</p>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/test_accuracy.html">test_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit_mar</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity      mean    median     lower     upper identified</span></span>
 <span><span class="co">#&gt; 1 prevalence 0.1607179 0.1605903 0.1490482 0.1729679       TRUE</span></span>
@@ -1269,9 +1335,10 @@ cannot. Because the disease status of unverified subjects is never
 observed, the observed data follow the same distribution for every
 <code>odds_ratio</code>. In <code><a href="../reference/saturated.html">saturated()</a></code>,
 <code>odds_ratio</code> is <em>not identified</em>: its posterior equals
-its prior regardless of sample size. Whether MAR is plausible depends on
+its prior regardless of sample size <span class="citation">(Buzoianu and
+Kadane 2008; Gustafson 2015)</span>. Whether MAR is plausible depends on
 how the study was run; when it is not, an honest analysis shows how
-results vary with <code>odds_ratio</code>.</p>
+results vary with <code>odds_ratio</code> <span class="citation">(Kosinski and Barnhart 2003a)</span>.</p>
 </div>
 <div class="section level3">
 <h3 id="varying-the-odds-ratio">Varying the odds ratio<a class="anchor" aria-label="anchor" href="#varying-the-odds-ratio"></a>
@@ -1283,7 +1350,7 @@ results from <code>fit = fit_mar</code> at
 <code>rules = NULL</code> (individual tests), and
 <code>level = 0.95</code>, printing <code>prevalence</code>,
 <code>Se[A]</code>, and <code>Se[B]</code>:</p>
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">grid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/sensitivity_analysis.html">sensitivity_analysis</a></span><span class="op">(</span></span>
 <span>  fit <span class="op">=</span> <span class="va">fit_mar</span>,</span>
 <span>  odds_ratios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1.5</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>,</span>
@@ -1312,7 +1379,7 @@ drops from 0.161 to 0.145, while <code>Se[A]</code> rises from 0.831 to
 values around 1.5 and 2.0. We plot <code>Se[A]</code> and
 <code>Se[B]</code> from <code>grid</code> with
 <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a>:</p>
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">se</span> <span class="op">&lt;-</span> <span class="va">grid</span><span class="op">[</span><span class="va">grid</span><span class="op">$</span><span class="va">quantity</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Se[A]"</span>, <span class="st">"Se[B]"</span><span class="op">)</span>, <span class="op">]</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">se</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">odds_ratio</span>, y <span class="op">=</span> <span class="va">mean</span>, ymin <span class="op">=</span> <span class="va">lower</span>, ymax <span class="op">=</span> <span class="va">upper</span>,</span>
@@ -1321,7 +1388,7 @@ values around 1.5 and 2.0. We plot <code>Se[A]</code> and
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"odds ratio of verification"</span>, y <span class="op">=</span> <span class="st">"sensitivity"</span>, colour <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="baysesp_files/figure-html/unnamed-chunk-34-1.png" class="r-plt" alt="" width="672"></p>
+<p><img src="baysesp_files/figure-html/unnamed-chunk-35-1.png" class="r-plt" alt="" width="672"></p>
 <p>Both sensitivities climb with <code>odds_ratio</code>, and their
 separated intervals show <code>A</code> stays more sensitive than
 <code>B</code> across the range. If a conclusion reversed within
@@ -1335,7 +1402,7 @@ point</em>—is what to report.</p>
 with <code>verification = mnar()</code>. We fit <code>fit_mnar</code> to
 <code>d_mnar</code>, centering <code>log(odds_ratio)</code> at
 <code>log(1.5)</code>:</p>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit_mnar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">d_mnar</span>,</span>
 <span>  model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span></span>
@@ -1365,7 +1432,7 @@ shares one across profiles.</li>
 </ul>
 <p>We call <code>test_accuracy(fit = fit_mnar)</code> to inspect the
 posterior estimates and intervals:</p>
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/test_accuracy.html">test_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit_mnar</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity      mean    median     lower     upper identified</span></span>
 <span><span class="co">#&gt; 1 prevalence 0.1543854 0.1538402 0.1399525 0.1725252      FALSE</span></span>
@@ -1407,25 +1474,27 @@ the log scale: <code>interaction_order = 1</code> assumes
 no information about another); <code>interaction_order = 2</code> allows
 pairwise associations via log odds ratios;
 <code>interaction_order</code> equal to the number of tests imposes no
-restriction. The second, <code><a href="../reference/random_effects.html">random_effects()</a></code>, links all tests
-within each disease group to a shared unobserved (<em>latent</em>)
-normal variable, with one <em>loading</em> per test and disease
-group.</p>
+restriction <span class="citation">(Baker 1995)</span>. The second,
+<code><a href="../reference/random_effects.html">random_effects()</a></code>, links all tests within each disease group
+to a shared unobserved (<em>latent</em>) normal variable, with one
+<em>loading</em> per test and disease group <span class="citation">(Qu
+et al. 1996; Dendukuri and Joseph 2001)</span>.</p>
 </div>
 <div class="section level3">
 <h3 id="a-study-with-three-dependent-tests">A study with three dependent tests<a class="anchor" aria-label="anchor" href="#a-study-with-three-dependent-tests"></a>
 </h3>
 <p>Tests often err together: a mild case of disease may be missed by
-every test at once. To illustrate, we simulate <code>n = 10000</code>
-subjects with three tests (<code>A</code>, <code>B</code>,
-<code>C</code>), <code>prevalence = 0.2</code>, true sensitivities 0.9,
-0.8, 0.7, true specificities 0.85, 0.9, 0.95,
+every test at once <span class="citation">(Vacek 1985; Torrance-Rynard
+and Walter 1997)</span>. To illustrate, we simulate
+<code>n = 10000</code> subjects with three tests (<code>A</code>,
+<code>B</code>, <code>C</code>), <code>prevalence = 0.2</code>, true
+sensitivities 0.9, 0.8, 0.7, true specificities 0.85, 0.9, 0.95,
 <code>odds_ratio = 1</code> (MAR), and
 <code>verification_prob = c(0.1, rep(0.8, 6), 1)</code>. We pass
 <code>dependence = latent_dependence()</code>—the same structure used by
 <code><a href="../reference/random_effects.html">random_effects()</a></code>—then summarize the data with
 <code><a href="../reference/baysesp_data.html">baysesp_data()</a></code> into <code>d3</code> and print it:</p>
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
 <span><span class="va">study3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_study.html">simulate_study</a></span><span class="op">(</span></span>
 <span>  n <span class="op">=</span> <span class="fl">10000</span>,</span>
@@ -1496,7 +1565,7 @@ sign). In <code>d3</code>, look at the totals (3 tests, 8 profiles,
 <code>model = loglinear(interaction_order = 1)</code>,
 <code>model = loglinear(interaction_order = 2)</code>, and
 <code>model = random_effects()</code>:</p>
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit3_sat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">d3</span>, model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">fit3_ci</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">d3</span>,</span>
@@ -1563,7 +1632,7 @@ make the MCMC sampler unreliable;</li>
 <p>To compare the four fits, a small helper <code>sensitivities()</code>
 calls <code><a href="../reference/test_accuracy.html">test_accuracy()</a></code> and extracts <code>prevalence</code>,
 <code>Se[A]</code>, <code>Se[B]</code>, and <code>Se[C]</code>:</p>
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sensitivities</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">fits</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">rows</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fits</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">acc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/test_accuracy.html">test_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fits</span><span class="op">[[</span><span class="va">m</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
@@ -1609,7 +1678,7 @@ is positive. We define <code>confirmed</code> (“positive if
 <code>A</code> is positive and <code>B</code> or <code>C</code> confirms
 it”) and compare <code>"A"</code> with <code>confirmed</code> via
 <code><a href="../reference/rule_accuracy.html">rule_accuracy()</a></code>:</p>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">confirmed</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/test_rule.html">test_rule</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="st">"A confirmed"</span>,</span>
 <span>  positive <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">profiles</span><span class="op">)</span> <span class="op">{</span></span>
@@ -1652,7 +1721,7 @@ population, changing only
 <code>verification_prob = c(0, rep(0.8, 6), 1)</code> so triple-negative
 subjects (<code>0 0 0</code>) are never verified, and build
 <code>d3_never</code>:</p>
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
 <span><span class="va">study3_never</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_study.html">simulate_study</a></span><span class="op">(</span></span>
 <span>  n <span class="op">=</span> <span class="fl">10000</span>,</span>
@@ -1680,7 +1749,7 @@ alongside
 <code>model = saturated(unverified_prevalence_prior = elicit_beta(mean = 0.02, upper = 0.05))</code>.
 Structured models take no prior on <code>0 0 0</code> because their
 assumed structure fills it in:</p>
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit3n_ci</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">d3_never</span>, model <span class="op">=</span> <span class="fu"><a href="../reference/loglinear.html">loglinear</a></span><span class="op">(</span>interaction_order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">fit3n_ll2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">d3_never</span>, model <span class="op">=</span> <span class="fu"><a href="../reference/loglinear.html">loglinear</a></span><span class="op">(</span>interaction_order <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">fit3n_re</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">d3_never</span>, model <span class="op">=</span> <span class="fu"><a href="../reference/random_effects.html">random_effects</a></span><span class="op">(</span><span class="op">)</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
@@ -1703,7 +1772,7 @@ assumed structure fills it in:</p>
 not mix) and both bulk and tail effective sample sizes are too low.
 Next, we run <code>sensitivities()</code> on the three structured
 fits:</p>
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">sensitivities</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>independence <span class="op">=</span> <span class="va">fit3n_ci</span>, order_2 <span class="op">=</span> <span class="va">fit3n_ll2</span>,</span>
 <span>                   random_effects <span class="op">=</span> <span class="va">fit3n_re</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              model   quantity      mean     lower     upper</span></span>
@@ -1729,7 +1798,7 @@ without any warning; <code>order_2</code> stays near truth (0.200,
 <code>fit3n_re</code> failed, we check each chain’s mean
 <code>prevalence</code> via
 <code><a href="https://mc-stan.org/posterior/reference/extract_variable_matrix.html" class="external-link">posterior::extract_variable_matrix()</a></code>:</p>
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="fu">posterior</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/posterior/reference/extract_variable_matrix.html" class="external-link">extract_variable_matrix</a></span><span class="op">(</span><span class="va">fit3n_re</span><span class="op">@</span><span class="va">draws</span>, <span class="st">"prevalence"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         1         2         3         4 </span></span>
 <span><span class="co">#&gt; 0.5742174 0.1994957 0.1992896 0.1995440</span></span></code></pre></div>
@@ -1742,7 +1811,7 @@ the chains across separated modes; a non-convergent fit like
 <p>By contrast, <code><a href="../reference/saturated.html">saturated()</a></code> exposes the full range
 compatible with the data, which we inspect via
 <code>accuracy_bounds(fit = fit3n_sat)</code>:</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/accuracy_bounds.html">accuracy_bounds</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit3n_sat</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity lower_bound upper_bound     lower     upper</span></span>
 <span><span class="co">#&gt; 1 prevalence   0.1947724   0.7906794 0.1871114 0.7987596</span></span>
@@ -1760,13 +1829,13 @@ range only the assumed structure chooses; <code>independence</code> sits
 at the edge (<code>prevalence</code> 0.196, <code>Se[A]</code> 0.928),
 implying almost no diseased subjects in <code>0 0 0</code>.</p>
 <p>This precision comes from the assumed structure, not the data, so a
-wrong structure gives a wrong answer with a confident interval. The same
-holds for <code>odds_ratio</code> under
-<code>verification = mnar()</code>, which structured models appear to
-estimate. Their <code>identified</code> column is <code>TRUE</code> only
-for quantities not involving never-verified profiles (and under MAR);
-quantities relying on never-verified profiles or <code>odds_ratio</code>
-under MNAR are <em>not identified</em> from the data alone. Use
+wrong structure gives a wrong answer with a confident interval <span class="citation">(Albert and Dodd 2004, 2008)</span>. The same holds for
+<code>odds_ratio</code> under <code>verification = mnar()</code>, which
+structured models appear to estimate. Their <code>identified</code>
+column is <code>TRUE</code> only for quantities not involving
+never-verified profiles (and under MAR); quantities relying on
+never-verified profiles or <code>odds_ratio</code> under MNAR are
+<em>not identified</em> from the data alone. Use
 <code><a href="../reference/prior_posterior.html">prior_posterior()</a></code> to see the induced prior on accuracy, and
 <code><a href="../reference/sensitivity_analysis.html">sensitivity_analysis()</a></code> to refit for each
 <code>odds_ratio</code> (forwarding arguments like <code>seed</code> to
@@ -1817,6 +1886,437 @@ an elicited <code>odds_ratio_prior</code>.</td>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
+<div class="section level2">
+<h2 id="comparison">10. Comparing models<a class="anchor" aria-label="anchor" href="#comparison"></a>
+</h2>
+<div class="section level3">
+<h3 id="predictive-accuracy-and-posterior-predictive-checks">Predictive accuracy and posterior predictive checks<a class="anchor" aria-label="anchor" href="#predictive-accuracy-and-posterior-predictive-checks"></a>
+</h3>
+<p>When several models are fitted to the same study,
+<code><a href="../reference/compare_models.html">compare_models()</a></code> evaluates how well each one predicts the
+observed data. Every model assigns probabilities to the cells of the
+observed table—for each profile, the counts of verified diseased,
+verified healthy, and unverified subjects. Predictive performance is
+measured by the <em>expected log predictive density</em> (elpd) of a new
+subject, estimated by leave-one-out cross-validation: each subject is
+predicted from all the others, and the log predictive probabilities are
+summed <span class="citation">(Vehtari et al. 2017)</span>, with higher
+values indicating better predictions. For
+<code>model = saturated()</code>, leave-one-out is computed in closed
+form; for structured models, it is estimated by Pareto smoothed
+importance sampling <span class="citation">(Vehtari et al. 2024)</span>,
+refitting exactly for any cell where the importance-sampling estimate is
+unreliable. The widely applicable information criterion (WAIC) <span class="citation">(Watanabe 2010)</span> is reported alongside as a
+second estimate. Each model is also evaluated with <em>posterior
+predictive checks</em> <span class="citation">(Gelman et al.
+1996)</span>: replicated tables of the same size are simulated from the
+posterior draws and compared with the observed counts.</p>
+<p>Alongside the four MAR fits to <code>d3</code> from <a href="#fitting-structured">Section 9</a>, we also fit a log-linear model
+of order 2 where verification may depend on the disease
+(<code>verification = mnar()</code>):</p>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit3_ll2_mnar</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">d3</span>,</span>
+<span>  model <span class="op">=</span> <span class="fu"><a href="../reference/loglinear.html">loglinear</a></span><span class="op">(</span>interaction_order <span class="op">=</span> <span class="fl">2</span>, verification <span class="op">=</span> <span class="fu"><a href="../reference/mnar.html">mnar</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Now we compare all five fits to <code>d3</code> with
+<code><a href="../reference/compare_models.html">compare_models()</a></code> after setting
+<code>set.seed(1)</code>:</p>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compare_models.html">compare_models</a></span><span class="op">(</span></span>
+<span>  saturated <span class="op">=</span> <span class="va">fit3_sat</span>,</span>
+<span>  independence <span class="op">=</span> <span class="va">fit3_ci</span>,</span>
+<span>  order_2 <span class="op">=</span> <span class="va">fit3_ll2</span>,</span>
+<span>  order_2_mnar <span class="op">=</span> <span class="va">fit3_ll2_mnar</span>,</span>
+<span>  random_effects <span class="op">=</span> <span class="va">fit3_re</span>,</span>
+<span>  refit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verified_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">comparison</span></span>
+<span><span class="co">#&gt; Expected log predictive density of a new subject (leave-one-out)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  model           elpd_loo se_loo elpd_diff se_diff p_loo</span></span>
+<span><span class="co">#&gt;  random_effects -18139.02 144.21      0.00    0.00 18.10</span></span>
+<span><span class="co">#&gt;  order_2        -18140.35 144.20     -1.33    1.20 19.79</span></span>
+<span><span class="co">#&gt;  order_2_mnar   -18141.33 144.25     -2.31    1.40 20.34</span></span>
+<span><span class="co">#&gt;  saturated      -18142.30 144.15     -3.28    1.05 21.75</span></span>
+<span><span class="co">#&gt;  independence   -18188.07 144.75    -49.05   10.91 14.05</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Reliability of the estimates and fit to the data</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  model          loo_method high_k elpd_waic p_waic ppc_pvalue</span></span>
+<span><span class="co">#&gt;  random_effects psis            0 -18139.00  18.08       0.62</span></span>
+<span><span class="co">#&gt;  order_2        psis            0 -18140.33  19.77       0.58</span></span>
+<span><span class="co">#&gt;  order_2_mnar   psis            0 -18141.31  20.31       0.51</span></span>
+<span><span class="co">#&gt;  saturated      exact           - -18142.35  21.80       0.49</span></span>
+<span><span class="co">#&gt;  independence   psis            0 -18188.06  14.03       0.00</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; elpd_diff: difference from the first model, with standard error se_diff.</span></span>
+<span><span class="co">#&gt; high_k: cells with Pareto k &gt; 0.7 (- for exact leave-one-out, which has no k).</span></span>
+<span><span class="co">#&gt; ppc_pvalue: posterior predictive p-value of the chi-square discrepancy</span></span>
+<span><span class="co">#&gt; between observed and expected counts.</span></span></code></pre></div>
+<ul>
+<li>
+<code>saturated</code>, <code>independence</code>,
+<code>order_2</code>, <code>order_2_mnar</code>,
+<code>random_effects</code>: the fitted models to compare, all fitted to
+the same data; the argument names label the rows of the output;</li>
+<li>
+<code>refit</code>: if <code>TRUE</code>, refits a structured model
+for any cell whose importance-sampling estimate is unreliable (Pareto
+<span class="math inline">k &gt; 0.7</span>); if <code>FALSE</code>,
+only warns;</li>
+<li>
+<code>verified_prior</code>: prior on the probability that a subject
+with a given profile is verified, shared across all MAR models (default
+uniform). The observed table includes verification status so that models
+with <code>verification = mar()</code> and
+<code>verification = mnar()</code> can be compared on the same data.
+Under MAR, this verification component does not depend on test accuracy:
+using one prior for all MAR models keeps it identical across them so
+that it cancels in their differences (within the comparison only, it
+replaces the <code>verified_prior</code> of <code><a href="../reference/saturated.html">saturated()</a></code>).
+Models with <code>verification = mnar()</code> keep their own
+verification priors (<code>intercepts_prior</code> and
+<code>odds_ratio_prior</code> in
+<code>verification = mnar()</code>);</li>
+<li>
+<code>level</code>: probability of the posterior predictive
+intervals of the replicated counts (default 0.95).</li>
+</ul>
+<p>Setting <code>set.seed(1)</code> makes the output reproducible,
+because the replicated tables and the verification probabilities of the
+MAR models are drawn in R.</p>
+<p>Printing <code>comparison</code> produces two tables with one row per
+model, ranked from best to worst predictive accuracy. The first table
+compares out-of-sample predictive performance:</p>
+<ul>
+<li>
+<code>elpd_loo</code>: expected log predictive density from
+leave-one-out cross-validation—the sum over all subjects of the log
+predictive probability assigned to each subject’s observed cell (for
+instance, verified diseased with profile <code>(1,1,0)</code>) when that
+subject is left out. Because <code>elpd_loo</code> is always negative
+and scales with sample size, its absolute value carries little meaning
+on its own; only differences between models matter, with higher (less
+negative) values being better;</li>
+<li>
+<code>se_loo</code>: standard error of <code>elpd_loo</code>,
+reflecting subject-to-subject variability shared by all models; do not
+use it to compare models;</li>
+<li>
+<code>elpd_diff</code>: difference in <code>elpd_loo</code> relative
+to the top-ranked model (0 for the first row, negative for the
+rest);</li>
+<li>
+<code>se_diff</code>: standard error of <code>elpd_diff</code>,
+computed subject by subject so the shared variability cancels; a
+difference smaller than about twice <code>se_diff</code> is not clear
+evidence in favor of either model;</li>
+<li>
+<code>p_loo</code>: effective number of parameters, measuring the
+gap between in-sample fit and out-of-sample predictive accuracy; it
+grows with model flexibility, and values far above the actual number of
+parameters warn that some observations strongly influence the fit.</li>
+</ul>
+<p>The second table reports the reliability of these estimates and how
+well each model reproduces the observed counts:</p>
+<ul>
+<li>
+<code>loo_method</code>: method used for
+<code>elpd_loo</code>—<code>"exact"</code> for
+<code>model = saturated()</code>, where leave-one-out has a closed form;
+<code>"psis"</code> for structured models estimated by Pareto smoothed
+importance sampling; or <code>"psis, 2 refits"</code> when two cells
+were recomputed with exact refits;</li>
+<li>
+<code>high_k</code>: number of cells with an unreliable
+importance-sampling estimate (Pareto <span class="math inline">k &gt;
+0.7</span>). With <code>refit = TRUE</code>, those cells are refitted so
+the estimate remains reliable; with <code>refit = FALSE</code>, any
+value above 0 produces a warning. For <code>model = saturated()</code>,
+leave-one-out is exact and has no Pareto <span class="math inline">k</span>, so <code>high_k</code> is shown as
+<code>-</code>;</li>
+<li>
+<code>elpd_waic</code>, <code>p_waic</code>: the same two quantities
+estimated by WAIC, an approximation to leave-one-out; they should stay
+close to <code>elpd_loo</code> and <code>p_loo</code>, and a difference
+larger than 1 triggers a warning to trust <code>elpd_loo</code>;</li>
+<li>
+<code>ppc_pvalue</code>: posterior predictive p-value for the whole
+table. For each posterior draw, a table of the same size is simulated
+and its chi-square discrepancy from the expected counts is compared with
+the observed table’s; <code>ppc_pvalue</code> is the proportion of
+simulated tables at least as extreme as the observed one. Values near 0
+indicate that the model fails to reproduce the data, whereas values away
+from 0 (such as 0.3 or 0.6) indicate no detectable misfit rather than
+the probability that a model is true.</li>
+</ul>
+<p>In the output, <code>random_effects</code>—the model that simulated
+<code>d3</code>—ranks first (<code>elpd_loo</code> -18139.12). Both
+<code>order_2</code> (<code>elpd_diff</code> -1.23, <code>se_diff</code>
+1.22) and <code>order_2_mnar</code> (-2.21, <code>se_diff</code> 1.42)
+predict essentially as well. <code>saturated</code> is 3.18 lower
+(<code>se_diff</code> 1.05): it reproduces the table just as well but
+uses more parameters (<code>p_loo</code> 21.73 versus 18.19), a minor
+difference across 10000 subjects when every profile is verified.
+<code>independence</code> is clearly worse, trailing by 48.93
+(<code>se_diff</code> 10.92). Across the structured models,
+<code>high_k</code> is 0 so no refits were needed,
+<code>elpd_waic</code> agrees with <code>elpd_loo</code> within 0.2 for
+all five models, and <code>ppc_pvalue</code> lies between 0.50 and 0.61
+for four models but drops to 0.00 for <code>independence</code>:
+conditional independence fails to reproduce the observed table. Allowing
+verification to depend on the disease (<code>order_2_mnar</code>) does
+not improve predictions, though this does not confirm MAR because in
+structured models the verification odds ratio is driven by the assumed
+dependence structure rather than directly by the data.</p>
+<p>To see which cells <code>independence</code> misses, we inspect the
+<code>checks</code> data frame inside <code>comparison</code> (one row
+per model and cell) and filter for <code>p_value &lt; 0.05</code>:</p>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">checks</span> <span class="op">&lt;-</span> <span class="va">comparison</span><span class="op">$</span><span class="va">checks</span></span>
+<span><span class="va">checks</span><span class="op">[</span><span class="va">checks</span><span class="op">$</span><span class="va">model</span> <span class="op">==</span> <span class="st">"independence"</span> <span class="op">&amp;</span> <span class="va">checks</span><span class="op">$</span><span class="va">p_value</span> <span class="op">&lt;</span> <span class="fl">0.05</span>, <span class="op">]</span></span>
+<span><span class="co">#&gt;           model profile     cell observed  expected lower upper p_value</span></span>
+<span><span class="co">#&gt; 25 independence (0,0,0) diseased        4   0.67125     0     3  0.0120</span></span>
+<span><span class="co">#&gt; 35 independence (1,1,0)  healthy      149  87.55575    68   108  0.0000</span></span>
+<span><span class="co">#&gt; 37 independence (0,0,1) diseased       34  13.17800     6    21  0.0000</span></span>
+<span><span class="co">#&gt; 40 independence (1,0,1) diseased      150 185.04875   152   222  0.0405</span></span>
+<span><span class="co">#&gt; 43 independence (0,1,1) diseased       44  65.71950    46    87  0.0315</span></span></code></pre></div>
+<p>Each row reports the <code>observed</code> count, the
+<code>expected</code> count under the model, the 95% interval of
+replicated counts (<code>lower</code> and <code>upper</code>), and the
+two-sided cell <code>p_value</code>. Five cells fall outside their
+intervals. The largest discrepancies are in <code>(1,1,0)</code>
+verified healthy—149 observed against 87.5 expected (68 to 108), because
+<code>A</code> and <code>B</code> err together among healthy
+subjects—and <code>(0,0,1)</code> verified diseased—34 observed against
+13.0 expected (6 to 21). In <code>(0,0,0)</code> verified diseased, 4
+observed subjects also exceed what conditional independence allows (0 to
+3): when tests are dependent, a diseased subject missed by one test is
+more likely to be missed by the others too.</p>
+<p>Calling <code>plot(comparison)</code> displays these posterior
+predictive checks graphically, showing each cell’s observed count
+(orange) alongside the 95% interval of replicated counts (blue):</p>
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">comparison</span><span class="op">)</span></span></code></pre></div>
+<p><img src="baysesp_files/figure-html/unnamed-chunk-50-1.png" class="r-plt" alt="" width="672"></p>
+<p>Counts are plotted on a square-root scale so both small and large
+cells remain readable, and each model label repeats its
+<code>ppc_pvalue</code>. For <code>random_effects</code>,
+<code>order_2</code>, <code>order_2_mnar</code>, and
+<code>saturated</code>, every orange point lies inside its blue
+interval; for <code>independence</code>, several points fall outside in
+the five cells listed above.</p>
+</div>
+<div class="section level3">
+<h3 id="what-the-comparison-cannot-tell">What the comparison cannot tell<a class="anchor" aria-label="anchor" href="#what-the-comparison-cannot-tell"></a>
+</h3>
+<p>Because <code><a href="../reference/compare_models.html">compare_models()</a></code> evaluates only the observed
+cells, it cannot separate models that assign identical probabilities to
+the observed data. Two <code><a href="../reference/saturated.html">saturated()</a></code> models on
+<code>d3_never</code> that differ only in
+<code>unverified_prevalence_prior</code> predict the observed table
+identically. We fit a second saturated model with a higher prior on
+<code>(0,0,0)</code> (<code>mean = 0.1</code>, <code>upper = 0.2</code>)
+and compare it with <code>fit3n_sat</code>:</p>
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fit3n_sat_high</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">d3_never</span>,</span>
+<span>  model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span>unverified_prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/elicit_beta.html">elicit_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.1</span>, upper <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  seed <span class="op">=</span> <span class="fl">1</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/compare_models.html">compare_models</a></span><span class="op">(</span></span>
+<span>  low_prior <span class="op">=</span> <span class="va">fit3n_sat</span>,</span>
+<span>  high_prior <span class="op">=</span> <span class="va">fit3n_sat_high</span>,</span>
+<span>  refit <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  verified_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  level <span class="op">=</span> <span class="fl">0.95</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Models low_prior, high_prior give the same probability to the observed</span></span>
+<span><span class="co">#&gt; data: they differ at most in the prior on the never-verified profiles, in the</span></span>
+<span><span class="co">#&gt; verification mechanism or in verified_prior, which do not change the</span></span>
+<span><span class="co">#&gt; comparison. The comparison cannot tell them apart: use sensitivity_analysis()</span></span>
+<span><span class="co">#&gt; to see the effect of these choices.</span></span>
+<span><span class="co">#&gt; Expected log predictive density of a new subject (leave-one-out)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  model       elpd_loo se_loo elpd_diff se_diff p_loo</span></span>
+<span><span class="co">#&gt;  low_prior  -16167.85 148.61      0.00    0.00 19.86</span></span>
+<span><span class="co">#&gt;  high_prior -16167.85 148.61      0.00    0.00 19.85</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Reliability of the estimates and fit to the data</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;  model      loo_method high_k elpd_waic p_waic ppc_pvalue</span></span>
+<span><span class="co">#&gt;  low_prior  exact           - -16168.05  20.06       0.48</span></span>
+<span><span class="co">#&gt;  high_prior exact           - -16167.80  19.79       0.49</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; elpd_diff: difference from the first model, with standard error se_diff.</span></span>
+<span><span class="co">#&gt; high_k: cells with Pareto k &gt; 0.7 (- for exact leave-one-out, which has no k).</span></span>
+<span><span class="co">#&gt; ppc_pvalue: posterior predictive p-value of the chi-square discrepancy</span></span>
+<span><span class="co">#&gt; between observed and expected counts.</span></span></code></pre></div>
+<p>Both models share the exact same <code>elpd_loo</code> (-16167.85)
+and <code>elpd_diff</code> (0.00), and the warning explains why: the
+proportion of diseased subjects in the never-verified profile
+<code>(0,0,0)</code> is <em>not identified</em>—its prior never enters
+the likelihood of the observed counts—so the data cannot choose between
+the two priors even though they yield different accuracy estimates.</p>
+<p>For quantities that are <em>not identified</em>, use
+<code><a href="../reference/accuracy_bounds.html">accuracy_bounds()</a></code> and <code><a href="../reference/sensitivity_analysis.html">sensitivity_analysis()</a></code>
+(<a href="#never-verified">Section 7</a> and <a href="#mnar">Section
+8</a>). For the same reason, strong predictive accuracy on the observed
+cells does not confirm what a structured model implies about
+never-verified profiles or about <code>odds_ratio</code> under
+<code>verification = mnar()</code>.</p>
+</div>
+</div>
+<div class="section level2 unnumbered">
+<h2 class="unnumbered" id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-albert2004" class="csl-entry">
+Albert, Paul S., and Lori E. Dodd. 2004. <span>“A Cautionary Note on the
+Robustness of Latent Class Models for Estimating Diagnostic Error
+Without a Gold Standard.”</span> <em>Biometrics</em> 60 (2): 427–35. <a href="https://doi.org/10.1111/j.0006-341X.2004.00187.x" class="external-link">https://doi.org/10.1111/j.0006-341X.2004.00187.x</a>.
+</div>
+<div id="ref-albert2008" class="csl-entry">
+Albert, Paul S., and Lori E. Dodd. 2008. <span>“On Estimating Diagnostic
+Accuracy from Studies with Multiple Raters and Partial Gold Standard
+Evaluation.”</span> <em>Journal of the American Statistical
+Association</em> 103 (481): 61–73. <a href="https://doi.org/10.1198/016214507000000329" class="external-link">https://doi.org/10.1198/016214507000000329</a>.
+</div>
+<div id="ref-alonzo2005rtpr" class="csl-entry">
+Alonzo, Todd A. 2005. <span>“Verification Bias-Corrected Estimators of
+the Relative True and False Positive Rates of Two Binary Screening
+Tests.”</span> <em>Statistics in Medicine</em> 24 (3): 403–17. <a href="https://doi.org/10.1002/sim.1959" class="external-link">https://doi.org/10.1002/sim.1959</a>.
+</div>
+<div id="ref-baker1995" class="csl-entry">
+Baker, Stuart G. 1995. <span>“Evaluating Multiple Diagnostic Tests with
+Partial Verification.”</span> <em>Biometrics</em> 51 (1): 330–37. <a href="https://doi.org/10.2307/2533339" class="external-link">https://doi.org/10.2307/2533339</a>.
+</div>
+<div id="ref-begg1983" class="csl-entry">
+Begg, Colin B., and Robert A. Greenes. 1983. <span>“Assessment of
+Diagnostic Tests When Disease Verification Is Subject to Selection
+Bias.”</span> <em>Biometrics</em> 39 (1): 207–15. <a href="https://doi.org/10.2307/2530820" class="external-link">https://doi.org/10.2307/2530820</a>.
+</div>
+<div id="ref-buzoianu2008" class="csl-entry">
+Buzoianu, Manuela, and Joseph B. Kadane. 2008. <span>“Adjusting for
+Verification Bias in Diagnostic Test Evaluation: A <span>Bayesian</span>
+Approach.”</span> <em>Statistics in Medicine</em> 27 (13): 2453–73. <a href="https://doi.org/10.1002/sim.3099" class="external-link">https://doi.org/10.1002/sim.3099</a>.
+</div>
+<div id="ref-carpenter2017" class="csl-entry">
+Carpenter, Bob, Andrew Gelman, Matthew D. Hoffman, et al. 2017.
+<span>“<span>Stan</span>: A Probabilistic Programming Language.”</span>
+<em>Journal of Statistical Software</em> 76 (1): 1–32. <a href="https://doi.org/10.18637/jss.v076.i01" class="external-link">https://doi.org/10.18637/jss.v076.i01</a>.
+</div>
+<div id="ref-dendukuri2001" class="csl-entry">
+Dendukuri, Nandini, and Lawrence Joseph. 2001. <span>“Bayesian
+Approaches to Modeling the Conditional Dependence Between Multiple
+Diagnostic Tests.”</span> <em>Biometrics</em> 57 (1): 158–67. <a href="https://doi.org/10.1111/j.0006-341X.2001.00158.x" class="external-link">https://doi.org/10.1111/j.0006-341X.2001.00158.x</a>.
+</div>
+<div id="ref-gelman1996" class="csl-entry">
+Gelman, Andrew, Xiao-Li Meng, and Hal Stern. 1996. <span>“Posterior
+Predictive Assessment of Model Fitness via Realized
+Discrepancies.”</span> <em>Statistica Sinica</em> 6 (4): 733–807. <a href="https://www3.stat.sinica.edu.tw/statistica/j6n4/j6n41/j6n41.htm" class="external-link">https://www3.stat.sinica.edu.tw/statistica/j6n4/j6n41/j6n41.htm</a>.
+</div>
+<div id="ref-gustafson2015" class="csl-entry">
+Gustafson, Paul. 2015. <em>Bayesian Inference for Partially Identified
+Models: Exploring the Limits of Limited Data</em>. Monographs on
+Statistics and Applied Probability. Chapman &amp; Hall/CRC.
+</div>
+<div id="ref-kosinski2003statmed" class="csl-entry">
+Kosinski, Andrzej S., and Huiman X. Barnhart. 2003a. <span>“A Global
+Sensitivity Analysis of Performance of a Medical Diagnostic Test When
+Verification Bias Is Present.”</span> <em>Statistics in Medicine</em> 22
+(17): 2711–21. <a href="https://doi.org/10.1002/sim.1517" class="external-link">https://doi.org/10.1002/sim.1517</a>.
+</div>
+<div id="ref-kosinski2003biometrics" class="csl-entry">
+Kosinski, Andrzej S., and Huiman X. Barnhart. 2003b. <span>“Accounting
+for Nonignorable Verification Bias in Assessment of Diagnostic
+Tests.”</span> <em>Biometrics</em> 59 (1): 163–71. <a href="https://doi.org/10.1111/1541-0420.00019" class="external-link">https://doi.org/10.1111/1541-0420.00019</a>.
+</div>
+<div id="ref-littlerubin2002" class="csl-entry">
+Little, Roderick J. A., and Donald B. Rubin. 2002. <em>Statistical
+Analysis with Missing Data</em>. 2nd ed. Wiley.
+</div>
+<div id="ref-martinez2006" class="csl-entry">
+Martinez, Edson Zangiacomi, Jorge Alberto Achcar, and Francisco
+Louzada-Neto. 2006. <span>“Estimators of Sensitivity and Specificity in
+the Presence of Verification Bias: A <span>Bayesian</span>
+Approach.”</span> <em>Computational Statistics &amp; Data Analysis</em>
+51 (2): 601–11. <a href="https://doi.org/10.1016/j.csda.2005.12.021" class="external-link">https://doi.org/10.1016/j.csda.2005.12.021</a>.
+</div>
+<div id="ref-pepe2001" class="csl-entry">
+Pepe, Margaret Sullivan, and Todd A. Alonzo. 2001. <span>“Comparing
+Disease Screening Tests When True Disease Status Is Ascertained Only for
+Screen Positives.”</span> <em>Biostatistics</em> 2 (3): 249–60. <a href="https://doi.org/10.1093/biostatistics/2.3.249" class="external-link">https://doi.org/10.1093/biostatistics/2.3.249</a>.
+</div>
+<div id="ref-qu1996" class="csl-entry">
+Qu, Yinsheng, Ming Tan, and Michael H. Kutner. 1996. <span>“Random
+Effects Models in Latent Class Analysis for Evaluating Accuracy of
+Diagnostic Tests.”</span> <em>Biometrics</em> 52 (3): 797–810. <a href="https://doi.org/10.2307/2533043" class="external-link">https://doi.org/10.2307/2533043</a>.
+</div>
+<div id="ref-rubin1976" class="csl-entry">
+Rubin, Donald B. 1976. <span>“Inference and Missing Data.”</span>
+<em>Biometrika</em> 63 (3): 581–92. <a href="https://doi.org/10.1093/biomet/63.3.581" class="external-link">https://doi.org/10.1093/biomet/63.3.581</a>.
+</div>
+<div id="ref-schatzkin1987" class="csl-entry">
+Schatzkin, Arthur, Robert J. Connor, Philip R. Taylor, and Bill Bunnag.
+1987. <span>“Comparing New and Old Screening Tests When a Reference
+Procedure Cannot Be Performed on All Screenees.”</span> <em>American
+Journal of Epidemiology</em> 125 (4): 672–78. <a href="https://doi.org/10.1093/oxfordjournals.aje.a114580" class="external-link">https://doi.org/10.1093/oxfordjournals.aje.a114580</a>.
+</div>
+<div id="ref-torrancerynard1997" class="csl-entry">
+Torrance-Rynard, Vicki L., and Stephen D. Walter. 1997. <span>“Effects
+of Dependent Errors in the Assessment of Diagnostic Test
+Performance.”</span> <em>Statistics in Medicine</em> 16 (19): 2157–75.
+<a href="https://doi.org/10.1002/(SICI)1097-0258(19971015)16:19%3C2157::AID-SIM653%3E3.0.CO;2-X" class="external-link">https://doi.org/10.1002/(SICI)1097-0258(19971015)16:19&lt;2157::AID-SIM653&gt;3.0.CO;2-X</a>.
+</div>
+<div id="ref-vacek1985" class="csl-entry">
+Vacek, Pamela M. 1985. <span>“The Effect of Conditional Dependence on
+the Evaluation of Diagnostic Tests.”</span> <em>Biometrics</em> 41 (4):
+959–68. <a href="https://doi.org/10.2307/2530967" class="external-link">https://doi.org/10.2307/2530967</a>.
+</div>
+<div id="ref-vehtari2017" class="csl-entry">
+Vehtari, Aki, Andrew Gelman, and Jonah Gabry. 2017. <span>“Practical
+<span>Bayesian</span> Model Evaluation Using Leave-One-Out
+Cross-Validation and <span>WAIC</span>.”</span> <em>Statistics and
+Computing</em> 27 (5): 1413–32. <a href="https://doi.org/10.1007/s11222-016-9696-4" class="external-link">https://doi.org/10.1007/s11222-016-9696-4</a>.
+</div>
+<div id="ref-vehtari2021" class="csl-entry">
+Vehtari, Aki, Andrew Gelman, Daniel Simpson, Bob Carpenter, and
+Paul-Christian Bürkner. 2021. <span>“Rank-Normalization, Folding, and
+Localization: An Improved <span><span class="math inline">\widehat{R}</span></span> for Assessing Convergence
+of <span>MCMC</span> (with Discussion).”</span> <em>Bayesian
+Analysis</em> 16 (2): 667–718. <a href="https://doi.org/10.1214/20-BA1221" class="external-link">https://doi.org/10.1214/20-BA1221</a>.
+</div>
+<div id="ref-vehtari2024" class="csl-entry">
+Vehtari, Aki, Daniel Simpson, Andrew Gelman, Yuling Yao, and Jonah
+Gabry. 2024. <span>“Pareto Smoothed Importance Sampling.”</span>
+<em>Journal of Machine Learning Research</em> 25 (72): 1–58. <a href="https://jmlr.org/papers/v25/19-556.html" class="external-link">https://jmlr.org/papers/v25/19-556.html</a>.
+</div>
+<div id="ref-watanabe2010" class="csl-entry">
+Watanabe, Sumio. 2010. <span>“Asymptotic Equivalence of
+<span>Bayes</span> Cross Validation and Widely Applicable Information
+Criterion in Singular Learning Theory.”</span> <em>Journal of Machine
+Learning Research</em> 11 (116): 3571–94. <a href="https://jmlr.org/papers/v11/watanabe10a.html" class="external-link">https://jmlr.org/papers/v11/watanabe10a.html</a>.
+</div>
+<div id="ref-zhou1993" class="csl-entry">
+Zhou, Xiao-Hua. 1993. <span>“Maximum Likelihood Estimators of
+Sensitivity and Specificity Corrected for Verification Bias.”</span>
+<em>Communications in Statistics – Theory and Methods</em> 22 (11):
+3177–98. <a href="https://doi.org/10.1080/03610929308831209" class="external-link">https://doi.org/10.1080/03610929308831209</a>.
+</div>
+<div id="ref-zhou1998" class="csl-entry">
+Zhou, Xiao-Hua. 1998. <span>“Correcting for Verification Bias in Studies
+of a Diagnostic Test’s Accuracy.”</span> <em>Statistical Methods in
+Medical Research</em> 7 (4): 337–53. <a href="https://doi.org/10.1177/096228029800700403" class="external-link">https://doi.org/10.1177/096228029800700403</a>.
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

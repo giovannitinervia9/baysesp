@@ -1,11 +1,12 @@
 # Missing not at random verification
 
 `mnar()` is the assumption that verification depends on the test results
-and also on the disease status: among subjects with the same profile,
-diseased and healthy subjects can be verified with different
-probabilities. Its arguments are the prior on the log odds ratio of
-verification, the prior on the verification intercepts and the choice of
-whether the odds ratio varies across profiles.
+and also on the disease status (Kosinski and Barnhart, 2003a): among
+subjects with the same profile, diseased and healthy subjects can be
+verified with different probabilities. Its arguments are the prior on
+the log odds ratio of verification, the prior on the verification
+intercepts and the choice of whether the odds ratio varies across
+profiles.
 
 ## Usage
 
@@ -92,15 +93,58 @@ verified subjects of each profile, but not \\\beta\\. The proportion of
 diseased among unverified subjects with a verified profile \\t\\ is
 \\\mathrm{expit}(\mathrm{logit}\\\phi_t - \beta)\\, where \\\phi_t\\ is
 the proportion among verified subjects, so \\\beta\\ links the two
-groups but the data say nothing about it: its posterior equals its
-prior. The prior on \\\beta\\ is then an explicit assumption, and
-varying it, or fixing \\\beta\\ at a range of values, shows how much the
-results depend on it.
+groups but the data say nothing about it: its posterior equals its prior
+(Gustafson, 2015). The prior on \\\beta\\ is then an explicit
+assumption, and varying it, or fixing \\\beta\\ at a range of values,
+shows how much the results depend on it (Buzoianu and Kadane, 2008;
+Kosinski and Barnhart, 2003b).
 
-With the log-linear and random-effects disease models, \\\beta\\ is
-identified through the restrictions that these models place on the
-disease distribution. This information comes from the assumed structure,
-not from the data alone, and it is fragile if the structure is wrong.
+With the log-linear (Baker, 1995) and random-effects (Dendukuri and
+Joseph, 2001; Qu et al., 1996) disease models, \\\beta\\ is identified
+through the restrictions that these models place on the disease
+distribution. This information comes from the assumed structure, not
+from the data alone, and it is fragile if the structure is wrong (Albert
+and Dodd, 2004).
+
+## References
+
+Albert, P. S. and Dodd, L. E. (2004). A cautionary note on the
+robustness of latent class models for estimating diagnostic error
+without a gold standard. *Biometrics*, 60(2), 427–435.
+[doi:10.1111/j.0006-341X.2004.00187.x](https://doi.org/10.1111/j.0006-341X.2004.00187.x)
+
+Baker, S. G. (1995). Evaluating multiple diagnostic tests with partial
+verification. *Biometrics*, 51(1), 330–337.
+[doi:10.2307/2533339](https://doi.org/10.2307/2533339)
+
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias
+in diagnostic test evaluation: A Bayesian approach. *Statistics in
+Medicine*, 27(13), 2453–2473.
+[doi:10.1002/sim.3099](https://doi.org/10.1002/sim.3099)
+
+Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the
+conditional dependence between multiple diagnostic tests. *Biometrics*,
+57(1), 158–167.
+[doi:10.1111/j.0006-341X.2001.00158.x](https://doi.org/10.1111/j.0006-341X.2001.00158.x)
+
+Gustafson, P. (2015). *Bayesian Inference for Partially Identified
+Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca
+Raton, FL.
+
+Kosinski, A. S. and Barnhart, H. X. (2003a). Accounting for nonignorable
+verification bias in assessment of diagnostic tests. *Biometrics*,
+59(1), 163–171.
+[doi:10.1111/1541-0420.00019](https://doi.org/10.1111/1541-0420.00019)
+
+Kosinski, A. S. and Barnhart, H. X. (2003b). A global sensitivity
+analysis of performance of a medical diagnostic test when verification
+bias is present. *Statistics in Medicine*, 22(17), 2711–2721.
+[doi:10.1002/sim.1517](https://doi.org/10.1002/sim.1517)
+
+Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in
+latent class analysis for evaluating accuracy of diagnostic tests.
+*Biometrics*, 52(3), 797–810.
+[doi:10.2307/2533043](https://doi.org/10.2307/2533043)
 
 ## See also
 

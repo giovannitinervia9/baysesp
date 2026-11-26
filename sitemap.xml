@@ -13,6 +13,7 @@
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/baysesp-package.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/baysesp.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/baysesp_data.html</loc></url>
+<url><loc>https://giovannitinervia9.github.io/baysesp/reference/compare_models.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/compare_tests.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/compile_models.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/elicit_beta.html</loc></url>
@@ -23,6 +24,7 @@
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/mar.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/min_positive.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/mnar.html</loc></url>
+<url><loc>https://giovannitinervia9.github.io/baysesp/reference/plot.model_comparison.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/plot.prior_posterior.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/prior_beta.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/prior_dirichlet.html</loc></url>
@@ -37,8 +39,10 @@
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/sensitivity_analysis.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/simulate_study.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/single_test.html</loc></url>
+<url><loc>https://giovannitinervia9.github.io/baysesp/reference/summary.baysesp_fit.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/test_accuracy.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/test_rule.html</loc></url>
+<url><loc>https://giovannitinervia9.github.io/baysesp/reference/update.baysesp_fit.html</loc></url>
 <url><loc>https://giovannitinervia9.github.io/baysesp/reference/verification_mechanism.html</loc></url>
 </urlset>
 

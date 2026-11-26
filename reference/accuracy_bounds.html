@@ -92,8 +92,8 @@ of the lower bound and the upper quantile of the upper bound).</p>
     <p>When some profiles (combinations of test results) are never verified, the
 data say nothing about how many diseased subjects they contain, and the
 absolute accuracy depends on it. A prior on that proportion gives a single
-answer, which rests entirely on the prior. These bounds instead show what
-the data alone allow: the lowest and highest value of each quantity when the
+answer, which rests entirely on the prior (Buzoianu and Kadane, 2008). These bounds
+instead show what the data alone allow (Gustafson, 2015): the lowest and highest value of each quantity when the
 proportion of diseased in the never-verified profiles ranges from 0 to 1.
 They do not depend on the prior. Wide bounds mean that the absolute accuracy
 is mostly determined by the assumption on the never-verified profiles.</p>
@@ -129,7 +129,7 @@ all of them diseased.</p>
 <p>The bounds are functions of identified parameters (and of the odds ratio),
 so they have a posterior distribution: the result gives their posterior
 medians and a credible region that contains the whole identification
-interval with probability at least <code>level</code>. For rules that declare a
+interval with probability at least <code>level</code> (Gustafson, 2015). For rules that declare a
 never-verified profile positive the bounds are <code>NA</code>.</p>
 <p>The accuracy is defined for a <em>rule</em> \(R\), which declares a subject
 positive or negative from the response profile \(t\), the vector of the
@@ -156,10 +156,17 @@ prevalence; the predictive values describe what a result means for a
 subject, and change with the prevalence of the population. For combined
 rules, such as <code><a href="any_positive.html">any_positive()</a></code>, the accuracy depends on the joint
 distribution of the tests, not only on their individual sensitivities and
-specificities.</p>
+specificities (Torrance-Rynard and Walter, 1997; Vacek, 1985).</p>
 <p>Each quantity is computed from every posterior draw of \(\pi\),
 \(\theta_0\) and \(\theta_1\). The results report its posterior mean
 and median and an equal-tailed credible interval with probability <code>level</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. <em>Statistics in Medicine</em>, 27(13), 2453–2473. <a href="https://doi.org/10.1002/sim.3099" class="external-link">doi:10.1002/sim.3099</a></p>
+<p>Gustafson, P. (2015). <em>Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data</em>. Chapman &amp; Hall/CRC, Boca Raton, FL.</p>
+<p>Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. <em>Statistics in Medicine</em>, 16(19), 2157–2175. <a href="https://doi.org/10.1002/%28SICI%291097-0258%2819971015%2916%3A19%3C2157%3A%3AAID-SIM653%3E3.0.CO%3B2-X" class="external-link">doi:10.1002/(SICI)1097-0258(19971015)16:19&lt;2157::AID-SIM653&gt;3.0.CO;2-X</a></p>
+<p>Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. <em>Biometrics</em>, 41(4), 959–968. <a href="https://doi.org/10.2307/2530967" class="external-link">doi:10.2307/2530967</a></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

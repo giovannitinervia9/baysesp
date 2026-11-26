@@ -92,7 +92,8 @@ are independent among the healthy.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Each subject has a latent variable \(Z \sim N(0, 1)\), independent of the
+    <p>Each subject has a latent variable \(Z \sim N(0, 1)\) (Qu et al., 1996;
+Dendukuri and Joseph, 2001), independent of the
 disease status \(D\). Given \(D = d\) and \(Z = z\) the \(K\) tests
 are independent, with
 $$P(T_k = 1 \mid D = d, Z = z) = \Phi(a_{dk} + b_{dk} z),$$
@@ -152,6 +153,11 @@ gives \(\rho = 0.2\), \(b = 1\) gives \(\rho = 0.5\) and \(b = 2\)
 gives \(\rho = 0.8\). Patterns outside these limits, such as a correlation
 of any sign and size for each pair, are obtained with
 <code>dependence = probit_dependence(...)</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the conditional dependence between multiple diagnostic tests. <em>Biometrics</em>, 57(1), 158–167. <a href="https://doi.org/10.1111/j.0006-341X.2001.00158.x" class="external-link">doi:10.1111/j.0006-341X.2001.00158.x</a></p>
+<p>Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in latent class analysis for evaluating accuracy of diagnostic tests. <em>Biometrics</em>, 52(3), 797–810. <a href="https://doi.org/10.2307/2533043" class="external-link">doi:10.2307/2533043</a></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

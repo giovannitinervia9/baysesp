@@ -3,17 +3,19 @@
 prior and posterior distributions of the accuracy of the tests (or of
 rules) and, for the saturated model, of the parameters the data cannot
 estimate: the proportion of diseased in never-verified profiles (q) and
-the log odds ratio of verification (beta). This shows how much each
-result depends on the data and how much on the assumptions: a posterior
-equal to its prior is not learned from the data. For the structured models
+the log odds ratio of verification (beta) when verification = mnar() (Kosinski and Barnhart, 2003).
+This shows how much each result depends on the data and how much on the
+assumptions: a posterior equal to its prior is not learned from the data
+(Buzoianu and Kadane, 2008; Gustafson, 2015). For the structured models
 it is also a prior simulation, which shows the prior that their priors induce on the
 accuracy."><meta property="og:description" content="Fits the same model again sampling from the prior alone, and compares the
 prior and posterior distributions of the accuracy of the tests (or of
 rules) and, for the saturated model, of the parameters the data cannot
 estimate: the proportion of diseased in never-verified profiles (q) and
-the log odds ratio of verification (beta). This shows how much each
-result depends on the data and how much on the assumptions: a posterior
-equal to its prior is not learned from the data. For the structured models
+the log odds ratio of verification (beta) when verification = mnar() (Kosinski and Barnhart, 2003).
+This shows how much each result depends on the data and how much on the
+assumptions: a posterior equal to its prior is not learned from the data
+(Buzoianu and Kadane, 2008; Gustafson, 2015). For the structured models
 it is also a prior simulation, which shows the prior that their priors induce on the
 accuracy."><meta property="og:image" content="https://giovannitinervia9.github.io/baysesp/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -59,9 +61,10 @@ accuracy."><meta property="og:image" content="https://giovannitinervia9.github.i
 prior and posterior distributions of the accuracy of the tests (or of
 rules) and, for the saturated model, of the parameters the data cannot
 estimate: the proportion of diseased in never-verified profiles (<code>q</code>) and
-the log odds ratio of verification (<code>beta</code>). This shows how much each
-result depends on the data and how much on the assumptions: a posterior
-equal to its prior is not learned from the data. For the structured models
+the log odds ratio of verification (<code>beta</code>) when <code>verification = mnar()</code> (Kosinski and Barnhart, 2003).
+This shows how much each result depends on the data and how much on the
+assumptions: a posterior equal to its prior is not learned from the data
+(Buzoianu and Kadane, 2008; Gustafson, 2015). For the structured models
 it is also a prior simulation, which shows the prior that their priors induce on the
 accuracy.</p>
     </div>
@@ -126,10 +129,18 @@ prevalence; the predictive values describe what a result means for a
 subject, and change with the prevalence of the population. For combined
 rules, such as <code><a href="any_positive.html">any_positive()</a></code>, the accuracy depends on the joint
 distribution of the tests, not only on their individual sensitivities and
-specificities.</p>
+specificities (Torrance-Rynard and Walter, 1997; Vacek, 1985).</p>
 <p>Each quantity is computed from every posterior draw of \(\pi\),
 \(\theta_0\) and \(\theta_1\). The results report its posterior mean
 and median and an equal-tailed credible interval with probability <code>level</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. <em>Statistics in Medicine</em>, 27(13), 2453–2473. <a href="https://doi.org/10.1002/sim.3099" class="external-link">doi:10.1002/sim.3099</a></p>
+<p>Gustafson, P. (2015). <em>Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data</em>. Chapman &amp; Hall/CRC, Boca Raton, FL.</p>
+<p>Kosinski, A. S. and Barnhart, H. X. (2003). Accounting for nonignorable verification bias in assessment of diagnostic tests. <em>Biometrics</em>, 59(1), 163–171. <a href="https://doi.org/10.1111/1541-0420.00019" class="external-link">doi:10.1111/1541-0420.00019</a></p>
+<p>Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent errors in the assessment of diagnostic test performance. <em>Statistics in Medicine</em>, 16(19), 2157–2175. <a href="https://doi.org/10.1002/%28SICI%291097-0258%2819971015%2916%3A19%3C2157%3A%3AAID-SIM653%3E3.0.CO%3B2-X" class="external-link">doi:10.1002/(SICI)1097-0258(19971015)16:19&lt;2157::AID-SIM653&gt;3.0.CO;2-X</a></p>
+<p>Vacek, P. M. (1985). The effect of conditional dependence on the evaluation of diagnostic tests. <em>Biometrics</em>, 41(4), 959–968. <a href="https://doi.org/10.2307/2530967" class="external-link">doi:10.2307/2530967</a></p>
     </div>
 
     <div class="section level2">
@@ -145,27 +156,27 @@ and median and an equal-tailed credible interval with probability <code>level</c
 <span class="r-in"><span>               seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pp</span> <span class="op">&lt;-</span> <span class="fu">prior_posterior</span><span class="op">(</span><span class="va">fit</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">pp</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      quantity distribution       mean     median       lower      upper</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  prevalence        prior 0.38272985 0.36638189 0.081516795 0.76663042</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  prevalence    posterior 0.21921887 0.21833326 0.195205493 0.24764361</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       Se[A]        prior 0.64641265 0.70507608 0.089134045 0.98463091</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       Se[A]    posterior 0.82612115 0.83060861 0.736908872 0.89047324</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       Sp[A]        prior 0.58463389 0.60952327 0.100142623 0.96611953</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6       Sp[A]    posterior 0.83875184 0.83894675 0.819089915 0.85702281</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      PPV[A]        prior 0.50092552 0.50112232 0.080332134 0.91813277</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8      PPV[A]    posterior 0.58946648 0.58976968 0.546740369 0.62957585</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9      NPV[A]        prior 0.73771535 0.79446788 0.218449133 0.97787068</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10     NPV[A]    posterior 0.94454483 0.94667101 0.907684607 0.96789705</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11      Se[B]        prior 0.64203562 0.69644791 0.096222087 0.98267789</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12      Se[B]    posterior 0.73436814 0.73729086 0.651813865 0.80313237</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13      Sp[B]        prior 0.58450724 0.60528155 0.113722805 0.96280904</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14      Sp[B]    posterior 0.94551773 0.94578176 0.933589357 0.95648060</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15     PPV[B]        prior 0.49671964 0.48960728 0.078724583 0.92418712</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16     PPV[B]    posterior 0.79069239 0.79136785 0.750914885 0.83016648</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17     NPV[B]        prior 0.73171462 0.78992728 0.213068574 0.97744781</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18     NPV[B]    posterior 0.92653231 0.92829749 0.894481579 0.94916144</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19       q[1]        prior 0.02978592 0.02692379 0.007255998 0.06799049</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20       q[1]    posterior 0.03001073 0.02728707 0.006945652 0.06931085</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    quantity distribution   mean median   lower  upper</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  prevalence        prior 0.3827 0.3664 0.08152 0.7666</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  prevalence    posterior 0.2192 0.2183 0.19521 0.2476</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Se[A]        prior 0.6464 0.7051 0.08913 0.9846</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Se[A]    posterior 0.8261 0.8306 0.73691 0.8905</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Sp[A]        prior 0.5846 0.6095 0.10014 0.9661</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Sp[A]    posterior 0.8388 0.8389 0.81909 0.8570</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      PPV[A]        prior 0.5009 0.5011 0.08033 0.9181</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      PPV[A]    posterior 0.5895 0.5898 0.54674 0.6296</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      NPV[A]        prior 0.7377 0.7945 0.21845 0.9779</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      NPV[A]    posterior 0.9445 0.9467 0.90768 0.9679</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Se[B]        prior 0.6420 0.6964 0.09622 0.9827</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Se[B]    posterior 0.7344 0.7373 0.65181 0.8031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Sp[B]        prior 0.5845 0.6053 0.11372 0.9628</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Sp[B]    posterior 0.9455 0.9458 0.93359 0.9565</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      PPV[B]        prior 0.4967 0.4896 0.07872 0.9242</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      PPV[B]    posterior 0.7907 0.7914 0.75091 0.8302</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      NPV[B]        prior 0.7317 0.7899 0.21307 0.9774</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      NPV[B]    posterior 0.9265 0.9283 0.89448 0.9492</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        q[1]        prior 0.0298 0.0269 0.00726 0.0680</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        q[1]    posterior 0.0300 0.0273 0.00695 0.0693</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">pp</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="prior_posterior-1.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span><span class="co"># }</span></span></span>

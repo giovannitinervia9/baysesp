@@ -70,7 +70,7 @@ $$P(D = 1 \mid T = t, V = 1) = P(D = 1 \mid T = t, V = 0) = P(D = 1 \mid T = t).
 Verification therefore carries no information on the disease beyond the
 test results.</p>
 <p>Under this assumption the verification process is ignorable and can be left
-out of the likelihood. Let \(n_{t,d}\) be the number of verified subjects
+out of the likelihood (Rubin, 1976; Little and Rubin, 2002). Let \(n_{t,d}\) be the number of verified subjects
 with profile \(t\) and disease status \(d\), \(u_t\) the number of
 unverified subjects with profile \(t\), \(\pi = P(D = 1)\) the
 prevalence, \(\pi_1 = \pi\), \(\pi_0 = 1 - \pi\), and
@@ -83,7 +83,7 @@ $$\ell_D = \sum_t \Big[\sum_d n_{t,d} \log(\pi_d\,\theta_{d,t}) + u_t \log \sum_
 The verification probabilities \(\lambda_t\) appear only in \(\ell_V\).
 Inference on the prevalence and on the test distributions is based on
 \(\ell_D\), and the unverified subjects contribute to it through the
-totals \(u_t\).</p>
+totals \(u_t\) (Begg and Greenes, 1983; Zhou, 1993).</p>
 <p>MAR is plausible when the choice of who undergoes the reference standard is
 made from the test results alone, for example when a protocol prescribes the
 reference test for every subject with a given test pattern, and no other
@@ -100,8 +100,17 @@ the disease status is missing not at random.</p>
 <p>Profiles that are never verified are compatible with MAR, but for them the
 data give no information on the proportion of diseased: there are no
 verified subjects from which to estimate it. What is concluded about it
-comes entirely from an assumption: a prior on that proportion, or a
+comes entirely from an assumption: a prior on that proportion (Buzoianu and Kadane, 2008; Gustafson, 2015), or a
 structure imposed on the dependence between the tests.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests when disease verification is subject to selection bias. <em>Biometrics</em>, 39(1), 207–215. <a href="https://doi.org/10.2307/2530820" class="external-link">doi:10.2307/2530820</a></p>
+<p>Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias in diagnostic test evaluation: A Bayesian approach. <em>Statistics in Medicine</em>, 27(13), 2453–2473. <a href="https://doi.org/10.1002/sim.3099" class="external-link">doi:10.1002/sim.3099</a></p>
+<p>Gustafson, P. (2015). <em>Bayesian Inference for Partially Identified Models: Exploring the Limits of Limited Data</em>. Chapman &amp; Hall/CRC, Boca Raton, FL.</p>
+<p>Little, R. J. A. and Rubin, D. B. (2002). <em>Statistical Analysis with Missing Data</em> (2nd ed.). Wiley.</p>
+<p>Rubin, D. B. (1976). Inference and missing data. <em>Biometrika</em>, 63(3), 581–592. <a href="https://doi.org/10.1093/biomet/63.3.581" class="external-link">doi:10.1093/biomet/63.3.581</a></p>
+<p>Zhou, X.-H. (1993). Maximum likelihood estimators of sensitivity and specificity corrected for verification bias. <em>Communications in Statistics – Theory and Methods</em>, 22(11), 3177–3198. <a href="https://doi.org/10.1080/03610929308831209" class="external-link">doi:10.1080/03610929308831209</a></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

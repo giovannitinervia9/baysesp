@@ -2,7 +2,8 @@
 
 Posterior summaries of the differences in sensitivity, specificity and
 Youden index (`first` minus `second`) and of the ratios of the true and
-false positive rates (`first` over `second`).
+false positive rates (`first` over `second`) (Alonzo, 2005; Pepe and
+Alonzo, 2001; Schatzkin et al., 1987).
 
 ## Usage
 
@@ -70,7 +71,8 @@ subject, and change with the prevalence of the population. For combined
 rules, such as
 [`any_positive()`](https://giovannitinervia9.github.io/baysesp/reference/any_positive.md),
 the accuracy depends on the joint distribution of the tests, not only on
-their individual sensitivities and specificities.
+their individual sensitivities and specificities (Torrance-Rynard and
+Walter, 1997; Vacek, 1985).
 
 Each quantity is computed from every posterior draw of \\\pi\\,
 \\\theta_0\\ and \\\theta_1\\. The results report its posterior mean and
@@ -96,10 +98,42 @@ is positive, or that a ratio is greater than 1. \\P(rTPR \> 1)\\ equals
 0)\\.
 
 When some profile is never verified, the differences depend on the prior
-of its proportion of diseased, but the ratios do not, as long as neither
-rule declares a never-verified profile positive. In that case the signs
-of the differences in sensitivity and in specificity are also
-identified, through the probabilities of the ratios.
+of its proportion of diseased (Gustafson, 2015), but the ratios do not,
+as long as neither rule declares a never-verified profile positive
+(Alonzo, 2005; Pepe and Alonzo, 2001; Schatzkin et al., 1987). In that
+case the signs of the differences in sensitivity and in specificity are
+also identified, through the probabilities of the ratios.
+
+## References
+
+Alonzo, T. A. (2005). Verification bias-corrected estimators of the
+relative true and false positive rates of two binary screening tests.
+*Statistics in Medicine*, 24(3), 403–417.
+[doi:10.1002/sim.1959](https://doi.org/10.1002/sim.1959)
+
+Gustafson, P. (2015). *Bayesian Inference for Partially Identified
+Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca
+Raton, FL.
+
+Pepe, M. S. and Alonzo, T. A. (2001). Comparing disease screening tests
+when true disease status is ascertained only for screen positives.
+*Biostatistics*, 2(3), 249–260.
+[doi:10.1093/biostatistics/2.3.249](https://doi.org/10.1093/biostatistics/2.3.249)
+
+Schatzkin, A., Connor, R. J., Taylor, P. R. and Bunnag, B. (1987).
+Comparing new and old screening tests when a reference procedure cannot
+be performed on all screenees. *American Journal of Epidemiology*,
+125(4), 672–678.
+[doi:10.1093/oxfordjournals.aje.a114580](https://doi.org/10.1093/oxfordjournals.aje.a114580)
+
+Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent
+errors in the assessment of diagnostic test performance. *Statistics in
+Medicine*, 16(19), 2157–2175.
+[doi:10.1002/(SICI)1097-0258(19971015)16:19\<2157::AID-SIM653\>3.0.CO;2-X](https://doi.org/10.1002/%28SICI%291097-0258%2819971015%2916%3A19%3C2157%3A%3AAID-SIM653%3E3.0.CO%3B2-X)
+
+Vacek, P. M. (1985). The effect of conditional dependence on the
+evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968.
+[doi:10.2307/2530967](https://doi.org/10.2307/2530967)
 
 ## Examples
 

@@ -2,8 +2,8 @@
 
 Posterior summaries of the sensitivity (`Se`), specificity (`Sp`),
 positive predictive value (`PPV`) and negative predictive value (`NPV`)
-of rules that combine the tests. For a single test the result is the
-same as in
+of rules that combine the tests (Begg and Greenes, 1983; Zhou, 1993;
+Zhou, 1994). For a single test the result is the same as in
 [`test_accuracy()`](https://giovannitinervia9.github.io/baysesp/reference/test_accuracy.md).
 
 ## Usage
@@ -72,11 +72,36 @@ subject, and change with the prevalence of the population. For combined
 rules, such as
 [`any_positive()`](https://giovannitinervia9.github.io/baysesp/reference/any_positive.md),
 the accuracy depends on the joint distribution of the tests, not only on
-their individual sensitivities and specificities.
+their individual sensitivities and specificities (Torrance-Rynard and
+Walter, 1997; Vacek, 1985).
 
 Each quantity is computed from every posterior draw of \\\pi\\,
 \\\theta_0\\ and \\\theta_1\\. The results report its posterior mean and
 median and an equal-tailed credible interval with probability `level`.
+
+## References
+
+Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests
+when disease verification is subject to selection bias. *Biometrics*,
+39(1), 207–215. [doi:10.2307/2530820](https://doi.org/10.2307/2530820)
+
+Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent
+errors in the assessment of diagnostic test performance. *Statistics in
+Medicine*, 16(19), 2157–2175.
+[doi:10.1002/(SICI)1097-0258(19971015)16:19\<2157::AID-SIM653\>3.0.CO;2-X](https://doi.org/10.1002/%28SICI%291097-0258%2819971015%2916%3A19%3C2157%3A%3AAID-SIM653%3E3.0.CO%3B2-X)
+
+Vacek, P. M. (1985). The effect of conditional dependence on the
+evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968.
+[doi:10.2307/2530967](https://doi.org/10.2307/2530967)
+
+Zhou, X.-H. (1993). Maximum likelihood estimators of sensitivity and
+specificity corrected for verification bias. *Communications in
+Statistics – Theory and Methods*, 22(11), 3177–3198.
+[doi:10.1080/03610929308831209](https://doi.org/10.1080/03610929308831209)
+
+Zhou, X.-H. (1994). Effect of verification bias on positive and negative
+predictive values. *Statistics in Medicine*, 13(17), 1737–1745.
+[doi:10.1002/sim.4780131705](https://doi.org/10.1002/sim.4780131705)
 
 ## Examples
 

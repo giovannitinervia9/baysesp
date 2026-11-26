@@ -52,12 +52,12 @@ quantile of the lower bound and the upper quantile of the upper bound).
 When some profiles (combinations of test results) are never verified,
 the data say nothing about how many diseased subjects they contain, and
 the absolute accuracy depends on it. A prior on that proportion gives a
-single answer, which rests entirely on the prior. These bounds instead
-show what the data alone allow: the lowest and highest value of each
-quantity when the proportion of diseased in the never-verified profiles
-ranges from 0 to 1. They do not depend on the prior. Wide bounds mean
-that the absolute accuracy is mostly determined by the assumption on the
-never-verified profiles.
+single answer, which rests entirely on the prior (Buzoianu and Kadane,
+2008). These bounds instead show what the data alone allow (Gustafson,
+2015): the lowest and highest value of each quantity when the proportion
+of diseased in the never-verified profiles ranges from 0 to 1. They do
+not depend on the prior. Wide bounds mean that the absolute accuracy is
+mostly determined by the assumption on the never-verified profiles.
 
 The bounds also depend on the odds ratio of verification between
 diseased and healthy subjects with the same profile, which the data
@@ -91,8 +91,9 @@ bounds correspond to considering all of them diseased.
 The bounds are functions of identified parameters (and of the odds
 ratio), so they have a posterior distribution: the result gives their
 posterior medians and a credible region that contains the whole
-identification interval with probability at least `level`. For rules
-that declare a never-verified profile positive the bounds are `NA`.
+identification interval with probability at least `level` (Gustafson,
+2015). For rules that declare a never-verified profile positive the
+bounds are `NA`.
 
 The accuracy is defined for a *rule* \\R\\, which declares a subject
 positive or negative from the response profile \\t\\, the vector of the
@@ -129,11 +130,32 @@ subject, and change with the prevalence of the population. For combined
 rules, such as
 [`any_positive()`](https://giovannitinervia9.github.io/baysesp/reference/any_positive.md),
 the accuracy depends on the joint distribution of the tests, not only on
-their individual sensitivities and specificities.
+their individual sensitivities and specificities (Torrance-Rynard and
+Walter, 1997; Vacek, 1985).
 
 Each quantity is computed from every posterior draw of \\\pi\\,
 \\\theta_0\\ and \\\theta_1\\. The results report its posterior mean and
 median and an equal-tailed credible interval with probability `level`.
+
+## References
+
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias
+in diagnostic test evaluation: A Bayesian approach. *Statistics in
+Medicine*, 27(13), 2453–2473.
+[doi:10.1002/sim.3099](https://doi.org/10.1002/sim.3099)
+
+Gustafson, P. (2015). *Bayesian Inference for Partially Identified
+Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca
+Raton, FL.
+
+Torrance-Rynard, V. L. and Walter, S. D. (1997). Effects of dependent
+errors in the assessment of diagnostic test performance. *Statistics in
+Medicine*, 16(19), 2157–2175.
+[doi:10.1002/(SICI)1097-0258(19971015)16:19\<2157::AID-SIM653\>3.0.CO;2-X](https://doi.org/10.1002/%28SICI%291097-0258%2819971015%2916%3A19%3C2157%3A%3AAID-SIM653%3E3.0.CO%3B2-X)
+
+Vacek, P. M. (1985). The effect of conditional dependence on the
+evaluation of diagnostic tests. *Biometrics*, 41(4), 959–968.
+[doi:10.2307/2530967](https://doi.org/10.2307/2530967)
 
 ## See also
 

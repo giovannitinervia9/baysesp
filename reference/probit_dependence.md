@@ -51,7 +51,8 @@ variables \\Y = (Y_1, \dots, Y_K)\\ jointly normal with mean 0, variance
 \Phi^{-1}(1 - Sp_k) \textrm{ if } d = 0,\$\$ where \\\Phi\\ is the
 standard normal distribution function, so that \\P(T_k = 1 \mid D = 1) =
 Se_k\\ and \\P(T_k = 0 \mid D = 0) = Sp_k\\ exactly, whatever the
-correlations.
+correlations. Probit models of this kind for conditional dependence are
+studied by Qu et al. (1996) and Dendukuri and Joseph (2001).
 
 The element \\R\_{d,jk}\\ is the correlation between the latent
 variables of tests \\j\\ and \\k\\ in class \\d\\ (known as the
@@ -70,6 +71,18 @@ with three tests \\r \> -1/2\\. Since \\K\\ is known only when the data
 are simulated, this condition is checked by
 [`simulate_study()`](https://giovannitinervia9.github.io/baysesp/reference/simulate_study.md),
 which gives an error for a matrix that is not positive definite.
+
+## References
+
+Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the
+conditional dependence between multiple diagnostic tests. *Biometrics*,
+57(1), 158–167.
+[doi:10.1111/j.0006-341X.2001.00158.x](https://doi.org/10.1111/j.0006-341X.2001.00158.x)
+
+Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in
+latent class analysis for evaluating accuracy of diagnostic tests.
+*Biometrics*, 52(3), 797–810.
+[doi:10.2307/2533043](https://doi.org/10.2307/2533043)
 
 ## See also
 

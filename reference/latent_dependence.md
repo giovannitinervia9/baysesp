@@ -42,16 +42,17 @@ An object of class `latent_dependence`.
 
 ## Details
 
-Each subject has a latent variable \\Z \sim N(0, 1)\\, independent of
-the disease status \\D\\. Given \\D = d\\ and \\Z = z\\ the \\K\\ tests
-are independent, with \$\$P(T_k = 1 \mid D = d, Z = z) = \Phi(a\_{dk} +
-b\_{dk} z),\$\$ where \\\Phi\\ is the standard normal distribution
-function and \\b\_{dk}\\ is the loading of test \\k\\ in class \\d\\
-(`diseased_loadings` for \\d = 1\\, `healthy_loadings` for \\d = 0\\).
-The intercepts are \$\$a\_{1k} = \Phi^{-1}(Se_k)\sqrt{1 + b\_{1k}^2},
-\qquad a\_{0k} = \Phi^{-1}(1 - Sp_k)\sqrt{1 + b\_{0k}^2},\$\$ so that,
-integrating out \\Z\\, \\P(T_k = 1 \mid D = 1) = Se_k\\ and \\P(T_k = 0
-\mid D = 0) = Sp_k\\ exactly, for any value of the loadings.
+Each subject has a latent variable \\Z \sim N(0, 1)\\ (Qu et al., 1996;
+Dendukuri and Joseph, 2001), independent of the disease status \\D\\.
+Given \\D = d\\ and \\Z = z\\ the \\K\\ tests are independent, with
+\$\$P(T_k = 1 \mid D = d, Z = z) = \Phi(a\_{dk} + b\_{dk} z),\$\$ where
+\\\Phi\\ is the standard normal distribution function and \\b\_{dk}\\ is
+the loading of test \\k\\ in class \\d\\ (`diseased_loadings` for \\d =
+1\\, `healthy_loadings` for \\d = 0\\). The intercepts are \$\$a\_{1k} =
+\Phi^{-1}(Se_k)\sqrt{1 + b\_{1k}^2}, \qquad a\_{0k} = \Phi^{-1}(1 -
+Sp_k)\sqrt{1 + b\_{0k}^2},\$\$ so that, integrating out \\Z\\, \\P(T_k =
+1 \mid D = 1) = Se_k\\ and \\P(T_k = 0 \mid D = 0) = Sp_k\\ exactly, for
+any value of the loadings.
 
 Equivalently, test \\k\\ is positive when a normal latent variable \\Y_k
 = b\_{dk} Z + \varepsilon_k\\, with \\\varepsilon_k \sim N(0, 1)\\
@@ -114,6 +115,18 @@ gives \\\rho = 0.2\\, \\b = 1\\ gives \\\rho = 0.5\\ and \\b = 2\\ gives
 \\\rho = 0.8\\. Patterns outside these limits, such as a correlation of
 any sign and size for each pair, are obtained with
 `dependence = probit_dependence(...)`.
+
+## References
+
+Dendukuri, N. and Joseph, L. (2001). Bayesian approaches to modeling the
+conditional dependence between multiple diagnostic tests. *Biometrics*,
+57(1), 158–167.
+[doi:10.1111/j.0006-341X.2001.00158.x](https://doi.org/10.1111/j.0006-341X.2001.00158.x)
+
+Qu, Y., Tan, M. and Kutner, M. H. (1996). Random effects models in
+latent class analysis for evaluating accuracy of diagnostic tests.
+*Biometrics*, 52(3), 797–810.
+[doi:10.2307/2533043](https://doi.org/10.2307/2533043)
 
 ## See also
 

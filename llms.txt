@@ -131,6 +131,10 @@ change.
   : Accuracy models
 - [`compile_models()`](https://giovannitinervia9.github.io/baysesp/reference/compile_models.md)
   : Compile the Stan programs for the cmdstanr backend
+- [`summary(`*`<baysesp_fit>`*`)`](https://giovannitinervia9.github.io/baysesp/reference/summary.baysesp_fit.md)
+  : Summary of a fitted model
+- [`update(`*`<baysesp_fit>`*`)`](https://giovannitinervia9.github.io/baysesp/reference/update.baysesp_fit.md)
+  : Fit a different model to the same data
 
 ## Verification
 
@@ -192,6 +196,13 @@ change.
   : Compare prior and posterior
 - [`plot(`*`<prior_posterior>`*`)`](https://giovannitinervia9.github.io/baysesp/reference/plot.prior_posterior.md)
   : Plot the comparison of prior and posterior
+
+## Model comparison
+
+- [`compare_models()`](https://giovannitinervia9.github.io/baysesp/reference/compare_models.md)
+  : Compare models fitted to the same data
+- [`plot(`*`<model_comparison>`*`)`](https://giovannitinervia9.github.io/baysesp/reference/plot.model_comparison.md)
+  : Plot the posterior predictive checks of a model comparison
 
 # Articles
 

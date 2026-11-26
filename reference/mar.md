@@ -29,13 +29,13 @@ t).\$\$ Verification therefore carries no information on the disease
 beyond the test results.
 
 Under this assumption the verification process is ignorable and can be
-left out of the likelihood. Let \\n\_{t,d}\\ be the number of verified
-subjects with profile \\t\\ and disease status \\d\\, \\u_t\\ the number
-of unverified subjects with profile \\t\\, \\\pi = P(D = 1)\\ the
-prevalence, \\\pi_1 = \pi\\, \\\pi_0 = 1 - \pi\\, and \\\theta\_{d,t} =
-P(T = t \mid D = d)\\. The log-likelihood of the observed counts is
-\$\$\ell = \sum_t \Big\[\sum_d n\_{t,d}
-\log(\pi_d\\\theta\_{d,t}\\\lambda\_{t,d}) + u_t \log \sum_d
+left out of the likelihood (Rubin, 1976; Little and Rubin, 2002). Let
+\\n\_{t,d}\\ be the number of verified subjects with profile \\t\\ and
+disease status \\d\\, \\u_t\\ the number of unverified subjects with
+profile \\t\\, \\\pi = P(D = 1)\\ the prevalence, \\\pi_1 = \pi\\,
+\\\pi_0 = 1 - \pi\\, and \\\theta\_{d,t} = P(T = t \mid D = d)\\. The
+log-likelihood of the observed counts is \$\$\ell = \sum_t \Big\[\sum_d
+n\_{t,d} \log(\pi_d\\\theta\_{d,t}\\\lambda\_{t,d}) + u_t \log \sum_d
 \pi_d\\\theta\_{d,t}\\(1 - \lambda\_{t,d})\Big\].\$\$ Setting
 \\\lambda\_{t,d} = \lambda_t\\ splits it into two parts, \$\$\ell =
 \ell_D + \ell_V,\$\$ \$\$\ell_D = \sum_t \Big\[\sum_d n\_{t,d}
@@ -44,7 +44,8 @@ P(T = t \mid D = d)\\. The log-likelihood of the observed counts is
 \log(1 - \lambda_t)\Big\].\$\$ The verification probabilities
 \\\lambda_t\\ appear only in \\\ell_V\\. Inference on the prevalence and
 on the test distributions is based on \\\ell_D\\, and the unverified
-subjects contribute to it through the totals \\u_t\\.
+subjects contribute to it through the totals \\u_t\\ (Begg and Greenes,
+1983; Zhou, 1993).
 
 MAR is plausible when the choice of who undergoes the reference standard
 is made from the test results alone, for example when a protocol
@@ -64,8 +65,36 @@ on the disease status is missing not at random.
 Profiles that are never verified are compatible with MAR, but for them
 the data give no information on the proportion of diseased: there are no
 verified subjects from which to estimate it. What is concluded about it
-comes entirely from an assumption: a prior on that proportion, or a
-structure imposed on the dependence between the tests.
+comes entirely from an assumption: a prior on that proportion (Buzoianu
+and Kadane, 2008; Gustafson, 2015), or a structure imposed on the
+dependence between the tests.
+
+## References
+
+Begg, C. B. and Greenes, R. A. (1983). Assessment of diagnostic tests
+when disease verification is subject to selection bias. *Biometrics*,
+39(1), 207–215. [doi:10.2307/2530820](https://doi.org/10.2307/2530820)
+
+Buzoianu, M. and Kadane, J. B. (2008). Adjusting for verification bias
+in diagnostic test evaluation: A Bayesian approach. *Statistics in
+Medicine*, 27(13), 2453–2473.
+[doi:10.1002/sim.3099](https://doi.org/10.1002/sim.3099)
+
+Gustafson, P. (2015). *Bayesian Inference for Partially Identified
+Models: Exploring the Limits of Limited Data*. Chapman & Hall/CRC, Boca
+Raton, FL.
+
+Little, R. J. A. and Rubin, D. B. (2002). *Statistical Analysis with
+Missing Data* (2nd ed.). Wiley.
+
+Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3),
+581–592.
+[doi:10.1093/biomet/63.3.581](https://doi.org/10.1093/biomet/63.3.581)
+
+Zhou, X.-H. (1993). Maximum likelihood estimators of sensitivity and
+specificity corrected for verification bias. *Communications in
+Statistics – Theory and Methods*, 22(11), 3177–3198.
+[doi:10.1080/03610929308831209](https://doi.org/10.1080/03610929308831209)
 
 ## See also
 

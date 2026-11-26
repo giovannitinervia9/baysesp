@@ -6,7 +6,7 @@
 \usage{
 mnar(
   odds_ratio_prior = prior_normal(0, 1),
-  intercepts_prior = prior_normal(0, 1.5),
+  intercepts_prior = prior_normal(0, 2.5),
   by_profile = FALSE
 )
 }
@@ -23,13 +23,16 @@ ratios between about 0.14 and 7.1.}
 one for each profile with at least one verified subject. It must act on
 the real line, as for \code{odds_ratio_prior}. It is used only by the log-linear
 and the random-effects models; the saturated model does not use it. The
-default \code{prior_normal(0, 1.5)} is close to a uniform distribution on the
-verification probability of healthy subjects, \eqn{\mathrm{expit}(\alpha_t)}.
-A wider prior, such as \code{prior_normal(0, 2.5)}, puts about a third of its
-mass on probabilities below 0.08 or above 0.92; with profiles in which
-few subjects are verified, it often leads to profiles with subjects but
-no verified subject, which the model treats as never verified (with a
-warning from \code{\link[=baysesp]{baysesp()}}).}
+default is \code{prior_normal(0, 2.5)}. In profiles where almost all subjects
+are diseased, the data say little about the verification probability of
+the healthy, \eqn{\mathrm{expit}(\alpha_t)}, and the prior pulls it
+towards 0.5; the shared \eqn{\beta} then absorbs the difference. As a
+result the estimated odds ratio depends on this prior: in simulations
+with verification probabilities of 0.8, \code{prior_normal(0, 1.5)} gave a
+posterior median of the odds ratio of about 2.4 when the true value was
+1, the default about 1.7. The sensitivities and specificities changed by
+less than 0.005. Read the odds ratio of the structured models together
+with \code{\link[=sensitivity_analysis]{sensitivity_analysis()}}.}
 
 \item{by_profile}{A single logical value, \code{TRUE} or \code{FALSE}, with default
 \code{FALSE}. If \code{FALSE}, one \eqn{\beta} is shared by all profiles with at

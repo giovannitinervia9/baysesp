@@ -617,7 +617,7 @@ fit_mnar <- baysesp(
   model = saturated(
     verification = mnar(
       odds_ratio_prior = prior_normal(mean = log(1.5), sd = 0.35),
-      intercepts_prior = prior_normal(mean = 0, sd = 1.5),
+      intercepts_prior = prior_normal(mean = 0, sd = 2.5),
       by_profile = FALSE
     )
   ),
@@ -628,7 +628,7 @@ fit_mnar <- baysesp(
 In `verification = mnar()`, the arguments are:
 
 - `odds_ratio_prior`: prior on `log(odds_ratio)`; `prior_normal(mean = log(1.5), sd = 0.35)` puts the odds ratio near 1.5, between 0.75 and 3 with 95% probability;
-- `intercepts_prior`: prior on healthy verification probabilities, used only by [Section 9](#structured) models (`prior_normal(mean = 0, sd = 1.5)`, the default);
+- `intercepts_prior`: prior on healthy verification probabilities, used only by [Section 9](#structured) models (`prior_normal(mean = 0, sd = 2.5)`, the default);
 - `by_profile`: if `TRUE`, each profile has its own odds ratio with the same prior; `FALSE`, the default, shares one across profiles.
 
 We call `test_accuracy(fit = fit_mnar)` to inspect the posterior estimates and intervals:

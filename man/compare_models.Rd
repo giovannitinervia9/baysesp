@@ -101,10 +101,10 @@ Under \code{verification = mnar()} in the log-linear and random effects models,
 verification depends on the disease and cannot be separated: it follows the
 priors of the model, \code{intercepts_prior} and \code{odds_ratio_prior} of \code{mnar()}.
 To compare these models with the others, choose a \code{verified_prior} close to
-the prior that \code{intercepts_prior} gives to verification: the default
-\code{verified_prior}, uniform, is close to the default
-\code{intercepts_prior = prior_normal(0, 1.5)}, and \code{verified_prior = prior_normal(0, 2.5)} matches \code{intercepts_prior = prior_normal(0, 2.5)}.
-Then the comparison is not driven by different priors on verification.
+the prior that \code{intercepts_prior} gives to verification, such as
+\code{verified_prior = prior_normal(0, 2.5)} for the default
+\code{intercepts_prior = prior_normal(0, 2.5)}: then the comparison is not driven
+by different priors on verification.
 
 \strong{Leave-one-out.} The unit left out is the subject, not the cell. The
 subjects of the same cell are identical, so there are at most as many

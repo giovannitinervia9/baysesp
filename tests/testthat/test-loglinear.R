@@ -36,7 +36,7 @@ test_that("stan_data() translates the log-linear models", {
   expect_warning(s <- stan_data(m, m@verification, d),
                  "no verified subject .*: \\(0,0,0\\)\\.$")
   expect_identical(c(s$mnar, s$n_beta), c(1L, 7L))
-  expect_identical(s$alpha_params, c(0, 1.5, 0))
+  expect_identical(s$alpha_params, c(0, 2.5, 0))
   expect_no_warning(stan_data(m, m@verification, example_fit()@data))
   expect_identical(stan_program(m), "loglinear")
   expect_error(stan_data(loglinear(4), mar(), d), "cannot exceed the number of tests \\(3\\)")

@@ -1,21 +1,80 @@
-#' @include priors.R
+#' @include priors.R generics.R
 NULL
 
 #' Verification mechanisms
 #'
 #' `verification_mechanism` is the abstract parent class of the assumptions on
-#' how subjects are selected for verification by the reference standard.
-#' `mar()` assumes that verification depends only on the test results
-#' (missing at random): among subjects with the same profile, verified and
-#' unverified subjects have the same proportion of diseased.
+#' how subjects are selected for verification by the reference standard. It
+#' cannot be instantiated: the concrete assumptions are the missing at random
+#' assumption, in which verification depends only on the test results, and the
+#' missing not at random assumption, in which verification also depends on the
+#' disease status. Each concrete assumption has its own page.
 #'
-#' @return An object of class `mar`.
+#' @seealso [mar()], [mnar()]
 #' @examples
-#' mar()
+#' S7::S7_inherits(mar(), verification_mechanism)
 #' @export
 verification_mechanism <- S7::new_class("verification_mechanism", abstract = TRUE)
 
-#' @rdname verification_mechanism
+#' Missing at random verification
+#'
+#' `mar()` is the assumption that verification depends only on the test results.
+#' Once the response profile is known, the disease status does not change the
+#' probability of being verified. The function has no arguments.
+#'
+#' @details
+#' Let \eqn{V = 1} indicate that a subject is verified, \eqn{T} be the response
+#' profile and \eqn{D} the disease status, and let
+#' \eqn{\lambda_{t,d} = P(V = 1 \mid T = t, D = d)}. The assumption is
+#' \deqn{\lambda_{t,1} = \lambda_{t,0} = \lambda_t \quad \textrm{for every profile } t,}
+#' so the probability of verification depends on the profile only.
+#'
+#' Equivalently, among subjects with the same profile \eqn{t}, verified and
+#' unverified subjects have the same proportion of diseased:
+#' \deqn{P(D = 1 \mid T = t, V = 1) = P(D = 1 \mid T = t, V = 0) = P(D = 1 \mid T = t).}
+#' Verification therefore carries no information on the disease beyond the
+#' test results.
+#'
+#' Under this assumption the verification process is ignorable and can be left
+#' out of the likelihood. Let \eqn{n_{t,d}} be the number of verified subjects
+#' with profile \eqn{t} and disease status \eqn{d}, \eqn{u_t} the number of
+#' unverified subjects with profile \eqn{t}, \eqn{\pi = P(D = 1)} the
+#' prevalence, \eqn{\pi_1 = \pi}, \eqn{\pi_0 = 1 - \pi}, and
+#' \eqn{\theta_{d,t} = P(T = t \mid D = d)}. The log-likelihood of the observed
+#' counts is
+#' \deqn{\ell = \sum_t \Big[\sum_d n_{t,d} \log(\pi_d\,\theta_{d,t}\,\lambda_{t,d}) + u_t \log \sum_d \pi_d\,\theta_{d,t}\,(1 - \lambda_{t,d})\Big].}
+#' Setting \eqn{\lambda_{t,d} = \lambda_t} splits it into two parts,
+#' \deqn{\ell = \ell_D + \ell_V,}
+#' \deqn{\ell_D = \sum_t \Big[\sum_d n_{t,d} \log(\pi_d\,\theta_{d,t}) + u_t \log \sum_d \pi_d\,\theta_{d,t}\Big], \qquad \ell_V = \sum_t \Big[(n_{t,1} + n_{t,0}) \log \lambda_t + u_t \log(1 - \lambda_t)\Big].}
+#' The verification probabilities \eqn{\lambda_t} appear only in \eqn{\ell_V}.
+#' Inference on the prevalence and on the test distributions is based on
+#' \eqn{\ell_D}, and the unverified subjects contribute to it through the
+#' totals \eqn{u_t}.
+#'
+#' MAR is plausible when the choice of who undergoes the reference standard is
+#' made from the test results alone, for example when a protocol prescribes the
+#' reference test for every subject with a given test pattern, and no other
+#' information related to the disease affects the choice. It is doubtful when
+#' the decision to verify uses information on the disease that the tests do not
+#' capture, such as symptoms, medical history or clinical suspicion, or when,
+#' within the same profile, subjects who are more likely to be diseased are
+#' verified more often. In those cases the proportion of diseased among verified
+#' subjects differs from that among unverified subjects with the same profile,
+#' and the estimates obtained under MAR are biased. The data do not contain
+#' information on whether MAR holds, so its plausibility must be judged on
+#' substantive grounds. The alternative in which verification also depends on
+#' the disease status is missing not at random.
+#'
+#' Profiles that are never verified are compatible with MAR, but for them the
+#' data give no information on the proportion of diseased: there are no
+#' verified subjects from which to estimate it. What is concluded about it
+#' comes entirely from an assumption: a prior on that proportion, or a
+#' structure imposed on the dependence between the tests.
+#'
+#' @return An object of class `mar`.
+#' @seealso [mnar()], [verification_mechanism]
+#' @examples
+#' mar()
 #' @export
 mar <- S7::new_class("mar", parent = verification_mechanism)
 
@@ -24,30 +83,80 @@ S7::method(print, mar) <- function(x, ...) {
   invisible(x)
 }
 
-#' Verification that depends on the disease
+#' Missing not at random verification
 #'
-#' `mnar()` assumes that verification depends on the test results and also on
-#' the disease status (missing not at random):
-#' \eqn{logit P(V = 1 | T = t, D = d) = \alpha_t + \beta d}. The parameter
+#' `mnar()` is the assumption that verification depends on the test results and
+#' also on the disease status: among subjects with the same profile, diseased
+#' and healthy subjects can be verified with different probabilities. Its
+#' arguments are the prior on the log odds ratio of verification, the prior on
+#' the verification intercepts and the choice of whether the odds ratio varies
+#' across profiles.
+#'
+#' @details
+#' Let \eqn{V = 1} indicate that a subject is verified, \eqn{T} be the response
+#' profile, \eqn{D} the disease status, and
+#' \eqn{\lambda_{t,d} = P(V = 1 \mid T = t, D = d)}. The model is
+#' \deqn{\mathrm{logit}\,\lambda_{t,d} = \alpha_t + \beta d, \qquad d \in \{0, 1\}.}
+#' For each profile \eqn{t} with at least one verified subject, \eqn{\alpha_t}
+#' is the log odds of verification for healthy subjects with profile \eqn{t},
+#' and \eqn{\alpha_t + \beta} is the log odds of verification for diseased
+#' subjects with the same profile. Profiles with no verified subject have
+#' \eqn{\lambda_{t,d} = 0} and no intercept.
+#'
 #' \eqn{\beta} is the log odds ratio of verification between diseased and
-#' healthy subjects with the same profile; equivalently, \eqn{\exp(-\beta)} is
-#' the odds ratio of disease between unverified and verified subjects with the
-#' same profile (Proposition 7.2 of the specification). With \eqn{\beta > 0}
-#' the diseased are verified more often, and the unverified are less often
-#' diseased than MAR would say.
+#' healthy subjects with the same profile:
+#' \deqn{\beta = \log \frac{\lambda_{t,1}\,/\,(1 - \lambda_{t,1})}{\lambda_{t,0}\,/\,(1 - \lambda_{t,0})}.}
+#' Equivalently, \eqn{\exp(-\beta)} is the odds ratio of disease between
+#' unverified and verified subjects with the same profile. When \eqn{\beta = 0}
+#' verification does not depend on the disease status given the profile, which
+#' is the missing at random assumption. A positive \eqn{\beta}
+#' means that diseased subjects are verified more often than healthy subjects
+#' with the same profile, so that unverified subjects are less often diseased
+#' than verified ones with the same profile; a negative \eqn{\beta} has the
+#' opposite meaning.
 #'
-#' In the saturated model \eqn{\beta} does not enter the likelihood: its
-#' posterior equals its prior, which is therefore an explicit assumption. Use
-#' [sensitivity_analysis()] to see how the results change over a range of
-#' odds ratios.
+#' With \eqn{\pi = P(D = 1)} and \eqn{\theta_{d,t} = P(T = t \mid D = d)} the
+#' disease parameters, and \eqn{n_{t,d}}, \eqn{u_t}, \eqn{\pi_1 = \pi},
+#' \eqn{\pi_0 = 1 - \pi} as in the counts of the observed data, the
+#' log-likelihood is
+#' \deqn{\ell = \sum_t \Big[\sum_d n_{t,d} \log(\pi_d\,\theta_{d,t}\,\lambda_{t,d}) + u_t \log \sum_d \pi_d\,\theta_{d,t}\,(1 - \lambda_{t,d})\Big].}
+#'
+#' With a saturated disease model, which places no restriction on
+#' \eqn{\theta_d}, the data identify the proportion of diseased among verified
+#' subjects of each profile, but not \eqn{\beta}. The proportion of diseased
+#' among unverified subjects with a verified profile \eqn{t} is
+#' \eqn{\mathrm{expit}(\mathrm{logit}\,\phi_t - \beta)}, where \eqn{\phi_t} is
+#' the proportion among verified subjects, so \eqn{\beta} links the two groups
+#' but the data say nothing about it: its posterior equals its prior. The prior
+#' on \eqn{\beta} is then an explicit assumption, and varying it, or fixing
+#' \eqn{\beta} at a range of values, shows how much the results depend on it.
+#'
+#' With the log-linear and random-effects disease models, \eqn{\beta} is
+#' identified through the restrictions that these models place on the disease
+#' distribution. This information comes from the assumed structure, not from
+#' the data alone, and it is fragile if the structure is wrong.
 #'
 #' @param odds_ratio_prior Prior on \eqn{\beta}, the log odds ratio of
-#'   verification between diseased and healthy subjects.
-#' @param intercepts_prior Prior on the intercepts \eqn{\alpha_t}, used only by
-#'   the structured models.
-#' @param by_profile If `TRUE`, a different \eqn{\beta} for each profile, all
-#'   with the same prior.
+#'   verification between diseased and healthy subjects with the same profile.
+#'   It must act on the real line, such as `prior_normal()` or
+#'   `prior_student()`; a prior on a probability, such as `prior_beta()`, is
+#'   not accepted. The default `prior_normal(0, 1)` centres \eqn{\beta} at 0,
+#'   which is missing at random, and gives 95% of its prior mass to odds
+#'   ratios between about 0.14 and 7.1.
+#' @param intercepts_prior Prior on the verification intercepts \eqn{\alpha_t},
+#'   one for each profile with at least one verified subject. It must act on
+#'   the real line, as for `odds_ratio_prior`. It is used only by the log-linear
+#'   and the random-effects models; the saturated model does not use it. The
+#'   default is `prior_normal(0, 2.5)`.
+#' @param by_profile A single logical value, `TRUE` or `FALSE`, with default
+#'   `FALSE`. If `FALSE`, one \eqn{\beta} is shared by all profiles with at
+#'   least one verified subject, so the odds ratio of verification is the same
+#'   for every profile. If `TRUE`, each of these profiles has its own
+#'   \eqn{\beta_t}, all with prior `odds_ratio_prior`, so the odds ratio may
+#'   differ across profiles. Profiles with no verified subject have no
+#'   \eqn{\beta}.
 #' @return An object of class `mnar`.
+#' @seealso [mar()], [verification_mechanism], [sensitivity_analysis()]
 #' @examples
 #' mnar()
 #' mnar(odds_ratio_prior = prior_normal(mean = log(2), sd = 0.5))

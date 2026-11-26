@@ -10,42 +10,217 @@ simulate_study(
   sensitivity,
   specificity,
   verification_prob,
-  odds_ratio = 1
+  odds_ratio = 1,
+  dependence = independence()
 )
 }
 \arguments{
-\item{n}{Number of subjects.}
+\item{n}{Number of subjects: a single whole number, at least 1. No default.}
 
-\item{prevalence}{Probability of disease.}
+\item{prevalence}{Probability of disease: a single number in
+\eqn{[0, 1]}. No default.}
 
-\item{sensitivity, specificity}{Sensitivity and specificity of each test, one
-value per test. The names of \code{sensitivity}, if present, become the names
-of the test columns; otherwise the tests are called \code{T1}, ..., \code{TK}.}
+\item{sensitivity}{Sensitivity of each test: a numeric vector with values in
+\eqn{[0, 1]}, one element per test, of length \code{K >= 1}. No default. The
+names of \code{sensitivity}, if present, become the names of the test columns
+of the output; if it has no names, the tests are called \code{T1}, ..., \code{TK}.
+The names \code{verified} and \code{disease} are not allowed.}
 
-\item{verification_prob}{Probability of verification of the healthy
-subjects, either a single value or one value per response profile, in
-binary order (see \code{\link[=baysesp_data]{baysesp_data()}}).}
+\item{specificity}{Specificity of each test: a numeric vector with values in
+\eqn{[0, 1]} and the same length as \code{sensitivity}; its k-th element is the
+specificity of the k-th test. Its names are ignored. No default.}
+
+\item{verification_prob}{Probability of verification of healthy subjects,
+with values in \eqn{[0, 1]}. It is either a single number, which applies to
+all response profiles, or a vector of length \eqn{2^K} with one number per
+response profile, in binary order: the profile \eqn{t} is at position
+\eqn{1 + \sum_k t_k 2^{k-1}}, so the first profile is the one with all tests
+negative and the first test changes fastest. With \code{K = 2} the order is
+(0,0), (1,0), (0,1), (1,1). A value 0 means that the profile is never
+verified and a value 1 that it is always verified. No default.}
 
 \item{odds_ratio}{Odds ratio of verification between diseased and healthy
-subjects with the same profile. The default, 1, gives verification that is
-missing at random; other values give verification that depends on the
-disease (missing not at random).}
+subjects with the same response profile: a single positive number, the
+same for all profiles. Default \code{1}, which gives verification that is
+missing at random (it does not depend on the disease status). Values
+greater than 1 make diseased subjects more likely to be verified, values
+between 0 and 1 less likely; any value different from 1 gives verification
+that is missing not at random.}
+
+\item{dependence}{How the test results depend on each other given the
+disease status: a single dependence mechanism, one of
+\code{dependence = independence()} (the tests are independent given the
+disease status), \code{dependence = latent_dependence(...)} (the tests share a
+normal latent variable, with one loading per test and disease class) or
+\code{dependence = probit_dependence(...)} (the tests have jointly normal
+latent variables, with one correlation per pair of tests and disease
+class). Default \code{independence()}. Whatever the mechanism, \code{sensitivity}
+and \code{specificity} remain the marginal sensitivity and specificity of each
+test.}
 }
 \value{
-A data frame with one row per subject: a 0/1 column for each test,
-\code{verified} (0/1) and \code{disease} (0/1, \code{NA} for unverified subjects).
+A data frame with one row per subject and the following columns: one
+0/1 column for each test, always observed, named as described in
+\code{sensitivity}; \code{verified} (0/1); \code{disease} (0/1 for verified subjects,
+\code{NA} for unverified subjects).
 }
 \description{
-Generates individual data from the selection model of the package: disease
-status, results of \code{K} conditionally independent binary tests and
-verification, which depends on the test results and, if \code{odds_ratio} is not
-1, also on the disease status. Useful for examples, tests and simulation
-studies.
+Generates individual data for a study in which \code{K} binary tests are applied
+to all subjects, but only some of them are verified by the reference
+standard. For each subject the disease status is drawn first, then the \code{K}
+test results and finally the verification, which depends on the response
+profile (the vector of test results) and, when \code{odds_ratio} is not 1, also
+on the disease status. Useful for examples, tests and simulation studies.
+}
+\details{
+For each subject the function simulates:
+\itemize{
+\item the disease status \eqn{D}, Bernoulli with probability \code{prevalence};
+\item the \code{K} test results \eqn{T_1, \dots, T_K} given \eqn{D}, with
+\eqn{P(T_k = 1 \mid D = 1)} equal to \code{sensitivity[k]} and
+\eqn{P(T_k = 0 \mid D = 0)} equal to \code{specificity[k]}. The tests are
+independent given \eqn{D} with \code{dependence = independence()}, and
+dependent given \eqn{D} with the other values of \code{dependence} (see the
+paragraph on the dependence between tests below);
+\item the verification \eqn{V}, Bernoulli with probability
+\eqn{\lambda_{t,d} = P(V = 1 \mid T = t, D = d)}.
+}
+
+The verification probability of a healthy subject with profile \eqn{t} is
+\eqn{\lambda_{t,0}} = \code{verification_prob} for that profile. The verification
+probability of a diseased subject with the same profile is
+\eqn{\lambda_{t,1} = \mathrm{expit}(\mathrm{logit}\,\lambda_{t,0} +
+\log(\mathrm{odds\_ratio}))}, so that the odds of verification of diseased
+subjects are \code{odds_ratio} times the odds for healthy subjects with the same
+profile.
+
+\strong{Dependence between the tests.} The argument \code{dependence} sets the joint
+distribution of the \code{K} results within each disease class, that is the
+probabilities \eqn{\theta_{d,t} = P(T = t \mid D = d)} of the response
+profiles \eqn{t} among the diseased (\eqn{d = 1}) and among the healthy
+(\eqn{d = 0}). Every mechanism keeps the sensitivities and specificities
+given in \code{sensitivity} and \code{specificity} as the marginal probabilities, and
+changes only how often the tests are right or wrong together:
+\itemize{
+\item \code{dependence = independence()}:
+\eqn{\theta_{1,t} = \prod_k Se_k^{t_k}(1 - Se_k)^{1 - t_k}} and
+\eqn{\theta_{0,t} = \prod_k (1 - Sp_k)^{t_k} Sp_k^{1 - t_k}};
+\item \code{dependence = latent_dependence(diseased_loadings, healthy_loadings)}:
+each subject has a latent variable \eqn{Z \sim N(0, 1)}, independent of
+\eqn{D}, and given \eqn{D = d} and \eqn{Z = z} the tests are independent
+with \eqn{P(T_k = 1 \mid D = d, Z = z) = \Phi(a_{dk} + b_{dk} z)}, where
+\eqn{b_{dk}} is the loading of test \eqn{k} in class \eqn{d} and
+\eqn{a_{dk}} is chosen so that the marginal probabilities are the
+sensitivities and specificities. Tests \eqn{j} and \eqn{k} are positively
+dependent when \eqn{b_{dj} b_{dk} > 0} and negatively dependent when
+\eqn{b_{dj} b_{dk} < 0};
+\item \code{dependence = probit_dependence(diseased_correlation, healthy_correlation)}:
+given \eqn{D = d}, test \eqn{k} is positive when a standard normal latent
+variable \eqn{Y_k} falls below a threshold that gives the required
+sensitivity or specificity, and the latent variables of the \code{K} tests are
+jointly normal with correlation matrix \eqn{R_d}. The element
+\eqn{R_{d,jk}} is the correlation, of any sign, between tests \eqn{j} and
+\eqn{k} in class \eqn{d}.
+}
+
+The size of the loadings or of the correlation matrices is checked here
+against the number of tests \code{K}, which the dependence mechanism does not
+know when it is created. A correlation matrix that is not positive definite
+for \code{K} tests gives an error.
+
+\strong{Supported data-generating mechanisms.}
+\itemize{
+\item any number \code{K >= 1} of tests, with arbitrary prevalence, sensitivities and
+specificities, with tests that are independent given the disease status
+or dependent through one of the mechanisms above;
+\item verification that depends on the response profile only, with the same
+probability for all profiles (a single \code{verification_prob}) or with one
+probability per profile. A value 0 means that the profile is never
+verified, a value 1 that it is always verified (for healthy subjects; see
+\code{odds_ratio} for diseased subjects);
+\item missing at random verification (\code{odds_ratio = 1}), where verification
+depends only on the profile, and missing not at random verification
+(\code{odds_ratio} different from 1), where the odds of verification also
+depend on the disease status through the same odds ratio for all profiles.
+Profiles with verification probability 0 or 1 are never verified, or
+always verified, whatever \code{odds_ratio} is.
+}
+
+\strong{Not supported:} dependence between the tests given the disease status
+other than through the two latent mechanisms above (for example log-linear
+interactions given as odds ratios), covariates, verification that depends on something other
+than the response profile and the disease status, and a disease-dependent
+verification whose odds ratio differs across profiles.
 }
 \examples{
 set.seed(1)
+
+# Two tests, verification depending only on the results (MAR): subjects
+# negative to both tests are verified with probability 0.1, the others with
+# probability 0.9 or 1. The profiles are in the order (0,0), (1,0), (0,1), (1,1).
 d <- simulate_study(n = 500, prevalence = 0.2,
-                    sensitivity = c(0.9, 0.7), specificity = c(0.85, 0.95),
+                    sensitivity = c(A = 0.9, B = 0.7),
+                    specificity = c(A = 0.85, B = 0.95),
                     verification_prob = c(0.1, 0.9, 0.9, 1))
 head(d)
+# proportion of verified subjects by profile
+tapply(d$verified, paste(d$A, d$B), mean)
+
+# Everyone verified: a single verification probability equal to 1
+d_full <- simulate_study(n = 500, prevalence = 0.2,
+                         sensitivity = c(A = 0.9, B = 0.7),
+                         specificity = c(A = 0.85, B = 0.95),
+                         verification_prob = 1)
+mean(d_full$verified)
+
+# A never-verified profile: only subjects positive to at least one test are
+# verified, so the disease status is missing for every (0,0) subject
+d_screen <- simulate_study(n = 500, prevalence = 0.2,
+                           sensitivity = c(A = 0.9, B = 0.7),
+                           specificity = c(A = 0.85, B = 0.95),
+                           verification_prob = c(0, 1, 1, 1))
+table(paste(d_screen$A, d_screen$B), d_screen$verified)
+
+# Verification that depends on the disease (MNAR): with odds_ratio = 3 the
+# odds of verification are three times higher for the diseased, so among
+# the verified the diseased are over-represented
+d_mnar <- simulate_study(n = 5000, prevalence = 0.2,
+                         sensitivity = c(A = 0.9, B = 0.7),
+                         specificity = c(A = 0.85, B = 0.95),
+                         verification_prob = 0.3, odds_ratio = 3)
+mean(d_mnar$disease, na.rm = TRUE)   # well above the prevalence 0.2
+
+# Three tests without names: the columns are called T1, T2, T3, and there
+# are 2^3 = 8 profiles, so verification_prob has 8 values
+d3 <- simulate_study(n = 500, prevalence = 0.1,
+                     sensitivity = c(0.9, 0.8, 0.7),
+                     specificity = c(0.9, 0.9, 0.95),
+                     verification_prob = c(0.05, rep(0.8, 6), 1))
+names(d3)
+
+# Three tests dependent given the disease: among the diseased tests A and B
+# share a latent severity, C much less; among the healthy only A and B
+# are (weakly) dependent
+d_dep <- simulate_study(n = 5000, prevalence = 0.2,
+                        sensitivity = c(A = 0.9, B = 0.8, C = 0.7),
+                        specificity = c(A = 0.85, B = 0.9, C = 0.95),
+                        verification_prob = c(0.05, rep(0.8, 6), 1),
+                        dependence = latent_dependence(
+                          diseased_loadings = c(1, 1, 0.3),
+                          healthy_loadings = c(0.5, 0.5, 0)))
+sick <- which(d_dep$disease == 1)
+cor(d_dep[sick, c("A", "B", "C")])
+
+# Correlation 0.4 between every pair of tests among the diseased and -0.2
+# among the healthy
+d_probit <- simulate_study(n = 5000, prevalence = 0.2,
+                           sensitivity = c(A = 0.9, B = 0.8, C = 0.7),
+                           specificity = c(A = 0.85, B = 0.9, C = 0.95),
+                           verification_prob = 1,
+                           dependence = probit_dependence(
+                             diseased_correlation = 0.4,
+                             healthy_correlation = -0.2))
+}
+\seealso{
+\code{\link[=independence]{independence()}}, \code{\link[=latent_dependence]{latent_dependence()}}, \code{\link[=probit_dependence]{probit_dependence()}}
 }

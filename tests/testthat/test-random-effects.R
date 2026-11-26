@@ -96,7 +96,7 @@ test_that("the random effects model recovers the accuracy under dependence", {
   and_true <- mean(rowSums(tests[sick, ]) == 3)
   re_and <- rule_accuracy(fit, all_positive(), level = 0.99)
   ci_and <- rule_accuracy(baysesp(d, loglinear(), seed = 33), all_positive(), level = 0.99)
-  i <- re_and$quantity == "TPR[all positive]"
+  i <- re_and$quantity == "Se[all positive]"
   expect_true(re_and$lower[i] <= and_true && and_true <= re_and$upper[i])
   expect_false(ci_and$lower[i] <= and_true && and_true <= ci_and$upper[i])
 })

@@ -18,7 +18,7 @@ NULL
 #'
 #' Shows how the accuracy of the tests changes with the two assumptions of the
 #' saturated model that the data cannot check: the odds ratio of verification
-#' between diseased and healthy subjects (see [mnar()]) and the prior on the
+#' between diseased and healthy subjects (set with `verification = mnar()` in the model) and the prior on the
 #' proportion of diseased in the never-verified profiles. For the saturated
 #' model no new fit is needed: these parameters do not enter the likelihood,
 #' so the draws of the identified parameters are reused and only the
@@ -31,10 +31,24 @@ NULL
 #' The odds ratio is fixed at each value of `odds_ratios`: with a grid of
 #' values this is a tipping-point analysis, which shows at which odds ratio a
 #' conclusion changes. With `odds_ratios = NULL` the odds ratio of the fitted
-#' model is kept (1 for [mar()], the prior of [mnar()] otherwise). The new
+#' model is kept (1 with `verification = mar()`, the prior `odds_ratio_prior` with `verification = mnar()`). The new
 #' priors in `unverified_priors` are sampled with the random number generator
 #' of R: set the seed for reproducible results.
 #'
+#' @template accuracy
+#' @details **Recomputation for the saturated model**. The saturated model estimates, for each profile \eqn{t}, its
+#'   frequency \eqn{\omega_t}, the fraction of verified subjects \eqn{v_t} and
+#'   the proportion of diseased among them \eqn{\phi^{(1)}_t}. With odds ratio
+#'   of verification \eqn{OR = \exp(\beta)}, the proportion of diseased among
+#'   the unverified is \eqn{\phi^{(0)}_t = \mathrm{expit}(\mathrm{logit}(\phi^{(1)}_t) - \beta)}:
+#'   with \eqn{OR > 1} the unverified are less often diseased than the verified.
+#'   The proportion of diseased in the profile is then
+#'   \deqn{\psi_t = v_t\, \phi^{(1)}_t + (1 - v_t)\, \phi^{(0)}_t,}
+#'   or \eqn{\psi_t = q_t}, drawn from the prior, for a never-verified profile.
+#'   From these, \eqn{\pi = \sum_t \omega_t \psi_t},
+#'   \eqn{\theta_{1,t} = \omega_t \psi_t / \pi} and
+#'   \eqn{\theta_{0,t} = \omega_t (1 - \psi_t) / (1 - \pi)}, and the accuracy
+#'   measures below.
 #' @param fit A model fitted with [baysesp()].
 #' @param odds_ratios Values of the odds ratio of verification between diseased
 #'   and healthy subjects, \eqn{\exp(\beta)}; 1 is MAR. `NULL` keeps the
@@ -49,7 +63,7 @@ NULL
 #' @param ... For the structured models, arguments passed to [baysesp()] for
 #'   the new fits, such as `chains` and `seed`.
 #' @return A data frame with the columns `odds_ratio` (`NA` when it follows the
-#'   prior of an [mnar()] model) and `unverified_prior`, which describe the
+#'   prior of a model with `verification = mnar()`) and `unverified_prior`, which describe the
 #'   assumptions, followed by the columns of [test_accuracy()] or
 #'   [rule_accuracy()], without `identified`.
 #' @examples

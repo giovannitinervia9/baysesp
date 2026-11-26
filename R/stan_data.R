@@ -1,4 +1,4 @@
-#' @include models.R data.R
+#' @include models.R data.R loglinear.R random_effects.R
 NULL
 
 # From model and data to the Stan programs ---------------------------------------
@@ -54,6 +54,7 @@ saturated_data <- function(model, data) {
   prevalence <- prior_code(model@profile_prevalence_prior)
 
   list(
+    prior_only = 0L,
     J = J,
     n1 = data@n_diseased,
     n0 = data@n_healthy,
@@ -108,7 +109,7 @@ structured_mnar <- function(s, verification, data) {
   s
 }
 
-structured_mar <- list(mnar = 0L, n_beta = 0L, beta_value = 0,
+structured_mar <- list(prior_only = 0L, mnar = 0L, n_beta = 0L, beta_value = 0,
                        alpha_family = 1L, alpha_params = c(0, 1, 0),
                        beta_family = 1L, beta_params = c(0, 1, 0))
 

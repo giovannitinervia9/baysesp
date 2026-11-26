@@ -7,11 +7,12 @@
 prior_student(df = 3, location = 0, scale = 1)
 }
 \arguments{
-\item{df}{Degrees of freedom, a positive number.}
+\item{df}{Degrees of freedom: a single positive number. Default 3.}
 
-\item{location}{Location (the centre of the distribution).}
+\item{location}{Location, the centre of the distribution: a single finite
+number. Default 0.}
 
-\item{scale}{Scale, a positive number.}
+\item{scale}{Scale: a single positive number. Default 1.}
 }
 \value{
 An object of class \code{prior_student}.

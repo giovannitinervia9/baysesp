@@ -57,7 +57,7 @@ test_that("the abstract class cannot be instantiated", {
 
 test_that("priors print a readable description", {
   expect_output(print(prior_beta(0.5, 2)),
-                "Beta\\(mean = 0.5, precision = 2\\), i.e. Beta\\(1, 1\\)")
+                "Beta\\(mean = 0.5, precision = 2\\)\n")
   expect_output(print(prior_normal(0, 1.5)), "<prior_normal> Normal\\(mean = 0, sd = 1.5\\)")
   expect_output(print(prior_student(3, 0, 1)), "logit")
   expect_output(print(prior_dirichlet(1)), "vector of probabilities")

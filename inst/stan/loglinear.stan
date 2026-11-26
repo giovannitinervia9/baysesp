@@ -15,6 +15,7 @@ functions {
 }
 
 data {
+  int<lower=0, upper=1> prior_only;             // 1 = sample from the prior only
   int<lower=2> J;                                // number of profiles, 2^K
   int<lower=1> P;                                // parameters per class
   matrix[J, P] X;                                // design matrix X_m
@@ -67,8 +68,10 @@ model {
   for (a in 1:num_elements(alpha)) alpha[a] ~ prior(alpha_family, alpha_params);
   for (i in 1:n_beta) beta[i] ~ prior(beta_family, beta_params);
 
-  target += cells_lp(logit_prevalence, log_softmax(X * eta0), log_softmax(X * eta1),
-                     n1, n0, u, verified_pos, mnar, n_beta, beta_value, alpha, beta);
+  if (!prior_only) {
+    target += cells_lp(logit_prevalence, log_softmax(X * eta0), log_softmax(X * eta1),
+                       n1, n0, u, verified_pos, mnar, n_beta, beta_value, alpha, beta);
+  }
 }
 
 generated quantities {

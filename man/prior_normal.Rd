@@ -7,9 +7,9 @@
 prior_normal(mean = 0, sd = 1)
 }
 \arguments{
-\item{mean}{Mean.}
+\item{mean}{Mean: a single finite number. Default 0.}
 
-\item{sd}{Standard deviation, a positive number.}
+\item{sd}{Standard deviation: a single positive number. Default 1.}
 }
 \value{
 An object of class \code{prior_normal}.

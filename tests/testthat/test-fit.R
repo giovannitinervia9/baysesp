@@ -52,6 +52,21 @@ test_that("the saturated model reproduces the conjugate posterior (rstan)", {
   expect_same_posterior(draws$prevalence, exact$prevalence)
   expect_same_posterior(rowSums(draws$theta_diseased[, c(2, 4)]), exact$se1)
   expect_output(print(fit), "saturated model, MAR verification, 4 chains x 1000 draws \\(rstan\\)")
+  expect_output(print(fit), "Convergence: max R-hat 1\\.[0-9]{3}, .* 0 divergent transitions")
+  expect_output(print(fit), "fixed at 1 \\(MAR\\)")
+})
+
+test_that("print shows the odds ratio of verification under MNAR", {
+  fit <- example_fit()
+  beta <- posterior::draws_array(beta = rep(log(c(1.5, 2.5)), 2))
+  fit@draws <- posterior::bind_draws(fit@draws, beta)
+  fit@model <- saturated(verification = mnar())
+  or <- odds_ratio_summary(fit)
+  expect_identical(or$quantity, "odds_ratio")
+  expect_equal(or$mean, 2)
+  expect_false(or$identified)
+  expect_output(print(fit), "odds_ratio")
+  expect_output(print(fit), "NA divergent transitions")
 })
 
 test_that("the cmdstanr backend gives the same posterior", {

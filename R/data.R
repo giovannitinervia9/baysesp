@@ -1,3 +1,6 @@
+#' @include generics.R
+NULL
+
 # Study data --------------------------------------------------------------------
 #
 # The model only needs the counts of the 3J cells of the aggregated table
@@ -156,7 +159,7 @@ profile_labels <- function(data) {
   paste0("(", apply(data@profiles, 1, paste, collapse = ","), ")")
 }
 
-S7::method(print, baysesp_data) <- function(x, ...) {
+S7::method(print_generic, baysesp_data) <- function(x, ...) {
   K <- length(x@tests)
   n_verified <- sum(x@n_diseased + x@n_healthy)
   never <- if (!any(x@never_verified)) "none" else

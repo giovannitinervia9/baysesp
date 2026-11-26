@@ -4,3 +4,7 @@
 ^README\.Rmd$
 ^configure\.log$
 ^\.github$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^man-roxygen$

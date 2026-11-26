@@ -24,12 +24,65 @@ Youden index (\code{first} minus \code{second}) and of the ratios of the true an
 positive rates (\code{first} over \code{second}).
 }
 \details{
+The accuracy is defined for a \emph{rule} \eqn{R}, which declares a subject
+positive or negative from the response profile \eqn{t}, the vector of the
+results of the tests: \eqn{r_R(t) = 1} if the profile is declared positive,
+0 otherwise. A single test is the rule "this test is positive". The
+quantities depend on the prevalence \eqn{\pi = P(D = 1)} and on the
+distribution of the profiles in the diseased, \eqn{\theta_{1,t} = P(T = t \mid D = 1)},
+and in the healthy, \eqn{\theta_{0,t} = P(T = t \mid D = 0)}:
+\itemize{
+\item \strong{sensitivity} (\code{Se}):
+\deqn{Se_R = P(R \textrm{ positive} \mid D = 1) = \sum_t r_R(t)\, \theta_{1,t},}
+the proportion of diseased subjects that the rule declares positive. It
+is also called the true positive rate (TPR);
+\item \strong{specificity} (\code{Sp}):
+\deqn{Sp_R = P(R \textrm{ negative} \mid D = 0) = 1 - \sum_t r_R(t)\, \theta_{0,t},}
+the proportion of healthy subjects that the rule declares negative;
+\eqn{1 - Sp_R} is the false positive rate (FPR);
+\item \strong{positive predictive value} (\code{PPV}):
+\deqn{PPV_R = P(D = 1 \mid R \textrm{ positive}) = \frac{\pi\, Se_R}{\pi\, Se_R + (1 - \pi)(1 - Sp_R)},}
+the probability that a subject declared positive is diseased;
+\item \strong{negative predictive value} (\code{NPV}):
+\deqn{NPV_R = P(D = 0 \mid R \textrm{ negative}) = \frac{(1 - \pi)\, Sp_R}{(1 - \pi)\, Sp_R + \pi\, (1 - Se_R)},}
+the probability that a subject declared negative is healthy.
+}
+
+Sensitivity and specificity describe the rule and do not depend on the
+prevalence; the predictive values describe what a result means for a
+subject, and change with the prevalence of the population. For combined
+rules, such as \code{\link[=any_positive]{any_positive()}}, the accuracy depends on the joint
+distribution of the tests, not only on their individual sensitivities and
+specificities.
+
+Each quantity is computed from every posterior draw of \eqn{\pi},
+\eqn{\theta_0} and \eqn{\theta_1}. The results report its posterior mean
+and median and an equal-tailed credible interval with probability \code{level}.
+
+For two rules \eqn{R} (\code{first}) and \eqn{R'} (\code{second}):
+\itemize{
+\item \strong{differences}: \eqn{\Delta Se = Se_R - Se_{R'}},
+\eqn{\Delta Sp = Sp_R - Sp_{R'}} and, for the Youden index
+\eqn{J_R = Se_R + Sp_R - 1}, which summarises the accuracy in one number
+(0 for a useless test, 1 for a perfect one),
+\eqn{\Delta J = \Delta Se + \Delta Sp}. A positive difference favours the
+first rule;
+\item \strong{ratios} of the true positive rates,
+\eqn{rTPR = Se_R / Se_{R'}}, and of the false positive rates,
+\eqn{rFPR = (1 - Sp_R) / (1 - Sp_{R'})}. For example, \eqn{rTPR = 1.2} means
+that the first rule detects 20\% more diseased subjects; \eqn{rFPR < 1}
+means that it gives fewer false positives.
+}
+
+The column \code{probability} is the posterior probability that a difference is
+positive, or that a ratio is greater than 1. \eqn{P(rTPR > 1)} equals
+\eqn{P(\Delta Se > 0)}, and \eqn{P(rFPR > 1)} equals \eqn{P(\Delta Sp < 0)}.
+
 When some profile is never verified, the differences depend on the prior of
 its proportion of diseased, but the ratios do not, as long as neither rule
-declares a never-verified profile positive. In that case the signs of the
-differences in sensitivity and in specificity are also identified: the
-\code{probability} of a ratio being greater than 1 is the probability that the
-corresponding difference is positive.
+declares a never-verified profile positive. In that case the signs of the differences in sensitivity
+and in specificity are also identified, through the probabilities of the
+ratios.
 }
 \examples{
 \donttest{

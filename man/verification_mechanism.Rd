@@ -2,23 +2,21 @@
 % Please edit documentation in R/verification.R
 \name{verification_mechanism}
 \alias{verification_mechanism}
-\alias{mar}
 \title{Verification mechanisms}
 \usage{
 verification_mechanism()
-
-mar()
-}
-\value{
-An object of class \code{mar}.
 }
 \description{
 \code{verification_mechanism} is the abstract parent class of the assumptions on
-how subjects are selected for verification by the reference standard.
-\code{mar()} assumes that verification depends only on the test results
-(missing at random): among subjects with the same profile, verified and
-unverified subjects have the same proportion of diseased.
+how subjects are selected for verification by the reference standard. It
+cannot be instantiated: the concrete assumptions are the missing at random
+assumption, in which verification depends only on the test results, and the
+missing not at random assumption, in which verification also depends on the
+disease status. Each concrete assumption has its own page.
 }
 \examples{
-mar()
+S7::S7_inherits(mar(), verification_mechanism)
+}
+\seealso{
+\code{\link[=mar]{mar()}}, \code{\link[=mnar]{mnar()}}
 }

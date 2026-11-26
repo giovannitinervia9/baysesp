@@ -20,6 +20,9 @@ NULL
 #' specificity (`Sp`), positive predictive value (`PPV`) and negative
 #' predictive value (`NPV`) of each test.
 #'
+#' @template accuracy
+#' @details The first row is the prevalence \eqn{\pi}, the proportion of
+#'   diseased subjects in the population.
 #' @param fit A fitted model, from [baysesp()].
 #' @param level Probability of the credible intervals.
 #' @return A data frame with one row per quantity and columns `quantity`,
@@ -49,15 +52,17 @@ test_accuracy <- function(fit, level = 0.95) {
 
 #' Accuracy of diagnostic rules
 #'
-#' Posterior summaries of the true positive rate (`TPR`, the sensitivity of the
-#' rule), false positive rate (`FPR`), specificity (`Sp`), positive predictive
-#' value (`PPV`) and negative predictive value (`NPV`) of rules that combine
-#' the tests.
+#' Posterior summaries of the sensitivity (`Se`), specificity (`Sp`),
+#' positive predictive value (`PPV`) and negative predictive value (`NPV`) of
+#' rules that combine the tests. For a single test the result is the same as
+#' in [test_accuracy()].
 #'
+#' @template accuracy
 #' @inheritParams test_accuracy
 #' @param rules A rule, such as [any_positive()], the name of a test, or a list
 #'   of them.
-#' @return A data frame as in [test_accuracy()].
+#' @return A data frame as in [test_accuracy()], without the row of the
+#'   prevalence.
 #' @examples
 #' \donttest{
 #' set.seed(1)
@@ -72,8 +77,8 @@ test_accuracy <- function(fit, level = 0.95) {
 #' @export
 rule_accuracy <- function(fit, rules, level = 0.95) {
   x <- accuracy_draws(fit, rules, level)
-  out <- by_rule(list(TPR = x$tpr, FPR = x$fpr, Sp = 1 - x$fpr, PPV = x$ppv, NPV = x$npv),
-                 list(x$all, x$all, x$all, x$ppv_identified, x$all))
+  out <- by_rule(list(Se = x$tpr, Sp = 1 - x$fpr, PPV = x$ppv, NPV = x$npv),
+                 list(x$all, x$all, x$ppv_identified, x$all))
   summarise_draws(out$draws, level, identified = out$identified)
 }
 
@@ -83,13 +88,30 @@ rule_accuracy <- function(fit, rules, level = 0.95) {
 #' Youden index (`first` minus `second`) and of the ratios of the true and false
 #' positive rates (`first` over `second`).
 #'
+#' @template accuracy
+#' @details For two rules \eqn{R} (`first`) and \eqn{R'} (`second`):
+#'
+#' - **differences**: \eqn{\Delta Se = Se_R - Se_{R'}},
+#'   \eqn{\Delta Sp = Sp_R - Sp_{R'}} and, for the Youden index
+#'   \eqn{J_R = Se_R + Sp_R - 1}, which summarises the accuracy in one number
+#'   (0 for a useless test, 1 for a perfect one),
+#'   \eqn{\Delta J = \Delta Se + \Delta Sp}. A positive difference favours the
+#'   first rule;
+#' - **ratios** of the true positive rates,
+#'   \eqn{rTPR = Se_R / Se_{R'}}, and of the false positive rates,
+#'   \eqn{rFPR = (1 - Sp_R) / (1 - Sp_{R'})}. For example, \eqn{rTPR = 1.2} means
+#'   that the first rule detects 20% more diseased subjects; \eqn{rFPR < 1}
+#'   means that it gives fewer false positives.
+#'
+#' The column `probability` is the posterior probability that a difference is
+#' positive, or that a ratio is greater than 1. \eqn{P(rTPR > 1)} equals
+#' \eqn{P(\Delta Se > 0)}, and \eqn{P(rFPR > 1)} equals \eqn{P(\Delta Sp < 0)}.
+#'
 #' When some profile is never verified, the differences depend on the prior of
 #' its proportion of diseased, but the ratios do not, as long as neither rule
-#' declares a never-verified profile positive. In that case the signs of the
-#' differences in sensitivity and in specificity are also identified: the
-#' `probability` of a ratio being greater than 1 is the probability that the
-#' corresponding difference is positive.
-#'
+#' declares a never-verified profile positive. In that case the signs of the differences in sensitivity
+#' and in specificity are also identified, through the probabilities of the
+#' ratios.
 #' @inheritParams test_accuracy
 #' @param first,second Two tests (by name) or two rules, see [test_rule].
 #' @return A data frame as in [test_accuracy()], with the additional column

@@ -7,16 +7,40 @@
 prior_dirichlet(concentration = 1)
 }
 \arguments{
-\item{concentration}{Concentration parameters: a single positive number,
-repeated for every component, or a vector with one positive value per
-component. \code{prior_dirichlet(1)} is the uniform distribution on the simplex.}
+\item{concentration}{Concentration parameters, positive finite numbers. Either
+a single number, repeated for every component, or a numeric vector with one
+value per component (one per response profile, so its length is 1 or
+\eqn{J = 2^K}, where \eqn{K} is the number of tests). The length is checked
+when the prior is given to a model. Default 1, the uniform distribution on
+the simplex.}
 }
 \value{
 An object of class \code{prior_dirichlet}.
 }
 \description{
 A Dirichlet distribution for a vector of probabilities that sum to one, such
-as the frequencies of the test result profiles.
+as the frequencies of the test result profiles. It generalises the Beta
+distribution to more than two components: each component is Beta distributed
+on its own.
+}
+\details{
+Let \eqn{a = (a_1, \dots, a_J)} be the concentration parameters and
+\eqn{p = (p_1, \dots, p_J)}, with \eqn{\sum_j p_j = 1}, the vector of
+probabilities. The distribution has the following properties:
+\itemize{
+\item the prior mean of component \eqn{j} is \eqn{a_j / \sum_k a_k};
+\item the total \eqn{\sum_k a_k} acts as a prior sample size: the larger it
+is, the more concentrated the distribution is around its mean, while a small
+total leaves the probabilities widely spread;
+\item each component has marginal distribution
+\eqn{\mathrm{Beta}(a_j, \sum_k a_k - a_j)}.
+}
+A single value \eqn{c} repeated for all components gives a symmetric prior
+with mean \eqn{1/J} for every component. With all concentrations equal to 1
+the distribution is uniform on the simplex of probabilities. Concentrations
+below 1 move the mass towards the corners of the simplex, where some
+components are close to zero; larger concentrations move it towards the
+prior mean.
 }
 \examples{
 prior_dirichlet(1)

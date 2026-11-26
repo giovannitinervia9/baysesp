@@ -43,7 +43,7 @@ test_that("the odds ratio changes the proportion of diseased among the unverifie
   phi1 <- 0.1 * example_theta1 / omega
   psi <- 0.5 * phi1 + 0.5 * stats::plogis(stats::qlogis(phi1) - log(3))
   tpr_or <- sum((omega * psi)[-1]) / sum(omega * psi)
-  expect_equal(s$mean[s$odds_ratio == 3 & s$quantity == "TPR[any positive]"], tpr_or)
+  expect_equal(s$mean[s$odds_ratio == 3 & s$quantity == "Se[any positive]"], tpr_or)
   expect_error(sensitivity_analysis(fit, odds_ratios = 0), "`odds_ratios`")
 })
 
@@ -67,9 +67,9 @@ test_that("new priors on the never-verified profiles are sampled", {
 
 test_that("identification functions take a fixed odds ratio", {
   fit <- example_fit(verified = c(FALSE, rep(TRUE, 7)))
-  b1 <- identification_bounds(fit)
-  expect_equal(identification_bounds(fit, odds_ratio = 1), b1)
-  b3 <- identification_bounds(fit, odds_ratio = 3)
+  b1 <- accuracy_bounds(fit)
+  expect_equal(accuracy_bounds(fit, odds_ratio = 1), b1)
+  b3 <- accuracy_bounds(fit, odds_ratio = 3)
   # with odds ratio 3 the unverified are less often diseased: lower prevalence bounds
   expect_true(all(b3$lower_bound[1] < b1$lower_bound[1]))
   omega <- 0.1 * example_theta1 + 0.9 * example_theta0
@@ -77,11 +77,11 @@ test_that("identification functions take a fixed odds ratio", {
   psi <- 0.5 * phi1 + 0.5 * stats::plogis(stats::qlogis(phi1) - log(3))
   expect_equal(b3$lower_bound[1], sum((omega * psi)[-1]))
   expect_equal(b3$upper_bound[1], sum((omega * psi)[-1]) + omega[1])
-  expect_identical(nrow(identified_quantities(fit, odds_ratio = 3)), 6L)
+  expect_identical(nrow(accuracy_ratios(fit, odds_ratio = 3)), 6L)
 
   mnar_fit <- fit
   mnar_fit@model <- saturated(verification = mnar())
-  expect_error(identification_bounds(mnar_fit), "give it with `odds_ratio`")
-  expect_no_error(identification_bounds(mnar_fit, odds_ratio = 2))
-  expect_error(identification_bounds(fit, odds_ratio = -1), "`odds_ratio`")
+  expect_error(accuracy_bounds(mnar_fit), "give it with `odds_ratio`")
+  expect_no_error(accuracy_bounds(mnar_fit, odds_ratio = 2))
+  expect_error(accuracy_bounds(fit, odds_ratio = -1), "`odds_ratio`")
 })

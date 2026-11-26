@@ -7,13 +7,19 @@
 prior_distribution(family = character(0), support = character(0))
 }
 \arguments{
-\item{family}{Name of the distribution family.}
+\item{family}{Name of the distribution family (read-only property).}
 
-\item{support}{Scale the prior acts on: \code{"probability"}, \code{"real"} or
-\code{"simplex"}.}
+\item{support}{Scale the prior acts on (read-only property): \code{"probability"}
+for priors on a probability, \code{"real"} for priors on an unconstrained
+parameter, \code{"simplex"} for priors on a vector of probabilities that sum to
+one.}
 }
 \description{
 \code{prior_distribution} is the abstract parent class of all prior distributions.
-Use the constructors \code{\link[=prior_beta]{prior_beta()}}, \code{\link[=elicit_beta]{elicit_beta()}}, \code{\link[=prior_normal]{prior_normal()}},
-\code{\link[=prior_student]{prior_student()}} and \code{\link[=prior_dirichlet]{prior_dirichlet()}} to create priors.
+Its concrete subclasses are the Beta, normal, Student t and Dirichlet priors,
+each with its own constructor.
+}
+\seealso{
+\code{\link[=prior_beta]{prior_beta()}}, \code{\link[=elicit_beta]{elicit_beta()}}, \code{\link[=prior_normal]{prior_normal()}}, \code{\link[=prior_student]{prior_student()}},
+\code{\link[=prior_dirichlet]{prior_dirichlet()}}
 }

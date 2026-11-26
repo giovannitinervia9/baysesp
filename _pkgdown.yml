@@ -1,0 +1,60 @@
+url: https://giovannitinervia9.github.io/baysesp/
+template:
+  bootstrap: 5
+  light-switch: true
+  math-rendering: katex
+
+reference:
+- title: Data
+  contents:
+  - baysesp_data
+  - simulate_study
+  - independence
+  - latent_dependence
+  - probit_dependence
+- title: Models and fitting
+  contents:
+  - baysesp
+  - saturated
+  - loglinear
+  - random_effects
+  - accuracy_model
+  - compile_models
+- title: Verification
+  contents:
+  - mar
+  - mnar
+  - verification_mechanism
+- title: Priors
+  contents:
+  - prior_beta
+  - elicit_beta
+  - prior_normal
+  - prior_student
+  - prior_dirichlet
+  - prior_distribution
+- title: Diagnostic rules
+  contents:
+  - single_test
+  - any_positive
+  - all_positive
+  - min_positive
+  - test_rule
+- title: Accuracy of tests and rules
+  contents:
+  - test_accuracy
+  - rule_accuracy
+  - compare_tests
+- title: Never-verified profiles and sensitivity analysis
+  contents:
+  - accuracy_bounds
+  - accuracy_ratios
+  - sensitivity_analysis
+  - prior_posterior
+  - plot.prior_posterior
+
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - baysesp

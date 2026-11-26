@@ -15,24 +15,24 @@ screening studies. `{baysesp}` corrects this *verification bias* with a joint
 model for the tests, the disease and the verification process, written in
 [Stan](https://mc-stan.org).
 
-## Planned features
+## Features
 
-- Joint modelling of **K binary tests**, with or without conditional
-  dependence between them.
+- Joint modelling of **K binary tests**. The saturated model makes no
+  assumption on how the tests depend on each other; log-linear and random
+  effects models assume a structure for that dependence.
 - Accuracy of **combination rules**: any test positive, all positive,
-  at least *k* positive.
+  at least *k* positive, or a custom rule.
 - **Comparisons between tests**: differences and ratios of sensitivities
   and specificities, with their posterior distributions.
-- **Ignorable and non-ignorable verification**, with explicit sensitivity
-  analyses for the quantities that the data cannot identify, such as the
-  prevalence among subjects who are never verified.
+- Verification that depends only on the test results (missing at random) or
+  also on the disease status (missing not at random).
+- **Profiles that are never verified**, for example when only subjects with a
+  positive test receive the reference standard: the missing information is an
+  explicit prior, with bounds and ratios that hold whatever that prior is.
+- **Sensitivity analyses** over the assumptions that the data cannot check,
+  without fitting the model again, and prior-posterior comparisons.
 - Two Stan backends: `{rstan}` (default, models precompiled at
   installation) and `{cmdstanr}` (optional).
-
-## Status
-
-The package is under active development and its interface is not stable
-yet. The modelling framework is being implemented step by step.
 
 ## Installation
 
@@ -53,3 +53,45 @@ models once with `compile_models()`:
 ``` r
 baysesp::compile_models()
 ```
+
+## Example
+
+Two tests, `A` and `B`, are performed on 3000 simulated subjects; those
+negative to both tests are rarely verified.
+
+``` r
+library(baysesp)
+
+set.seed(2026)
+study <- simulate_study(
+  n = 3000,
+  prevalence = 0.15,
+  sensitivity = c(A = 0.85, B = 0.70),
+  specificity = c(A = 0.90, B = 0.95),
+  verification_prob = c(0.1, 0.8, 0.8, 1)
+)
+
+# count the subjects of each combination of test results
+d <- baysesp_data(
+  data = study,
+  tests = c("A", "B"),
+  verified = "verified",
+  disease = "disease"
+)
+
+# saturated model, verification that depends only on the test results
+fit <- baysesp(data = d, model = saturated(verification = mar()), seed = 1)
+
+test_accuracy(fit = fit)                                  # Se, Sp, PPV, NPV
+rule_accuracy(fit = fit, rules = list(any_positive(), all_positive()))
+compare_tests(fit = fit, first = "A", second = "B")
+plot(fit)
+```
+
+The [package website](https://giovannitinervia9.github.io/baysesp/) has the
+documentation of every function and a vignette that goes through all the
+features of the package, `vignette("baysesp")`.
+
+## Status
+
+The package is under active development and its interface may still change.

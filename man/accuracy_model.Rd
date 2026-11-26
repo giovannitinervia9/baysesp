@@ -6,11 +6,19 @@
 \usage{
 accuracy_model(verification = verification_mechanism())
 }
-\arguments{
-\item{verification}{Verification mechanism, by default \code{\link[=mar]{mar()}}.}
-}
 \description{
 \code{accuracy_model} is the abstract parent class of the models for the joint
-distribution of the tests. Every model has a \code{verification} property, the
-assumed \link{verification_mechanism}.
+distribution of the test results and of the disease status. It cannot be
+created directly: the concrete models are \code{\link[=saturated]{saturated()}}, \code{\link[=loglinear]{loglinear()}} and
+\code{\link[=random_effects]{random_effects()}}, each with its own constructor.
+}
+\details{
+Every model has the property \code{verification}, an object of class
+\code{verification_mechanism} (\code{mar()} or \code{mnar()}) that states how the
+probability of being verified depends on the test results and on the
+disease status. A model object holds the priors and the verification
+mechanism; the data are supplied to \code{baysesp()}, which fits the model.
+}
+\seealso{
+\code{\link[=saturated]{saturated()}}, \code{\link[=loglinear]{loglinear()}}, \code{\link[=random_effects]{random_effects()}}
 }

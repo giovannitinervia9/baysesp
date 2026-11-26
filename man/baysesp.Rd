@@ -17,40 +17,104 @@ baysesp(
 )
 }
 \arguments{
-\item{data}{Study data, created by \code{\link[=baysesp_data]{baysesp_data()}}.}
+\item{data}{A \code{baysesp_data} object, created by \code{\link[=baysesp_data]{baysesp_data()}}, with the
+results of the tests, the verification indicator and the disease status of
+each subject. Any other object gives an error.}
 
-\item{model}{Model, by default \code{\link[=saturated]{saturated()}} with MAR verification; see
-also \code{\link[=loglinear]{loglinear()}} and \code{\link[=random_effects]{random_effects()}}.}
+\item{model}{An accuracy model: an object created by one of the model
+constructors \code{\link[=saturated]{saturated()}}, \code{\link[=loglinear]{loglinear()}} or \code{\link[=random_effects]{random_effects()}}. It holds
+the priors on the model parameters and the verification mechanism, which is
+\code{verification = mar()} or \code{verification = mnar()} given to the constructor. Default
+\code{saturated()}, with MAR verification. Any other object gives an error.}
 
-\item{backend}{Stan interface: \code{"rstan"} (default; the programs are compiled
-when the package is installed) or \code{"cmdstanr"} (each program is compiled
-the first time it is used, see \code{\link[=compile_models]{compile_models()}}). If \code{cmdstanr} or
-CmdStan are not available, \code{"rstan"} is used with a message.}
+\item{backend}{Stan interface, a single value: \code{"rstan"} (default) or
+\code{"cmdstanr"}. With \code{"rstan"}, the Stan programs are the ones compiled when
+the package is installed, so nothing is compiled at run time. With
+\code{"cmdstanr"}, each program is compiled the first time it is used and the
+executable is kept in the user cache directory, so the first run is slower
+and later runs reuse the compiled program. If \code{cmdstanr} or CmdStan is not
+available, \code{"rstan"} is used and a message is printed. The \code{backend} element
+of the result reports the backend that was actually used. Any other value
+gives an error.}
 
-\item{chains}{Number of Markov chains.}
+\item{chains}{Positive integer, the number of Markov chains, which run
+independently. Default \code{4}.}
 
-\item{iter_warmup, iter_sampling}{Number of warmup and sampling iterations per
-chain.}
+\item{iter_warmup}{Positive integer, the number of warmup iterations of each
+chain. The warmup iterations adapt the sampler and are then discarded.
+Default \code{1000}.}
 
-\item{seed}{Random seed, or \code{NULL}.}
+\item{iter_sampling}{Positive integer, the number of sampling iterations of
+each chain, kept as draws. Default \code{1000}, which gives \code{chains * 1000}
+draws in total.}
 
-\item{...}{Further arguments passed to \code{\link[rstan:stanmodel-method-sampling]{rstan::sampling()}} or to the
-\verb{$sample()} method of \code{cmdstanr}, such as \code{cores}/\code{parallel_chains}.}
+\item{seed}{\code{NULL} (default) or a single whole number between \code{0} and
+\code{2147483647}. If \code{NULL}, a seed is drawn from the random number generator
+of R, so that calling \code{set.seed()} before \code{baysesp()} makes the run
+reproducible. A number is used directly as the seed of the sampler.}
+
+\item{...}{Further arguments passed to \code{\link[rstan:stanmodel-method-sampling]{rstan::sampling()}} when \code{backend} is
+\code{"rstan"} (for example \code{cores}, to run the chains in parallel, or
+\code{control}, for example \code{list(adapt_delta = 0.95)}), or to the \verb{$sample()}
+method of \code{cmdstanr} when \code{backend} is \code{"cmdstanr"} (for example
+\code{parallel_chains}, or \code{adapt_delta}). Do not repeat \code{chains},
+\code{iter_warmup}, \code{iter_sampling} or \code{seed}, which \code{baysesp()} already passes to
+the backend.}
 }
 \value{
-An object of class \code{baysesp_fit}, with properties \verb{@model}, \verb{@data},
-\verb{@draws} (a \code{posterior::draws_array}), \verb{@backend} and \verb{@stan_fit} (the
-object returned by the backend). The draws contain \code{prevalence},
-\code{theta_healthy} and \code{theta_diseased} (the distributions of the profiles in
-the healthy and in the diseased) and, for the saturated model, the
-parameters of the transparent parametrization: \code{omega}, \code{v} and \code{phi1}
-(0 for never-verified profiles), \code{q} if some profile is never verified and
-\code{beta} with \code{\link[=mnar]{mnar()}} verification (also for \code{\link[=loglinear]{loglinear()}}).
+An object of class \code{baysesp_fit} with the following properties:
+\itemize{
+\item \code{model}: the model object given in \code{model}.
+\item \code{data}: the \code{baysesp_data} object given in \code{data}.
+\item \code{draws}: a \code{posterior::draws_array} with the sampling iterations only,
+that is \code{iter_sampling} iterations, \code{chains} chains and the variables
+listed below.
+\item \code{backend}: the backend used, \code{"rstan"} or \code{"cmdstanr"}.
+\item \code{stan_fit}: the object returned by the backend: a \code{stanfit} object for
+\code{"rstan"}, a \code{CmdStanMCMC} object for \code{"cmdstanr"}.
+}
+
+The profiles are the \eqn{J = 2^K} response profiles of the \eqn{K} tests,
+indexed in binary order: profile \eqn{j} is the pattern of results with index
+\eqn{j = 1 + \sum_k t_k 2^{k-1}}, where \eqn{t_k = 1} for a positive result on
+test \eqn{k} and \eqn{t_k = 0} otherwise. Profile 1 has all tests negative,
+and the first test changes fastest. The variables in \code{draws} are:
+\itemize{
+\item \code{prevalence}: the prevalence of the disease.
+\item \code{theta_healthy[j]} and \code{theta_diseased[j]}: the probability of profile
+\eqn{j} among the healthy and among the diseased. Within each draw, each of
+the two sets sums to 1 over \eqn{j}.
+\item \code{omega[j]}, \code{v[j]} and \code{phi1[j]}, only for the saturated model: the
+probability of profile \eqn{j}, the probability of verification given
+profile \eqn{j}, and the probability of disease among the verified subjects
+with profile \eqn{j}. \code{v[j]} and \code{phi1[j]} are 0 for profiles with no
+verified subjects.
+\item \code{q[b]}: the prevalence of disease among the subjects with the \eqn{b}-th
+profile that has no verified subjects. Present only if some profile has no
+verified subjects.
+\item \code{beta}: the log odds ratio of verification between diseased and healthy
+subjects with the same profile, present only with MNAR verification. Without
+\code{by_profile = TRUE} it is a single value. With \code{by_profile = TRUE} there is
+one value, named \code{beta[i]}, for each profile with verified subjects, in
+binary order.
+}
 }
 \description{
-Fits a model for the accuracy of one or more binary tests under partial
-verification. The model object holds the priors and the verification
-mechanism; see \code{\link[=saturated]{saturated()}}.
+Fits a Bayesian model for the sensitivity and specificity of one or more
+binary tests when not all subjects have been verified with the reference
+standard. The objects of the model classes passed to \code{model} contain the
+specification of the priors and of the verification mechanism.
+}
+\details{
+The posterior distribution of the parameters of \code{model}, given \code{data}, is
+approximated with the No-U-Turn sampler of Stan, a form of Hamiltonian Monte
+Carlo that adapts its step size and mass matrix during the warmup iterations.
+The likelihood and the priors are coded in a Stan program specific to the
+model class and to the verification mechanism. Each chain runs
+\code{iter_warmup} warmup iterations, which are discarded, followed by
+\code{iter_sampling} sampling iterations, which are kept as draws. The draws
+therefore form \code{chains * iter_sampling} joint samples of the parameters of
+the model, and every quantity reported by the package is computed from them.
 }
 \examples{
 \donttest{

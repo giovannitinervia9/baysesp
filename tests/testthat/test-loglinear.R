@@ -43,7 +43,7 @@ test_that("functions for the saturated model refuse the structured models", {
   fit <- example_fit(verified = c(FALSE, rep(TRUE, 7)))
   fit@model <- loglinear()
   expect_no_error(test_accuracy(fit))
-  expect_error(identification_bounds(fit), "only for the saturated model")
+  expect_error(accuracy_bounds(fit), "only for the saturated model")
   expect_error(sensitivity_analysis(fit), "`odds_ratios`")
   expect_error(sensitivity_analysis(fit, odds_ratios = 2, unverified_priors = prior_beta()),
                "applies only to saturated")

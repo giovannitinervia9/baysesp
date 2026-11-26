@@ -16,6 +16,7 @@ functions {
 }
 
 data {
+  int<lower=0, upper=1> prior_only;             // 1 = sample from the prior only
   int<lower=1> J;                                // number of profiles, 2^K
   array[J] int<lower=0> n1;                      // verified diseased
   array[J] int<lower=0> n0;                      // verified healthy
@@ -76,11 +77,13 @@ model {
   for (i in 1:n_beta) beta[i] ~ prior(beta_family, beta_params);
 
   // likelihood: multinomial over profiles and independent binomials
-  N_profile ~ multinomial(omega);
-  for (a in 1:J1) {
-    int j = verified_idx[a];
-    n1[j] + n0[j] ~ binomial_logit(N_profile[j], logit_v[a]);
-    n1[j] ~ binomial_logit(n1[j] + n0[j], logit_phi1[a]);
+  if (!prior_only) {
+    N_profile ~ multinomial(omega);
+    for (a in 1:J1) {
+      int j = verified_idx[a];
+      n1[j] + n0[j] ~ binomial_logit(N_profile[j], logit_v[a]);
+      n1[j] ~ binomial_logit(n1[j] + n0[j], logit_phi1[a]);
+    }
   }
 }
 

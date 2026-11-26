@@ -7,11 +7,11 @@
 prior_beta(mean = 0.5, precision = 2)
 }
 \arguments{
-\item{mean}{Mean of the distribution, in (0, 1).}
+\item{mean}{Mean of the distribution: a single number in (0, 1). Default 0.5.}
 
-\item{precision}{Precision, a positive number: the larger it is, the more
-concentrated the distribution around its mean. \code{prior_beta(0.5, 2)} is the
-uniform distribution.}
+\item{precision}{Precision: a single positive number. The larger it is, the
+more concentrated the distribution around its mean. The default 2, with
+\code{mean = 0.5}, gives the uniform distribution on (0, 1).}
 }
 \value{
 An object of class \code{prior_beta}.

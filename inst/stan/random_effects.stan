@@ -47,6 +47,7 @@ functions {
 }
 
 data {
+  int<lower=0, upper=1> prior_only;             // 1 = sample from the prior only
   int<lower=2> J;                                // number of profiles, 2^K
   int<lower=2> K;                                // number of tests
   int<lower=0, upper=1> positive_loadings;       // 1 = all loadings positive
@@ -110,10 +111,12 @@ model {
   for (i in 1:num_elements(alpha)) alpha[i] ~ prior(alpha_family, alpha_params);
   for (i in 1:n_beta) beta[i] ~ prior(beta_family, beta_params);
 
-  target += cells_lp(logit_prevalence,
-                     log_profiles(profiles, a[1], b[1], nodes, log_weights),
-                     log_profiles(profiles, a[2], b[2], nodes, log_weights),
-                     n1, n0, u, verified_pos, mnar, n_beta, beta_value, alpha, beta);
+  if (!prior_only) {
+    target += cells_lp(logit_prevalence,
+                       log_profiles(profiles, a[1], b[1], nodes, log_weights),
+                       log_profiles(profiles, a[2], b[2], nodes, log_weights),
+                       n1, n0, u, verified_pos, mnar, n_beta, beta_value, alpha, beta);
+  }
 }
 
 generated quantities {

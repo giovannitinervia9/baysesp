@@ -1,4 +1,4 @@
-# Rule vectors and TPR/FPR of Example 4.5 of the specification (K = 3).
+# Rule vectors and accuracy of Example 4.5 of the specification (K = 3).
 
 test_that("rules give the vectors of Example 4.5", {
   d <- example_fit()@data
@@ -21,14 +21,14 @@ test_that("rule_accuracy() reproduces the table of Example 4.5", {
   acc <- rule_accuracy(example_fit(), list("A", any_positive(), all_positive(),
                                             min_positive(2)))
   get <- function(q) acc$mean[acc$quantity == q]
-  expect_identical(acc$quantity[1:5], c("TPR[A]", "FPR[A]", "Sp[A]", "PPV[A]", "NPV[A]"))
-  expect_equal(get("TPR[A]"), 0.80)
-  expect_equal(get("FPR[A]"), 0.10)
-  expect_equal(get("TPR[any positive]"), 0.95)
+  expect_identical(acc$quantity[1:4], c("Se[A]", "Sp[A]", "PPV[A]", "NPV[A]"))
+  expect_equal(get("Se[A]"), 0.80)
+  expect_equal(get("Sp[A]"), 0.90)
+  expect_equal(get("Se[any positive]"), 0.95)
   expect_equal(get("Sp[any positive]"), 0.80)
-  expect_equal(get("TPR[all positive]"), 0.50)
+  expect_equal(get("Se[all positive]"), 0.50)
   expect_equal(get("Sp[all positive]"), 0.99)
-  expect_equal(get("TPR[at least 2 positive]"), 0.80)
+  expect_equal(get("Se[at least 2 positive]"), 0.80)
   expect_equal(get("Sp[at least 2 positive]"), 0.95)
   expect_equal(get("NPV[all positive]"), 0.9 * 0.99 / (0.9 * 0.99 + 0.1 * 0.5))
   expect_true(all(acc$identified))
@@ -62,18 +62,18 @@ test_that("identification follows Proposition 7.1", {
   expect_identical(compare_tests(fit, "B", "C")$identified, c(FALSE, FALSE, FALSE, TRUE, TRUE))
 })
 
-test_that("identification_bounds() gives the bounds of Proposition 7.1", {
+test_that("accuracy_bounds() gives the bounds of Proposition 7.1", {
   fit <- example_fit(verified = c(FALSE, rep(TRUE, 7)))
-  b <- identification_bounds(fit, rules = list("A", any_positive()))
+  b <- accuracy_bounds(fit, rules = list("A", any_positive()))
   p <- 0.1
   omega0 <- p * example_theta1[1] + (1 - p) * example_theta0[1]
   c0 <- p * (1 - example_theta1[1])
   A <- p * 0.80
   B <- (1 - p) * 0.10
-  expect_identical(b$quantity, c("prevalence", "TPR[A]", "FPR[A]",
-                                 "TPR[any positive]", "FPR[any positive]"))
-  expect_equal(b$lower_bound[1:3], c(c0, A / (c0 + omega0), B / (1 - c0)))
-  expect_equal(b$upper_bound[1:3], c(c0 + omega0, A / c0, B / (1 - c0 - omega0)))
+  expect_identical(b$quantity, c("prevalence", "Se[A]", "Sp[A]",
+                                 "Se[any positive]", "Sp[any positive]"))
+  expect_equal(b$lower_bound[1:3], c(c0, A / (c0 + omega0), 1 - B / (1 - c0 - omega0)))
+  expect_equal(b$upper_bound[1:3], c(c0 + omega0, A / c0, 1 - B / (1 - c0)))
   expect_equal(b$lower, b$lower_bound)
   # the true values are inside the bounds
   expect_true(b$lower_bound[2] <= 0.80 && 0.80 <= b$upper_bound[2])
@@ -81,17 +81,17 @@ test_that("identification_bounds() gives the bounds of Proposition 7.1", {
 
   # a rule that declares a never-verified profile positive has no bounds
   fit <- example_fit(verified = c(TRUE, FALSE, rep(TRUE, 6)))
-  b <- identification_bounds(fit)
-  expect_true(all(is.na(b[b$quantity %in% c("TPR[A]", "FPR[A]"), -1])))
-  expect_false(anyNA(b[b$quantity == "TPR[B]", -1]))
+  b <- accuracy_bounds(fit)
+  expect_true(all(is.na(b[b$quantity %in% c("Se[A]", "Sp[A]"), -1])))
+  expect_false(anyNA(b[b$quantity == "Se[B]", -1]))
 })
 
-test_that("identified_quantities() compares the eligible rules", {
+test_that("accuracy_ratios() compares the eligible rules", {
   fit <- example_fit(verified = c(TRUE, FALSE, rep(TRUE, 6)))
-  q <- identified_quantities(fit)
+  q <- accuracy_ratios(fit)
   expect_identical(q$quantity, c("TPR[B] / TPR[C]", "FPR[B] / FPR[C]"))
   expect_equal(q$mean, c((0.04 + 0.10 + 0.08 + 0.50) / (0.03 + 0.12 + 0.08 + 0.50),
                          (0.05 + 0.02 + 0.01 + 0.01) / (0.04 + 0.01 + 0.01 + 0.01)))
   expect_identical(names(q), c("quantity", "mean", "median", "lower", "upper", "probability"))
-  expect_error(identified_quantities(fit, rules = c("A", "B")), "At least two rules")
+  expect_error(accuracy_ratios(fit, rules = c("A", "B")), "At least two rules")
 })

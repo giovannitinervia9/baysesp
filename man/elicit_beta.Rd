@@ -7,14 +7,16 @@
 elicit_beta(mean, upper, prob = 0.95)
 }
 \arguments{
-\item{mean}{Most plausible value, in (0, 1).}
+\item{mean}{Most plausible value: a single number in (0, 1). No default.}
 
-\item{upper}{Plausible upper value, greater than \code{mean} and lower than 1.}
+\item{upper}{Plausible upper value: a single number greater than \code{mean} and
+lower than 1. No default.}
 
-\item{prob}{Probability that the value is below \code{upper}.}
+\item{prob}{Probability that the value is below \code{upper}: a single number in
+(0.5, 1). Default 0.95.}
 }
 \value{
-An object of class \code{\link[=prior_beta]{prior_beta()}}.
+An object of class \code{prior_beta}.
 }
 \description{
 Builds a \code{\link[=prior_beta]{prior_beta()}} from two simple statements about a probability:

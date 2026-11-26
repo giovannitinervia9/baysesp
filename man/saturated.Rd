@@ -13,44 +13,123 @@ saturated(
 )
 }
 \arguments{
-\item{frequency_prior}{\code{\link[=prior_dirichlet]{prior_dirichlet()}} on the frequencies of the
-response profiles.}
+\item{frequency_prior}{\code{\link[=prior_dirichlet]{prior_dirichlet()}} on the vector of profile
+frequencies \eqn{\omega = (\omega_1, \dots, \omega_J)}. Its
+\code{concentration} is a single positive number, the same for every profile,
+or a vector with one positive value per profile, in binary order: the
+profile with all tests negative comes first, and the first test changes
+fastest (with two tests: (0,0), (1,0), (0,1), (1,1)). Default
+\code{prior_dirichlet(1)}, the uniform distribution on the simplex.}
 
-\item{verified_prior}{Prior on the fraction of verified subjects in each
-profile.}
+\item{verified_prior}{Prior on the verification probability \eqn{v_t} of each
+profile with at least one verified subject. The same prior is used,
+independently, for each such profile. A prior on a probability, such as
+\code{\link[=prior_beta]{prior_beta()}} or \code{\link[=elicit_beta]{elicit_beta()}}, acts on \eqn{v_t} itself; a prior on the
+real line, such as \code{\link[=prior_normal]{prior_normal()}} or \code{\link[=prior_student]{prior_student()}}, acts on
+\eqn{\mathrm{logit}\,v_t}. Default \code{prior_beta(0.5, 2)}, the uniform
+distribution on (0, 1). Never-verified profiles have no such parameter.}
 
-\item{profile_prevalence_prior}{Prior on the proportion of diseased among
-the verified subjects of each profile.}
+\item{profile_prevalence_prior}{Prior on \eqn{\phi^{(1)}_t}, the proportion of
+diseased among the verified subjects of each profile with at least one
+verified subject. The same prior is used, independently, for each such
+profile, with the same rules as \code{verified_prior}: a prior on a probability
+acts on the proportion, a prior on the real line on its logit. Default
+\code{prior_beta(0.5, 2)}, the uniform distribution on (0, 1).}
 
-\item{unverified_prevalence_prior}{Prior on the proportion of diseased in
-each never-verified profile: one prior for all of them, or a list with one
-prior per never-verified profile, in binary order. Required when some
-profile has no verified subject; see \code{\link[=elicit_beta]{elicit_beta()}}.}
+\item{unverified_prevalence_prior}{Prior on \eqn{q_t}, the proportion of
+diseased in each never-verified profile (a profile with no verified
+subject). It has no default prior: its default \code{NULL} means that no prior
+is given. It is required when at least one profile is never verified, and
+\code{baysesp()} stops with an error if it is missing in that case. Its value
+can be one prior, which applies to every never-verified profile, or a list
+with one prior per never-verified profile, in binary order among those
+profiles (with two tests, if both (0,1) and (1,1) are never verified, the
+list has two elements: the first for (0,1), the second for (1,1)). A list
+of length one is the same as a single prior. Each prior has the same
+allowed classes as \code{verified_prior}. Its posterior equals its prior, so it
+is an explicit assumption; use \code{elicit_beta()} to specify it from a
+plausible value and an upper bound.}
 
-\item{verification}{Verification mechanism, by default \code{\link[=mar]{mar()}}.}
+\item{verification}{Verification mechanism: \code{mar()} (the default), where
+verification depends only on the test results, or \code{mnar()}, where it also
+depends on the disease status. See Details for what changes.}
 }
 \value{
 An object of class \code{saturated}.
 }
 \description{
-The model of the main analysis (road 1 in the specification): no assumption
-on the dependence between the tests. It is written in the transparent
-parametrization, which separates the parameters the data identify from the
-assumptions they cannot check:
+The model with no assumption on the dependence between the tests: the
+distribution of the profiles is free within each disease class. It is
+written in a transparent parametrization, which separates the identified
+parameters from the non-identified ones:
 \itemize{
-\item identified: the frequency of each response profile, the fraction of
-verified subjects in each profile and the proportion of diseased among
-them;
-\item not identified: the proportion of diseased in the profiles that are never
-verified. Its posterior is equal to its prior, so the prior is an explicit
-assumption and has no default.
+\item identified: the frequency of each response profile, the verification
+probability of each profile with at least one verified subject, and the
+proportion of diseased among its verified subjects;
+\item not identified: the proportion of diseased among the unverified subjects
+of each such profile, which is fixed by the verification mechanism, and
+the proportion of diseased in each never-verified profile, whose posterior
+equals its prior.
 }
 }
 \details{
-Priors with support \code{"real"}, such as \code{\link[=prior_normal]{prior_normal()}}, act on the logit of
-the probability they are given to.
+With \eqn{K} tests there are \eqn{J = 2^K} response profiles \eqn{t}. For
+each profile the model has four parameters:
+\itemize{
+\item \eqn{\omega_t = P(T = t)}: frequency of the profile among all subjects;
+\item \eqn{v_t = P(V = 1 \mid T = t)}: probability that a subject with profile
+\eqn{t} is verified;
+\item \eqn{\phi^{(1)}_t = P(D = 1 \mid T = t, V = 1)}: proportion of diseased
+among the verified subjects with profile \eqn{t};
+\item \eqn{\phi^{(0)}_t = P(D = 1 \mid T = t, V = 0)}: proportion of diseased
+among the unverified subjects with profile \eqn{t}.
+}
+
+Let \eqn{n_{t,1}} and \eqn{n_{t,0}} be the numbers of verified diseased and
+verified healthy subjects with profile \eqn{t}, \eqn{u_t} the number of
+unverified subjects, and \eqn{N_t = n_{t,1} + n_{t,0} + u_t}. The
+log-likelihood is
+\deqn{\ell = \sum_t \Big[N_t \log \omega_t + (n_{t,1} + n_{t,0}) \log v_t + u_t \log(1 - v_t) + n_{t,1} \log \phi^{(1)}_t + n_{t,0} \log(1 - \phi^{(1)}_t)\Big].}
+The unverified subjects enter only through \eqn{N_t} and \eqn{u_t}, because
+their disease status is not observed. The proportion \eqn{\phi^{(0)}_t}
+does not enter the log-likelihood: the data carry no information on it, so
+it is determined by the verification mechanism and by \eqn{\phi^{(1)}_t}.
+A never-verified profile has no verified subject, so \eqn{v_t = 0} and only
+its first term remains.
+
+With \code{verification = mar()} (missing at random) verification depends only on the test
+results: among subjects with the same profile, verified and unverified
+subjects have the same proportion of diseased, so
+\eqn{\phi^{(0)}_t = \phi^{(1)}_t}.
+
+With \code{verification = mnar()} (missing not at random) verification may also depend on the
+disease status:
+\deqn{\mathrm{logit}\,\phi^{(0)}_t = \mathrm{logit}\,\phi^{(1)}_t - \beta,}
+where \eqn{\beta} is the log odds ratio of verification between diseased and
+healthy subjects with the same profile. Equivalently, \eqn{\exp(-\beta)} is
+the odds ratio of disease between unverified and verified subjects with the
+same profile: \eqn{\beta > 0} means that the unverified are less often
+diseased. There is one \eqn{\beta} common to all profiles with verified
+subjects, or one per profile with \code{verification = mnar(by_profile = TRUE)}. Since
+\eqn{\beta} does not enter the log-likelihood, its posterior equals its
+prior, and the results depend on the assumed value: they should be examined
+over a range of plausible values.
+
+The quantities of interest are obtained as follows. For each profile,
+\deqn{\psi_t = v_t \phi^{(1)}_t + (1 - v_t) \phi^{(0)}_t}
+is the proportion of diseased among subjects with profile \eqn{t}; for a
+never-verified profile \eqn{\phi^{(0)}_t = q_t} is the proportion of diseased
+in it, so \eqn{\psi_t = q_t}. Then
+\deqn{\pi = \sum_t \omega_t \psi_t, \qquad \theta_{1,t} = \frac{\omega_t \psi_t}{\pi}, \qquad \theta_{0,t} = \frac{\omega_t (1 - \psi_t)}{1 - \pi},}
+where \eqn{\pi} is the prevalence, \eqn{\theta_{1,t} = P(T = t \mid D = 1)}
+and \eqn{\theta_{0,t} = P(T = t \mid D = 0)}. The sensitivity of a test is
+the sum of \eqn{\theta_{1,t}} over the profiles with a positive result for
+that test, and its specificity the sum of \eqn{\theta_{0,t}} over the
+profiles with a negative result. Under both mechanisms the never-verified
+profiles enter \eqn{\pi} through \eqn{q_t}, whose posterior equals its prior.
 }
 \examples{
 saturated()
 saturated(unverified_prevalence_prior = elicit_beta(mean = 0.005, upper = 0.015))
+saturated(verification = mnar())
 }

@@ -1,3 +1,6 @@
+#' @include generics.R
+NULL
+
 # Prior distributions ---------------------------------------------------------
 #
 # Every prior is an S7 object of a subclass of `prior_distribution`. Two
@@ -11,12 +14,16 @@
 #' Prior distributions
 #'
 #' `prior_distribution` is the abstract parent class of all prior distributions.
-#' Use the constructors [prior_beta()], [elicit_beta()], [prior_normal()],
-#' [prior_student()] and [prior_dirichlet()] to create priors.
+#' Its concrete subclasses are the Beta, normal, Student t and Dirichlet priors,
+#' each with its own constructor.
 #'
-#' @param family Name of the distribution family.
-#' @param support Scale the prior acts on: `"probability"`, `"real"` or
-#'   `"simplex"`.
+#' @param family Name of the distribution family (read-only property).
+#' @param support Scale the prior acts on (read-only property): `"probability"`
+#'   for priors on a probability, `"real"` for priors on an unconstrained
+#'   parameter, `"simplex"` for priors on a vector of probabilities that sum to
+#'   one.
+#' @seealso [prior_beta()], [elicit_beta()], [prior_normal()], [prior_student()],
+#'   [prior_dirichlet()]
 #' @export
 prior_distribution <- S7::new_class(
   "prior_distribution",
@@ -42,10 +49,10 @@ is_scalar_number <- function(x) {
 #' are `shape1 = mean * precision` and `shape2 = (1 - mean) * precision`; they
 #' are available as the read-only properties `@shape1` and `@shape2`.
 #'
-#' @param mean Mean of the distribution, in (0, 1).
-#' @param precision Precision, a positive number: the larger it is, the more
-#'   concentrated the distribution around its mean. `prior_beta(0.5, 2)` is the
-#'   uniform distribution.
+#' @param mean Mean of the distribution: a single number in (0, 1). Default 0.5.
+#' @param precision Precision: a single positive number. The larger it is, the
+#'   more concentrated the distribution around its mean. The default 2, with
+#'   `mean = 0.5`, gives the uniform distribution on (0, 1).
 #' @return An object of class `prior_beta`.
 #' @seealso [elicit_beta()] to obtain the precision from a plausible upper value.
 #' @examples
@@ -98,10 +105,12 @@ prior_beta <- S7::new_class(
 #' Beta with its mass at the extremes and a regular one. The function returns
 #' the regular one, the root to the right of the minimum.
 #'
-#' @param mean Most plausible value, in (0, 1).
-#' @param upper Plausible upper value, greater than `mean` and lower than 1.
-#' @param prob Probability that the value is below `upper`.
-#' @return An object of class [prior_beta()].
+#' @param mean Most plausible value: a single number in (0, 1). No default.
+#' @param upper Plausible upper value: a single number greater than `mean` and
+#'   lower than 1. No default.
+#' @param prob Probability that the value is below `upper`: a single number in
+#'   (0.5, 1). Default 0.95.
+#' @return An object of class `prior_beta`.
 #' @examples
 #' p <- elicit_beta(mean = 0.005, upper = 0.015)
 #' p
@@ -139,8 +148,8 @@ elicit_beta <- function(mean, upper, prob = 0.95) {
 #' A normal distribution for an unconstrained parameter. When it is given to a
 #' probability, it acts on its logit.
 #'
-#' @param mean Mean.
-#' @param sd Standard deviation, a positive number.
+#' @param mean Mean: a single finite number. Default 0.
+#' @param sd Standard deviation: a single positive number. Default 1.
 #' @return An object of class `prior_normal`.
 #' @examples
 #' prior_normal(0, 1.5)
@@ -175,9 +184,10 @@ prior_normal <- S7::new_class(
 #' A Student t distribution for an unconstrained parameter, with heavier tails
 #' than the normal. When it is given to a probability, it acts on its logit.
 #'
-#' @param df Degrees of freedom, a positive number.
-#' @param location Location (the centre of the distribution).
-#' @param scale Scale, a positive number.
+#' @param df Degrees of freedom: a single positive number. Default 3.
+#' @param location Location, the centre of the distribution: a single finite
+#'   number. Default 0.
+#' @param scale Scale: a single positive number. Default 1.
 #' @return An object of class `prior_student`.
 #' @examples
 #' prior_student(df = 3, location = 0, scale = 1)
@@ -213,11 +223,34 @@ prior_student <- S7::new_class(
 #' Dirichlet prior
 #'
 #' A Dirichlet distribution for a vector of probabilities that sum to one, such
-#' as the frequencies of the test result profiles.
+#' as the frequencies of the test result profiles. It generalises the Beta
+#' distribution to more than two components: each component is Beta distributed
+#' on its own.
 #'
-#' @param concentration Concentration parameters: a single positive number,
-#'   repeated for every component, or a vector with one positive value per
-#'   component. `prior_dirichlet(1)` is the uniform distribution on the simplex.
+#' Let \eqn{a = (a_1, \dots, a_J)} be the concentration parameters and
+#' \eqn{p = (p_1, \dots, p_J)}, with \eqn{\sum_j p_j = 1}, the vector of
+#' probabilities. The distribution has the following properties:
+#' \itemize{
+#'   \item the prior mean of component \eqn{j} is \eqn{a_j / \sum_k a_k};
+#'   \item the total \eqn{\sum_k a_k} acts as a prior sample size: the larger it
+#'   is, the more concentrated the distribution is around its mean, while a small
+#'   total leaves the probabilities widely spread;
+#'   \item each component has marginal distribution
+#'   \eqn{\mathrm{Beta}(a_j, \sum_k a_k - a_j)}.
+#' }
+#' A single value \eqn{c} repeated for all components gives a symmetric prior
+#' with mean \eqn{1/J} for every component. With all concentrations equal to 1
+#' the distribution is uniform on the simplex of probabilities. Concentrations
+#' below 1 move the mass towards the corners of the simplex, where some
+#' components are close to zero; larger concentrations move it towards the
+#' prior mean.
+#'
+#' @param concentration Concentration parameters, positive finite numbers. Either
+#'   a single number, repeated for every component, or a numeric vector with one
+#'   value per component (one per response profile, so its length is 1 or
+#'   \eqn{J = 2^K}, where \eqn{K} is the number of tests). The length is checked
+#'   when the prior is given to a model. Default 1, the uniform distribution on
+#'   the simplex.
 #' @return An object of class `prior_dirichlet`.
 #' @examples
 #' prior_dirichlet(1)
@@ -251,9 +284,8 @@ format_number <- function(x) format(x, digits = 4)
 prior_label <- S7::new_generic("prior_label", "prior")
 
 S7::method(prior_label, prior_beta) <- function(prior) {
-  sprintf("Beta(mean = %s, precision = %s), i.e. Beta(%s, %s)",
-          format_number(prior@mean), format_number(prior@precision),
-          format_number(prior@shape1), format_number(prior@shape2))
+  sprintf("Beta(mean = %s, precision = %s)",
+          format_number(prior@mean), format_number(prior@precision))
 }
 S7::method(prior_label, prior_normal) <- function(prior) {
   sprintf("Normal(mean = %s, sd = %s)", format_number(prior@mean), format_number(prior@sd))
@@ -267,7 +299,7 @@ S7::method(prior_label, prior_dirichlet) <- function(prior) {
           paste(format_number(prior@concentration), collapse = ", "))
 }
 
-S7::method(print, prior_distribution) <- function(x, ...) {
+S7::method(print_generic, prior_distribution) <- function(x, ...) {
   scale <- switch(x@support,
                   probability = "on a probability",
                   real = "on an unconstrained parameter (on the logit of a probability)",

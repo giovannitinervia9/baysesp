@@ -35,14 +35,14 @@ the new fits, such as \code{chains} and \code{seed}.}
 }
 \value{
 A data frame with the columns \code{odds_ratio} (\code{NA} when it follows the
-prior of an \code{\link[=mnar]{mnar()}} model) and \code{unverified_prior}, which describe the
+prior of a model with \code{verification = mnar()}) and \code{unverified_prior}, which describe the
 assumptions, followed by the columns of \code{\link[=test_accuracy]{test_accuracy()}} or
 \code{\link[=rule_accuracy]{rule_accuracy()}}, without \code{identified}.
 }
 \description{
 Shows how the accuracy of the tests changes with the two assumptions of the
 saturated model that the data cannot check: the odds ratio of verification
-between diseased and healthy subjects (see \code{\link[=mnar]{mnar()}}) and the prior on the
+between diseased and healthy subjects (set with \code{verification = mnar()} in the model) and the prior on the
 proportion of diseased in the never-verified profiles. For the saturated
 model no new fit is needed: these parameters do not enter the likelihood,
 so the draws of the identified parameters are reused and only the
@@ -56,9 +56,58 @@ fixed; the never-verified profiles have no separate prior to change.
 The odds ratio is fixed at each value of \code{odds_ratios}: with a grid of
 values this is a tipping-point analysis, which shows at which odds ratio a
 conclusion changes. With \code{odds_ratios = NULL} the odds ratio of the fitted
-model is kept (1 for \code{\link[=mar]{mar()}}, the prior of \code{\link[=mnar]{mnar()}} otherwise). The new
+model is kept (1 with \code{verification = mar()}, the prior \code{odds_ratio_prior} with \code{verification = mnar()}). The new
 priors in \code{unverified_priors} are sampled with the random number generator
 of R: set the seed for reproducible results.
+
+\strong{Recomputation for the saturated model}. The saturated model estimates, for each profile \eqn{t}, its
+frequency \eqn{\omega_t}, the fraction of verified subjects \eqn{v_t} and
+the proportion of diseased among them \eqn{\phi^{(1)}_t}. With odds ratio
+of verification \eqn{OR = \exp(\beta)}, the proportion of diseased among
+the unverified is \eqn{\phi^{(0)}_t = \mathrm{expit}(\mathrm{logit}(\phi^{(1)}_t) - \beta)}:
+with \eqn{OR > 1} the unverified are less often diseased than the verified.
+The proportion of diseased in the profile is then
+\deqn{\psi_t = v_t\, \phi^{(1)}_t + (1 - v_t)\, \phi^{(0)}_t,}
+or \eqn{\psi_t = q_t}, drawn from the prior, for a never-verified profile.
+From these, \eqn{\pi = \sum_t \omega_t \psi_t},
+\eqn{\theta_{1,t} = \omega_t \psi_t / \pi} and
+\eqn{\theta_{0,t} = \omega_t (1 - \psi_t) / (1 - \pi)}, and the accuracy
+measures below.
+
+The accuracy is defined for a \emph{rule} \eqn{R}, which declares a subject
+positive or negative from the response profile \eqn{t}, the vector of the
+results of the tests: \eqn{r_R(t) = 1} if the profile is declared positive,
+0 otherwise. A single test is the rule "this test is positive". The
+quantities depend on the prevalence \eqn{\pi = P(D = 1)} and on the
+distribution of the profiles in the diseased, \eqn{\theta_{1,t} = P(T = t \mid D = 1)},
+and in the healthy, \eqn{\theta_{0,t} = P(T = t \mid D = 0)}:
+\itemize{
+\item \strong{sensitivity} (\code{Se}):
+\deqn{Se_R = P(R \textrm{ positive} \mid D = 1) = \sum_t r_R(t)\, \theta_{1,t},}
+the proportion of diseased subjects that the rule declares positive. It
+is also called the true positive rate (TPR);
+\item \strong{specificity} (\code{Sp}):
+\deqn{Sp_R = P(R \textrm{ negative} \mid D = 0) = 1 - \sum_t r_R(t)\, \theta_{0,t},}
+the proportion of healthy subjects that the rule declares negative;
+\eqn{1 - Sp_R} is the false positive rate (FPR);
+\item \strong{positive predictive value} (\code{PPV}):
+\deqn{PPV_R = P(D = 1 \mid R \textrm{ positive}) = \frac{\pi\, Se_R}{\pi\, Se_R + (1 - \pi)(1 - Sp_R)},}
+the probability that a subject declared positive is diseased;
+\item \strong{negative predictive value} (\code{NPV}):
+\deqn{NPV_R = P(D = 0 \mid R \textrm{ negative}) = \frac{(1 - \pi)\, Sp_R}{(1 - \pi)\, Sp_R + \pi\, (1 - Se_R)},}
+the probability that a subject declared negative is healthy.
+}
+
+Sensitivity and specificity describe the rule and do not depend on the
+prevalence; the predictive values describe what a result means for a
+subject, and change with the prevalence of the population. For combined
+rules, such as \code{\link[=any_positive]{any_positive()}}, the accuracy depends on the joint
+distribution of the tests, not only on their individual sensitivities and
+specificities.
+
+Each quantity is computed from every posterior draw of \eqn{\pi},
+\eqn{\theta_0} and \eqn{\theta_1}. The results report its posterior mean
+and median and an equal-tailed credible interval with probability \code{level}.
 }
 \examples{
 \donttest{

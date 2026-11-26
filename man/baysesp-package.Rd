@@ -13,6 +13,7 @@ Bayesian estimation of the sensitivity, specificity and predictive values of one
 Useful links:
 \itemize{
   \item \url{https://github.com/giovannitinervia9/baysesp}
+  \item \url{https://giovannitinervia9.github.io/baysesp/}
   \item Report bugs at \url{https://github.com/giovannitinervia9/baysesp/issues}
 }
 

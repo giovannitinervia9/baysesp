@@ -16,11 +16,13 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-URL: https://github.com/giovannitinervia9/baysesp
+URL: https://github.com/giovannitinervia9/baysesp,
+    https://giovannitinervia9.github.io/baysesp/
 BugReports: https://github.com/giovannitinervia9/baysesp/issues
 Depends:
     R (>= 4.1.0)
 Imports:
+    ggplot2,
     methods,
     posterior,
     Rcpp (>= 0.12.0),
@@ -31,8 +33,10 @@ Imports:
     stats
 Suggests:
     cmdstanr,
-    ggplot2,
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
+VignetteBuilder: knitr
 Additional_repositories: https://stan-dev.r-universe.dev
 Config/testthat/edition: 3
 Biarch: true
@@ -45,6 +49,7 @@ LinkingTo:
     StanHeaders (>= 2.18.0)
 SystemRequirements: GNU make
 Collate: 
+    'generics.R'
     'data.R'
     'priors.R'
     'verification.R'
@@ -54,9 +59,12 @@ Collate:
     'accuracy.R'
     'backend.R'
     'baysesp-package.R'
+    'random_effects.R'
+    'loglinear.R'
     'stan_data.R'
     'sensitivity.R'
-    'identification.R'
+    'bounds.R'
+    'plots.R'
     'simulate.R'
     'stanmodels.R'
     'zzz.R'

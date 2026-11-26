@@ -2,54 +2,58 @@
 % Please edit documentation in R/rules.R
 \name{test_rule}
 \alias{test_rule}
-\alias{single_test}
-\alias{any_positive}
-\alias{all_positive}
-\alias{min_positive}
-\title{Diagnostic rules}
+\title{Diagnostic rule class}
 \usage{
 test_rule(name = character(0), positive = function() NULL)
-
-single_test(test)
-
-any_positive()
-
-all_positive()
-
-min_positive(k)
 }
 \arguments{
-\item{name}{Label of the rule in the results.}
+\item{name}{Character string, the label of the rule in the results. Use a
+single non-missing string.}
 
-\item{positive}{Function of the matrix of response profiles (one row per
-profile, one named column per test) that returns, for each profile,
-whether the rule declares it positive.}
-
-\item{test}{Name of a test.}
-
-\item{k}{Minimum number of positive tests.}
+\item{positive}{Function with one argument, the matrix of response profiles
+described above. It must return one logical or numeric value per row of
+the matrix, and it is applied to the matrix of the data at the moment the
+rule is used.}
 }
 \value{
 An object of class \code{test_rule}.
 }
 \description{
-A rule declares a subject positive or negative from the results of the
-tests. Its accuracy depends on the joint distribution of the tests, not only
-on their sensitivities and specificities.
+A \code{test_rule} object declares each response profile positive or negative,
+starting from the results of one or more tests. The accuracy of a rule
+depends on the joint distribution of the tests, not only on their
+sensitivities and specificities. Common rules are built with \code{single_test()},
+\code{any_positive()}, \code{all_positive()} and \code{min_positive()}; a custom rule is
+built with \code{test_rule()}.
 }
 \details{
+A response profile is the vector \eqn{t = (t_1, \dots, t_K)} of the results
+of the \eqn{K} tests, where \eqn{t_k = 1} if test \eqn{k} is positive and
+\eqn{t_k = 0} if it is negative. With \eqn{K} tests there are \eqn{2^K}
+profiles. A rule assigns to each profile a value \eqn{r(t)}: \eqn{r(t) = 1}
+if the rule declares the subject positive, \eqn{r(t) = 0} otherwise.
+
+A \code{test_rule} has two properties:
 \itemize{
-\item \code{single_test(test)}: positive if the test is positive;
-\item \code{any_positive()}: positive if at least one test is positive (OR rule);
-\item \code{all_positive()}: positive if all tests are positive (AND rule);
-\item \code{min_positive(k)}: positive if at least \code{k} tests are positive.
+\item \code{name}: the label of the rule in the results;
+\item \code{positive}: a function of the matrix of response profiles that returns,
+for each profile, whether the rule declares it positive.
 }
 
-Wherever a rule is expected, the name of a test can be given instead.
+The matrix of response profiles has one row per profile (\eqn{2^K} rows) and
+one column per test, named with the test names. Its entries are \code{0}
+(negative) or \code{1} (positive). The function in \code{positive} must return one
+value per row: \code{TRUE} (or \code{1}) if the profile is positive, \code{FALSE} (or \code{0})
+otherwise. It may refer to tests by their names, for example
+\code{profiles[, "ct"]}.
 }
 \examples{
-any_positive()
-min_positive(2)
+# Positive if the tests named "ct" and "pcr" are both positive
+both_ct_pcr <- test_rule(
+  name = "ct and pcr positive",
+  positive = function(profiles) profiles[, "ct"] == 1 & profiles[, "pcr"] == 1
+)
+both_ct_pcr@name
 }
 \seealso{
 \code{\link[=rule_accuracy]{rule_accuracy()}}, \code{\link[=compare_tests]{compare_tests()}}

@@ -5,6 +5,7 @@
 #' @import methods
 #' @import Rcpp
 #' @importFrom rstan sampling
+#' @importFrom ggplot2 .data
 #' @importFrom rstantools rstan_config
 #' @importFrom RcppParallel RcppParallelLibs
 #' @useDynLib baysesp, .registration = TRUE

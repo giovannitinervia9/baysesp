@@ -1,4 +1,4 @@
-#' @include priors.R verification.R
+#' @include priors.R verification.R generics.R
 NULL
 
 # Accuracy models ----------------------------------------------------------------
@@ -10,10 +10,17 @@ NULL
 #' Accuracy models
 #'
 #' `accuracy_model` is the abstract parent class of the models for the joint
-#' distribution of the tests. Every model has a `verification` property, the
-#' assumed [verification_mechanism].
+#' distribution of the test results and of the disease status. It cannot be
+#' created directly: the concrete models are [saturated()], [loglinear()] and
+#' [random_effects()], each with its own constructor.
 #'
-#' @param verification Verification mechanism, by default [mar()].
+#' Every model has the property `verification`, an object of class
+#' `verification_mechanism` (`mar()` or `mnar()`) that states how the
+#' probability of being verified depends on the test results and on the
+#' disease status. A model object holds the priors and the verification
+#' mechanism; the data are supplied to `baysesp()`, which fits the model.
+#'
+#' @seealso [saturated()], [loglinear()], [random_effects()]
 #' @export
 accuracy_model <- S7::new_class(
   "accuracy_model",
@@ -23,35 +30,113 @@ accuracy_model <- S7::new_class(
 
 #' Saturated model
 #'
-#' The model of the main analysis (road 1 in the specification): no assumption
-#' on the dependence between the tests. It is written in the transparent
-#' parametrization, which separates the parameters the data identify from the
-#' assumptions they cannot check:
-#' - identified: the frequency of each response profile, the fraction of
-#'   verified subjects in each profile and the proportion of diseased among
-#'   them;
-#' - not identified: the proportion of diseased in the profiles that are never
-#'   verified. Its posterior is equal to its prior, so the prior is an explicit
-#'   assumption and has no default.
+#' The model with no assumption on the dependence between the tests: the
+#' distribution of the profiles is free within each disease class. It is
+#' written in a transparent parametrization, which separates the identified
+#' parameters from the non-identified ones:
+#' - identified: the frequency of each response profile, the verification
+#'   probability of each profile with at least one verified subject, and the
+#'   proportion of diseased among its verified subjects;
+#' - not identified: the proportion of diseased among the unverified subjects
+#'   of each such profile, which is fixed by the verification mechanism, and
+#'   the proportion of diseased in each never-verified profile, whose posterior
+#'   equals its prior.
 #'
-#' Priors with support `"real"`, such as [prior_normal()], act on the logit of
-#' the probability they are given to.
+#' @details
+#' With \eqn{K} tests there are \eqn{J = 2^K} response profiles \eqn{t}. For
+#' each profile the model has four parameters:
+#' - \eqn{\omega_t = P(T = t)}: frequency of the profile among all subjects;
+#' - \eqn{v_t = P(V = 1 \mid T = t)}: probability that a subject with profile
+#'   \eqn{t} is verified;
+#' - \eqn{\phi^{(1)}_t = P(D = 1 \mid T = t, V = 1)}: proportion of diseased
+#'   among the verified subjects with profile \eqn{t};
+#' - \eqn{\phi^{(0)}_t = P(D = 1 \mid T = t, V = 0)}: proportion of diseased
+#'   among the unverified subjects with profile \eqn{t}.
 #'
-#' @param frequency_prior [prior_dirichlet()] on the frequencies of the
-#'   response profiles.
-#' @param verified_prior Prior on the fraction of verified subjects in each
-#'   profile.
-#' @param profile_prevalence_prior Prior on the proportion of diseased among
-#'   the verified subjects of each profile.
-#' @param unverified_prevalence_prior Prior on the proportion of diseased in
-#'   each never-verified profile: one prior for all of them, or a list with one
-#'   prior per never-verified profile, in binary order. Required when some
-#'   profile has no verified subject; see [elicit_beta()].
-#' @param verification Verification mechanism, by default [mar()].
+#' Let \eqn{n_{t,1}} and \eqn{n_{t,0}} be the numbers of verified diseased and
+#' verified healthy subjects with profile \eqn{t}, \eqn{u_t} the number of
+#' unverified subjects, and \eqn{N_t = n_{t,1} + n_{t,0} + u_t}. The
+#' log-likelihood is
+#' \deqn{\ell = \sum_t \Big[N_t \log \omega_t + (n_{t,1} + n_{t,0}) \log v_t + u_t \log(1 - v_t) + n_{t,1} \log \phi^{(1)}_t + n_{t,0} \log(1 - \phi^{(1)}_t)\Big].}
+#' The unverified subjects enter only through \eqn{N_t} and \eqn{u_t}, because
+#' their disease status is not observed. The proportion \eqn{\phi^{(0)}_t}
+#' does not enter the log-likelihood: the data carry no information on it, so
+#' it is determined by the verification mechanism and by \eqn{\phi^{(1)}_t}.
+#' A never-verified profile has no verified subject, so \eqn{v_t = 0} and only
+#' its first term remains.
+#'
+#' With `verification = mar()` (missing at random) verification depends only on the test
+#' results: among subjects with the same profile, verified and unverified
+#' subjects have the same proportion of diseased, so
+#' \eqn{\phi^{(0)}_t = \phi^{(1)}_t}.
+#'
+#' With `verification = mnar()` (missing not at random) verification may also depend on the
+#' disease status:
+#' \deqn{\mathrm{logit}\,\phi^{(0)}_t = \mathrm{logit}\,\phi^{(1)}_t - \beta,}
+#' where \eqn{\beta} is the log odds ratio of verification between diseased and
+#' healthy subjects with the same profile. Equivalently, \eqn{\exp(-\beta)} is
+#' the odds ratio of disease between unverified and verified subjects with the
+#' same profile: \eqn{\beta > 0} means that the unverified are less often
+#' diseased. There is one \eqn{\beta} common to all profiles with verified
+#' subjects, or one per profile with `verification = mnar(by_profile = TRUE)`. Since
+#' \eqn{\beta} does not enter the log-likelihood, its posterior equals its
+#' prior, and the results depend on the assumed value: they should be examined
+#' over a range of plausible values.
+#'
+#' The quantities of interest are obtained as follows. For each profile,
+#' \deqn{\psi_t = v_t \phi^{(1)}_t + (1 - v_t) \phi^{(0)}_t}
+#' is the proportion of diseased among subjects with profile \eqn{t}; for a
+#' never-verified profile \eqn{\phi^{(0)}_t = q_t} is the proportion of diseased
+#' in it, so \eqn{\psi_t = q_t}. Then
+#' \deqn{\pi = \sum_t \omega_t \psi_t, \qquad \theta_{1,t} = \frac{\omega_t \psi_t}{\pi}, \qquad \theta_{0,t} = \frac{\omega_t (1 - \psi_t)}{1 - \pi},}
+#' where \eqn{\pi} is the prevalence, \eqn{\theta_{1,t} = P(T = t \mid D = 1)}
+#' and \eqn{\theta_{0,t} = P(T = t \mid D = 0)}. The sensitivity of a test is
+#' the sum of \eqn{\theta_{1,t}} over the profiles with a positive result for
+#' that test, and its specificity the sum of \eqn{\theta_{0,t}} over the
+#' profiles with a negative result. Under both mechanisms the never-verified
+#' profiles enter \eqn{\pi} through \eqn{q_t}, whose posterior equals its prior.
+#'
+#' @param frequency_prior [prior_dirichlet()] on the vector of profile
+#'   frequencies \eqn{\omega = (\omega_1, \dots, \omega_J)}. Its
+#'   `concentration` is a single positive number, the same for every profile,
+#'   or a vector with one positive value per profile, in binary order: the
+#'   profile with all tests negative comes first, and the first test changes
+#'   fastest (with two tests: (0,0), (1,0), (0,1), (1,1)). Default
+#'   `prior_dirichlet(1)`, the uniform distribution on the simplex.
+#' @param verified_prior Prior on the verification probability \eqn{v_t} of each
+#'   profile with at least one verified subject. The same prior is used,
+#'   independently, for each such profile. A prior on a probability, such as
+#'   [prior_beta()] or [elicit_beta()], acts on \eqn{v_t} itself; a prior on the
+#'   real line, such as [prior_normal()] or [prior_student()], acts on
+#'   \eqn{\mathrm{logit}\,v_t}. Default `prior_beta(0.5, 2)`, the uniform
+#'   distribution on (0, 1). Never-verified profiles have no such parameter.
+#' @param profile_prevalence_prior Prior on \eqn{\phi^{(1)}_t}, the proportion of
+#'   diseased among the verified subjects of each profile with at least one
+#'   verified subject. The same prior is used, independently, for each such
+#'   profile, with the same rules as `verified_prior`: a prior on a probability
+#'   acts on the proportion, a prior on the real line on its logit. Default
+#'   `prior_beta(0.5, 2)`, the uniform distribution on (0, 1).
+#' @param unverified_prevalence_prior Prior on \eqn{q_t}, the proportion of
+#'   diseased in each never-verified profile (a profile with no verified
+#'   subject). It has no default prior: its default `NULL` means that no prior
+#'   is given. It is required when at least one profile is never verified, and
+#'   `baysesp()` stops with an error if it is missing in that case. Its value
+#'   can be one prior, which applies to every never-verified profile, or a list
+#'   with one prior per never-verified profile, in binary order among those
+#'   profiles (with two tests, if both (0,1) and (1,1) are never verified, the
+#'   list has two elements: the first for (0,1), the second for (1,1)). A list
+#'   of length one is the same as a single prior. Each prior has the same
+#'   allowed classes as `verified_prior`. Its posterior equals its prior, so it
+#'   is an explicit assumption; use `elicit_beta()` to specify it from a
+#'   plausible value and an upper bound.
+#' @param verification Verification mechanism: `mar()` (the default), where
+#'   verification depends only on the test results, or `mnar()`, where it also
+#'   depends on the disease status. See Details for what changes.
 #' @return An object of class `saturated`.
 #' @examples
 #' saturated()
 #' saturated(unverified_prevalence_prior = elicit_beta(mean = 0.005, upper = 0.015))
+#' saturated(verification = mnar())
 #' @export
 saturated <- S7::new_class(
   "saturated",
@@ -96,7 +181,7 @@ as_prior_list <- function(x, argument) {
   stats::setNames(x, paste0(argument, if (length(x) > 1L) paste0("[[", seq_along(x), "]]")))
 }
 
-S7::method(print, saturated) <- function(x, ...) {
+S7::method(print_generic, saturated) <- function(x, ...) {
   q <- x@unverified_prevalence_prior
   q <- if (is.null(q)) "none" else
     paste(vapply(as_prior_list(q, ""), prior_label, character(1)), collapse = "; ")
@@ -106,177 +191,6 @@ S7::method(print, saturated) <- function(x, ...) {
       "  profile_prevalence_prior:    ", prior_label(x@profile_prevalence_prior), "\n",
       "  unverified_prevalence_prior: ", q, "\n",
       "  verification:                ", sub("^baysesp::", "", class(x@verification)[1]),
-      "\n", sep = "")
-  invisible(x)
-}
-
-#' Log-linear models
-#'
-#' Models for comparison (road 2 in the specification): they assume a
-#' structure for the dependence between the tests. The distribution of the
-#' profiles in each disease class is log-linear with the parameters of the
-#' subsets of at most `interaction_order` tests: order 1 is conditional
-#' independence, order 2 allows the association of each pair of tests, and
-#' order `K` (the number of tests) is the saturated model.
-#'
-#' With order lower than `K`, the structure gives information also on the
-#' proportion of diseased in never-verified profiles, and makes the odds ratio
-#' of [mnar()] verification formally estimable. That information comes from
-#' the assumption, not from the data: use these models as a comparison with
-#' [saturated()].
-#'
-#' @param interaction_order Highest number of tests in an interaction.
-#' @param prevalence_prior Prior on the prevalence.
-#' @param main_effects_prior Prior on the main effects (one per test and class).
-#'   With order 1 the main effects are the logits of the sensitivities and of
-#'   one minus the specificities.
-#' @param interactions_prior Prior on the interactions.
-#' @param verification Verification mechanism, by default [mar()].
-#' @return An object of class `loglinear`.
-#' @examples
-#' loglinear()                       # conditional independence
-#' loglinear(interaction_order = 2)  # pairwise dependence
-#' @export
-loglinear <- S7::new_class(
-  "loglinear",
-  parent = accuracy_model,
-  properties = list(
-    interaction_order = S7::class_integer,
-    prevalence_prior = prior_distribution,
-    main_effects_prior = prior_distribution,
-    interactions_prior = prior_distribution
-  ),
-  constructor = function(interaction_order = 1L,
-                         prevalence_prior = prior_beta(0.5, 2),
-                         main_effects_prior = prior_normal(0, 1.5),
-                         interactions_prior = prior_normal(0, 1),
-                         verification = mar()) {
-    if (!is_scalar_number(interaction_order) || interaction_order < 1 ||
-        interaction_order != round(interaction_order)) {
-      stop("`interaction_order` must be a positive whole number.", call. = FALSE)
-    }
-    S7::new_object(
-      S7::S7_object(),
-      verification = verification,
-      interaction_order = as.integer(interaction_order),
-      prevalence_prior = prevalence_prior,
-      main_effects_prior = main_effects_prior,
-      interactions_prior = interactions_prior
-    )
-  },
-  validator = function(self) {
-    targets <- c(prevalence_prior = "probability", main_effects_prior = "real",
-                 interactions_prior = "real")
-    for (name in names(targets)) {
-      problem <- tryCatch(check_prior(S7::prop(self, name), targets[[name]], name),
-                          error = conditionMessage)
-      if (is.character(problem)) return(problem)
-    }
-  }
-)
-
-S7::method(print, loglinear) <- function(x, ...) {
-  cat("<loglinear> log-linear model of order ", x@interaction_order, "\n",
-      "  prevalence_prior:   ", prior_label(x@prevalence_prior), "\n",
-      "  main_effects_prior: ", prior_label(x@main_effects_prior), "\n",
-      "  interactions_prior: ", prior_label(x@interactions_prior), "\n",
-      "  verification:       ", sub("^baysesp::", "", class(x@verification)[1]),
-      "\n", sep = "")
-  invisible(x)
-}
-
-#' Random effects model
-#'
-#' A model for comparison (road 2 in the specification) that explains the
-#' dependence between the tests with a single continuous latent variable
-#' \eqn{Z \sim N(0, 1)}, independent of the disease, such as the severity of the
-#' condition. Given the disease class \eqn{d} and \eqn{Z}, the tests are
-#' independent with \eqn{P(T_k = 1 | D = d, Z = z) = \Phi(a_{dk} + b_{dk} z)}.
-#' The tests are dependent given the disease alone because they share \eqn{Z}.
-#' It has \eqn{2K} parameters per class, fewer than the log-linear model of
-#' order 2 when there are many tests. It needs at least two tests.
-#'
-#' The sign of the conditional dependence between tests \eqn{j} and \eqn{k} is
-#' the sign of \eqn{b_{dj} b_{dk}}. Changing the sign of \eqn{Z} and of all the
-#' loadings of a class leaves the model unchanged, so a constraint is needed.
-#' By default all the loadings are positive: the tests can only be positively
-#' dependent, that is, tend to err together, as is usual for tests that
-#' measure the same condition.
-#'
-#' With `positive_loadings = FALSE` only the first loading of each class is
-#' positive, and any sign of dependence is allowed. Use it with care: the
-#' posterior can then have a second, reflected mode, with the first loading
-#' close to 0 and the others with the opposite sign, which can trap some
-#' chains and give wrong estimates. Run several chains and check that they
-#' agree (R-hat close to 1). For negative dependence, [loglinear()] of order 2
-#' is an alternative.
-#'
-#' As for [loglinear()], the information this model gives on never-verified
-#' profiles comes from the assumed structure, not from the data.
-#'
-#' @param prevalence_prior Prior on the prevalence.
-#' @param intercepts_prior Prior on the marginal probits
-#'   \eqn{m_{dk} = a_{dk} / \sqrt{1 + b_{dk}^2}}, so that
-#'   \eqn{P(T_k = 1 | D = d) = \Phi(m_{dk})}: for the diseased it is a prior on
-#'   the probit of the sensitivity, for the healthy on the probit of one minus
-#'   the specificity. The model is sampled in these parameters, which the data
-#'   inform directly, rather than in the intercepts.
-#' @param loadings_prior Prior on the loadings \eqn{b_{dk}}, truncated to
-#'   positive values where the loadings are positive.
-#' @param positive_loadings If `TRUE` (default), all the loadings are positive
-#'   (only positive dependence between the tests); if `FALSE`, only the first
-#'   loading of each class. See Details.
-#' @param verification Verification mechanism, by default [mar()].
-#' @return An object of class `random_effects`.
-#' @examples
-#' random_effects()
-#' random_effects(positive_loadings = FALSE)
-#' @export
-random_effects <- S7::new_class(
-  "random_effects",
-  parent = accuracy_model,
-  properties = list(
-    prevalence_prior = prior_distribution,
-    intercepts_prior = prior_distribution,
-    loadings_prior = prior_distribution,
-    positive_loadings = S7::class_logical
-  ),
-  constructor = function(prevalence_prior = prior_beta(0.5, 2),
-                         intercepts_prior = prior_normal(0, 1.5),
-                         loadings_prior = prior_normal(0, 1),
-                         positive_loadings = TRUE,
-                         verification = mar()) {
-    S7::new_object(
-      S7::S7_object(),
-      verification = verification,
-      prevalence_prior = prevalence_prior,
-      intercepts_prior = intercepts_prior,
-      loadings_prior = loadings_prior,
-      positive_loadings = positive_loadings
-    )
-  },
-  validator = function(self) {
-    targets <- c(prevalence_prior = "probability", intercepts_prior = "real",
-                 loadings_prior = "real")
-    for (name in names(targets)) {
-      problem <- tryCatch(check_prior(S7::prop(self, name), targets[[name]], name),
-                          error = conditionMessage)
-      if (is.character(problem)) return(problem)
-    }
-    if (length(self@positive_loadings) != 1L || is.na(self@positive_loadings)) {
-      "@positive_loadings must be TRUE or FALSE"
-    }
-  }
-)
-
-S7::method(print, random_effects) <- function(x, ...) {
-  cat("<random_effects> random effects model, Gauss-Hermite quadrature\n",
-      "  prevalence_prior: ", prior_label(x@prevalence_prior), "\n",
-      "  intercepts_prior: ", prior_label(x@intercepts_prior), "\n",
-      "  loadings_prior:   ", prior_label(x@loadings_prior),
-      if (x@positive_loadings) ", all loadings positive" else ", first loading positive",
-      "\n",
-      "  verification:     ", sub("^baysesp::", "", class(x@verification)[1]),
       "\n", sep = "")
   invisible(x)
 }

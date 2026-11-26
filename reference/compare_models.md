@@ -243,14 +243,14 @@ cmp
 #> Expected log predictive density of a new subject (leave-one-out)
 #> 
 #>  model        elpd_loo se_loo elpd_diff se_diff p_loo
-#>  independence -1573.09  32.84      0.00    0.00  7.95
-#>  saturated    -1573.71  32.80     -0.62    0.56  8.83
+#>  independence -1573.03  32.84      0.00    0.00  7.90
+#>  saturated    -1573.28  32.86     -0.25    0.76  8.93
 #> 
 #> Reliability of the estimates and fit to the data
 #> 
 #>  model        loo_method high_k elpd_waic p_waic ppc_pvalue
-#>  independence psis            0  -1573.07   7.94       0.51
-#>  saturated    exact           -  -1573.67   8.79       0.49
+#>  independence psis            0  -1573.02   7.89       0.51
+#>  saturated    exact           -  -1573.32   8.98       0.49
 #> 
 #> elpd_diff: difference from the first model, with standard error se_diff.
 #> high_k: cells with Pareto k > 0.7 (- for exact leave-one-out, which has no k).

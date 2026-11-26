@@ -116,13 +116,13 @@ d <- baysesp_data(d, tests = c("A", "B"), verified = "verified", disease = "dise
 fit <- baysesp(d, seed = 1)
 rule_accuracy(fit, list(any_positive(), all_positive()))
 #>            quantity      mean    median     lower     upper identified
-#> 1  Se[any positive] 0.9793453 0.9851305 0.9290624 0.9994905       TRUE
-#> 2  Sp[any positive] 0.8028503 0.8032343 0.7741721 0.8298526       TRUE
-#> 3 PPV[any positive] 0.5618369 0.5622735 0.5090977 0.6144496       TRUE
-#> 4 NPV[any positive] 0.9933103 0.9952834 0.9758382 0.9998439       TRUE
-#> 5  Se[all positive] 0.6935923 0.6944468 0.6214782 0.7582623       TRUE
-#> 6  Sp[all positive] 0.9925537 0.9929214 0.9858199 0.9972360       TRUE
-#> 7 PPV[all positive] 0.9600218 0.9620041 0.9251793 0.9849610       TRUE
-#> 8 NPV[all positive] 0.9261159 0.9267453 0.9048655 0.9443424       TRUE
+#> 1  Se[any positive] 0.9891497 0.9953785 0.9468068 0.9999939       TRUE
+#> 2  Sp[any positive] 0.8037203 0.8040117 0.7748167 0.8314678       TRUE
+#> 3 PPV[any positive] 0.5624813 0.5624924 0.5081414 0.6151883       TRUE
+#> 4 NPV[any positive] 0.9965089 0.9985393 0.9822992 0.9999981       TRUE
+#> 5  Se[all positive] 0.7033587 0.7042886 0.6338550 0.7687375       TRUE
+#> 6  Sp[all positive] 0.9932194 0.9936070 0.9867010 0.9975990       TRUE
+#> 7 PPV[all positive] 0.9635747 0.9655511 0.9297147 0.9869545       TRUE
+#> 8 NPV[all positive] 0.9291343 0.9296021 0.9086617 0.9464525       TRUE
 # }
 ```

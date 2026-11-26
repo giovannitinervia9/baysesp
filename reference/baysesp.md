@@ -89,9 +89,14 @@ baysesp(
   when `backend` is `"rstan"` (for example `cores`, to run the chains in
   parallel, or `control`, for example `list(adapt_delta = 0.95)`), or to
   the `$sample()` method of `cmdstanr` when `backend` is `"cmdstanr"`
-  (for example `parallel_chains`, or `adapt_delta`). Do not repeat
-  `chains`, `iter_warmup`, `iter_sampling` or `seed`, which `baysesp()`
-  already passes to the backend.
+  (for example `parallel_chains`, or `adapt_delta`). With
+  [`saturated()`](https://giovannitinervia9.github.io/baysesp/reference/saturated.md)
+  the target acceptance rate `adapt_delta` is 0.95 unless given here,
+  instead of the Stan default 0.8: see the `profile_prevalence_prior`
+  argument of
+  [`saturated()`](https://giovannitinervia9.github.io/baysesp/reference/saturated.md).
+  Do not repeat `chains`, `iter_warmup`, `iter_sampling` or `seed`,
+  which `baysesp()` already passes to the backend.
 
 ## Value
 
@@ -215,14 +220,14 @@ d <- baysesp_data(d, tests = c("A", "B"), verified = "verified", disease = "dise
 fit <- baysesp(d, seed = 1)
 test_accuracy(fit)
 #>     quantity      mean    median     lower     upper identified
-#> 1 prevalence 0.2052042 0.2048145 0.1795179 0.2316453       TRUE
-#> 2      Se[A] 0.8851116 0.8871800 0.8226758 0.9317420       TRUE
-#> 3      Sp[A] 0.8488080 0.8492479 0.8232210 0.8731027       TRUE
-#> 4     PPV[A] 0.6017400 0.6018114 0.5445422 0.6591683       TRUE
-#> 5     NPV[A] 0.9661723 0.9671865 0.9458064 0.9805380       TRUE
-#> 6      Se[B] 0.7878260 0.7892088 0.7192221 0.8507625       TRUE
-#> 7      Sp[B] 0.9465961 0.9470981 0.9301900 0.9614485       TRUE
-#> 8     PPV[B] 0.7920101 0.7926048 0.7341592 0.8445836       TRUE
-#> 9     NPV[B] 0.9452112 0.9460813 0.9240182 0.9626702       TRUE
+#> 1 prevalence 0.2032967 0.2029564 0.1776183 0.2304198       TRUE
+#> 2      Se[A] 0.8949437 0.8973944 0.8408835 0.9370849       TRUE
+#> 3      Sp[A] 0.8497024 0.8498352 0.8236039 0.8748486       TRUE
+#> 4     PPV[A] 0.6030221 0.6031086 0.5445309 0.6599996       TRUE
+#> 5     NPV[A] 0.9693508 0.9702629 0.9513761 0.9822349       TRUE
+#> 6      Se[B] 0.7975647 0.7987924 0.7329281 0.8545418       TRUE
+#> 7      Sp[B] 0.9472373 0.9474472 0.9303955 0.9620185       TRUE
+#> 8     PPV[B] 0.7940863 0.7951280 0.7353305 0.8484074       TRUE
+#> 9     NPV[B] 0.9482413 0.9488913 0.9291204 0.9637223       TRUE
 # }
 ```

@@ -320,18 +320,18 @@ the model, the sampler diagnostics and the estimates:
 
 fit
 #> <baysesp_fit> saturated model, MAR verification, 4 chains x 1000 draws (rstan)
-#> Convergence: max R-hat 1.004, min bulk ESS 4124, min tail ESS 2138, 0 divergent transitions
+#> Convergence: max R-hat 1.003, min bulk ESS 3398, min tail ESS 1865, 0 divergent transitions
 #> 
 #>    quantity  mean median lower upper identified
-#>  prevalence 0.150  0.150 0.135 0.167       TRUE
-#>       Se[A] 0.845  0.849 0.775 0.893       TRUE
-#>       Sp[A] 0.902  0.903 0.891 0.914       TRUE
-#>      PPV[A] 0.605  0.605 0.565 0.645       TRUE
-#>      NPV[A] 0.970  0.971 0.954 0.981       TRUE
-#>       Se[B] 0.703  0.704 0.641 0.756       TRUE
-#>       Sp[B] 0.951  0.951 0.941 0.959       TRUE
-#>      PPV[B] 0.715  0.716 0.672 0.757       TRUE
-#>      NPV[B] 0.947  0.948 0.931 0.959       TRUE
+#>  prevalence 0.149  0.148 0.135 0.164       TRUE
+#>       Se[A] 0.855  0.858 0.791 0.899       TRUE
+#>       Sp[A] 0.903  0.903 0.890 0.914       TRUE
+#>      PPV[A] 0.605  0.605 0.564 0.644       TRUE
+#>      NPV[A] 0.973  0.974 0.958 0.982       TRUE
+#>       Se[B] 0.710  0.712 0.649 0.762       TRUE
+#>       Sp[B] 0.951  0.951 0.942 0.959       TRUE
+#>      PPV[B] 0.716  0.715 0.669 0.758       TRUE
+#>      NPV[B] 0.949  0.950 0.934 0.960       TRUE
 #> 
 #> Odds ratio of verification fixed at 1 (MAR).
 ```
@@ -345,9 +345,9 @@ Second, because
 uses Markov chain Monte Carlo (MCMC) to draw samples from the posterior
 distribution, the `Convergence:` line checks whether the chains
 converged, reporting the worst diagnostic across all parameters: largest
-R-hat 1.004 (measuring agreement across chains; values below 1.01
+R-hat 1.003 (measuring agreement across chains; values below 1.01
 indicate good mixing), smallest bulk and tail effective sample sizes
-5602 and 2433 (effectively independent draws in the center and tails of
+3368 and 1822 (effectively independent draws in the center and tails of
 the posterior; values above a few hundred are desirable), and 0
 divergent transitions (a nonzero count warns of numerical sampling
 trouble). All four checks look healthy; [Section 4](#sampler) shows how
@@ -372,8 +372,8 @@ The columns report the `quantity` name, the posterior `mean` and
 `identified`. Here `identified` is `TRUE` for every row—meaning each
 quantity is *identified* (estimated from the data, so its interval
 shrinks around the true value with more data)—because every profile has
-verified subjects under MAR. The posterior means (0.150 prevalence,
-0.845 and 0.703 sensitivities, 0.902 and 0.951 specificities) closely
+verified subjects under MAR. The posterior means (0.149 prevalence,
+0.855 and 0.711 sensitivities, 0.903 and 0.951 specificities) closely
 recover the simulation truth (0.15, 0.85, 0.70, 0.90, 0.95).
 
 Fourth, the closing line states that the odds ratio of verification is
@@ -390,15 +390,15 @@ computations or to change the credible level—call
 
 test_accuracy(fit = fit, level = 0.95)
 #>     quantity      mean    median     lower     upper identified
-#> 1 prevalence 0.1502432 0.1498875 0.1354257 0.1672890       TRUE
-#> 2      Se[A] 0.8446544 0.8488566 0.7754855 0.8934065       TRUE
-#> 3      Sp[A] 0.9024739 0.9025993 0.8906182 0.9142404       TRUE
-#> 4     PPV[A] 0.6047388 0.6047673 0.5651597 0.6452495       TRUE
-#> 5     NPV[A] 0.9703282 0.9713977 0.9540481 0.9805913       TRUE
-#> 6      Se[B] 0.7025317 0.7035913 0.6413860 0.7563585       TRUE
-#> 7      Sp[B] 0.9505881 0.9506894 0.9414966 0.9588167       TRUE
-#> 8     PPV[B] 0.7152426 0.7156096 0.6718545 0.7567017       TRUE
-#> 9     NPV[B] 0.9474618 0.9481076 0.9314664 0.9592382       TRUE
+#> 1 prevalence 0.1486269 0.1484610 0.1345253 0.1642666       TRUE
+#> 2      Se[A] 0.8547865 0.8582099 0.7907496 0.8990307       TRUE
+#> 3      Sp[A] 0.9027087 0.9030288 0.8902295 0.9142242       TRUE
+#> 4     PPV[A] 0.6051829 0.6054918 0.5642558 0.6442772       TRUE
+#> 5     NPV[A] 0.9725721 0.9735550 0.9580490 0.9816665       TRUE
+#> 6      Se[B] 0.7103387 0.7117765 0.6487106 0.7623055       TRUE
+#> 7      Sp[B] 0.9507275 0.9509512 0.9415632 0.9592667       TRUE
+#> 8     PPV[B] 0.7155223 0.7154751 0.6694452 0.7575708       TRUE
+#> 9     NPV[B] 0.9494104 0.9500429 0.9344898 0.9603626       TRUE
 ```
 
 - `fit`: the fitted model returned by
@@ -421,8 +421,8 @@ plot(fit, level = 0.95)
 ![](baysesp_files/figure-html/unnamed-chunk-10-1.png)
 
 The resulting figure shows each quantity’s estimate and 95% credible
-interval side by side, making the higher sensitivity of `A` (0.845 vs
-0.703) and higher specificity of `B` (0.951 vs 0.902) immediate before
+interval side by side, making the higher sensitivity of `A` (0.855 vs
+0.711) and higher specificity of `B` (0.951 vs 0.903) immediate before
 we examine the sampler diagnostics in [Section 4](#sampler).
 
 ## 4. Checking the sampler
@@ -451,22 +451,22 @@ summary(object = fit, level = 0.95)
 #> Priors:
 #>   frequency_prior           Dirichlet(concentration = 1)
 #>   verified_prior            Beta(mean = 0.5, precision = 2)
-#>   profile_prevalence_prior  Beta(mean = 0.5, precision = 2)
+#>   profile_prevalence_prior  Beta(mean = 0.5, precision = 1)
 #> 
 #> Sampling: 4 chains x 1000 draws (rstan)
-#>   max R-hat 1.004, min bulk ESS 4124, min tail ESS 2138, divergent transitions 0
+#>   max R-hat 1.003, min bulk ESS 3398, min tail ESS 1865, divergent transitions 0
 #> 
 #> Accuracy (95% credible intervals):
 #>    quantity  mean median lower upper identified
-#>  prevalence 0.150  0.150 0.135 0.167       TRUE
-#>       Se[A] 0.845  0.849 0.775 0.893       TRUE
-#>       Sp[A] 0.902  0.903 0.891 0.914       TRUE
-#>      PPV[A] 0.605  0.605 0.565 0.645       TRUE
-#>      NPV[A] 0.970  0.971 0.954 0.981       TRUE
-#>       Se[B] 0.703  0.704 0.641 0.756       TRUE
-#>       Sp[B] 0.951  0.951 0.941 0.959       TRUE
-#>      PPV[B] 0.715  0.716 0.672 0.757       TRUE
-#>      NPV[B] 0.947  0.948 0.931 0.959       TRUE
+#>  prevalence 0.149  0.148 0.135 0.164       TRUE
+#>       Se[A] 0.855  0.858 0.791 0.899       TRUE
+#>       Sp[A] 0.903  0.903 0.890 0.914       TRUE
+#>      PPV[A] 0.605  0.605 0.564 0.644       TRUE
+#>      NPV[A] 0.973  0.974 0.958 0.982       TRUE
+#>       Se[B] 0.710  0.712 0.649 0.762       TRUE
+#>       Sp[B] 0.951  0.951 0.942 0.959       TRUE
+#>      PPV[B] 0.716  0.715 0.669 0.758       TRUE
+#>      NPV[B] 0.949  0.950 0.934 0.960       TRUE
 ```
 
 - `object`: the fitted model returned by
@@ -479,16 +479,16 @@ profiles, using the three default priors of
 [`saturated()`](https://giovannitinervia9.github.io/baysesp/reference/saturated.md)
 (`Dirichlet(concentration = 1)` for `frequency_prior`, and
 `Beta(mean = 0.5, precision = 2)` for `verified_prior` and
-`profile_prevalence_prior`). Under `Sampling:`, the 4 chains of 1000
-draws each converged cleanly: the largest R-hat is 1.004 (below the 1.01
-threshold), the smallest effective sample sizes are 5602 in the bulk and
-2433 in the tails (well above the usual target of at least 100 per
-chain), and there are 0 divergent transitions (Vehtari et al. 2021).
-Below the diagnostics, `Accuracy` repeats the 95% credible interval
-table of
+`Beta(mean = 0.5, precision = 1)` for `profile_prevalence_prior`). Under
+`Sampling:`, the 4 chains of 1000 draws each converged cleanly: the
+largest R-hat is 1.003 (below the 1.01 threshold), the smallest
+effective sample sizes are 3368 in the bulk and 1822 in the tails (well
+above the usual target of at least 100 per chain), and there are 0
+divergent transitions (Vehtari et al. 2021). Below the diagnostics,
+`Accuracy` repeats the 95% credible interval table of
 [`test_accuracy()`](https://giovannitinervia9.github.io/baysesp/reference/test_accuracy.md),
-such as `prevalence` 0.150 (0.136 to 0.167), `Se[A]` 0.845 (0.775 to
-0.893), and `Sp[A]` 0.902 (0.891 to 0.914). The returned object is also
+such as `prevalence` 0.149 (0.135 to 0.165), `Se[A]` 0.855 (0.790 to
+0.899), and `Sp[A]` 0.903 (0.891 to 0.914). The returned object is also
 a list: `summary(fit)$diagnostics` extracts the sampler diagnostics as a
 one-row data frame, and `summary(fit)$priors` returns the priors as a
 data frame.
@@ -505,27 +505,27 @@ print(diagnostics, n = Inf)
 #> # A tibble: 21 × 4
 #>    variable           rhat ess_bulk ess_tail
 #>    <chr>             <dbl>    <dbl>    <dbl>
-#>  1 prevalence        1.00     6758.    3319.
-#>  2 theta_healthy[1]  1.00     6538.    3757.
-#>  3 theta_healthy[2]  1.00     6163.    3182.
-#>  4 theta_healthy[3]  1.00     6097.    3351.
-#>  5 theta_healthy[4]  1.00     5576.    2757.
-#>  6 theta_diseased[1] 1.00     4822.    2535.
-#>  7 theta_diseased[2] 1.00     6412.    3235.
-#>  8 theta_diseased[3] 1.00     6432.    2773.
-#>  9 theta_diseased[4] 1.00     5889.    3065.
-#> 10 omega[1]          1.00     8888.    3300.
-#> 11 omega[2]          1.00     5963.    2780.
-#> 12 omega[3]          1.00     5672.    3218.
-#> 13 omega[4]          1.00     6919.    3299.
-#> 14 v[1]              1.00     6408.    3060.
-#> 15 v[2]              1.00     5596.    2374.
-#> 16 v[3]              1.00     5677.    2512.
-#> 17 v[4]              1.000    4124.    2138.
-#> 18 phi1[1]           1.00     4823.    2553.
-#> 19 phi1[2]           1.00     6762.    2837.
-#> 20 phi1[3]           1.000    7113.    3328.
-#> 21 phi1[4]           1.00     5636.    2694.
+#>  1 prevalence        1.000    5208.    3364.
+#>  2 theta_healthy[1]  1.00     4758.    3233.
+#>  3 theta_healthy[2]  1.00     4425.    3392.
+#>  4 theta_healthy[3]  1.00     4139.    3054.
+#>  5 theta_healthy[4]  1.00     4486.    2576.
+#>  6 theta_diseased[1] 1.00     3901.    1959.
+#>  7 theta_diseased[2] 1.00     4348.    2868.
+#>  8 theta_diseased[3] 1.00     4191.    2814.
+#>  9 theta_diseased[4] 1.00     4635.    3029.
+#> 10 omega[1]          1.00     6088.    2998.
+#> 11 omega[2]          1.00     3912.    2823.
+#> 12 omega[3]          1.00     3770.    3072.
+#> 13 omega[4]          1.00     4554.    3227.
+#> 14 v[1]              1.00     4410.    2488.
+#> 15 v[2]              1.00     5231.    2739.
+#> 16 v[3]              1.00     4442.    3207.
+#> 17 v[4]              1.000    3398.    1865.
+#> 18 phi1[1]           1.00     3913.    1948.
+#> 19 phi1[2]           1.000    5035.    3088.
+#> 20 phi1[3]           1.00     4623.    3086.
+#> 21 phi1[4]           1.00     4302.    2284.
 ```
 
 The rows are not the accuracy measures of [Section 3](#fitting) but the
@@ -558,18 +558,21 @@ computed from it, which is why the diagnostics are checked on all of
 them.
 
 Across all 21 parameters, `rhat` (agreement across chains, ideally below
-1.01) is at most 1.004, while `ess_bulk` and `ess_tail` (effective
+1.01) is at most 1.003, while `ess_bulk` and `ess_tail` (effective
 independent draws in the center and in the tails of the posterior,
-ideally above a few hundred) are at least 5602 and 2433, matching the
+ideally above a few hundred) are at least 3368 and 1822, matching the
 values reported by [`summary()`](https://rdrr.io/r/base/summary.html).
 
-If divergent transitions occur, pass
-`control = list(adapt_delta = 0.95)` (or 0.99) to
+If divergent transitions occur, pass a higher target acceptance rate to
 [`baysesp()`](https://giovannitinervia9.github.io/baysesp/reference/baysesp.md)
-for a smaller step size; if effective sample sizes are small, increase
-`iter_sampling`. `cores = 4` runs the four chains in parallel, and
-`fit@stan_fit` holds the Stan object for other diagnostics. Having
-checked the sampler, [Section 5](#priors) turns to the priors.
+for a smaller step size, for example
+`control = list(adapt_delta = 0.99)`
+([`saturated()`](https://giovannitinervia9.github.io/baysesp/reference/saturated.md)
+already uses 0.95, the other models the Stan default 0.8); if effective
+sample sizes are small, increase `iter_sampling`. `cores = 4` runs the
+four chains in parallel, and `fit@stan_fit` holds the Stan object for
+other diagnostics. Having checked the sampler, [Section 5](#priors)
+turns to the priors.
 
 ## 5. Priors
 
@@ -621,7 +624,7 @@ shown here with their default values:
 saturated(
   frequency_prior = prior_dirichlet(concentration = 1),
   verified_prior = prior_beta(mean = 0.5, precision = 2),
-  profile_prevalence_prior = prior_beta(mean = 0.5, precision = 2),
+  profile_prevalence_prior = prior_beta(mean = 0.5, precision = 1),
   unverified_prevalence_prior = NULL,
   verification = mar()
 )
@@ -642,8 +645,8 @@ saturated(
   among the verified subjects of each profile, `phi1`.
   `prior_beta(mean, precision)` works like adding `mean * precision`
   diseased and `(1 - mean) * precision` healthy subjects to the verified
-  subjects of every profile: the default adds one of each. This is the
-  prior that can move the accuracy, as shown below.
+  subjects of every profile: the default, the Jeffreys prior, adds half
+  of each. This is the prior that can move the accuracy, as shown below.
 - `unverified_prevalence_prior`: the prior on the proportion of diseased
   in profiles that are never verified. It is `NULL` by default and
   needed only when such profiles exist ([Section 7](#never-verified)).
@@ -688,14 +691,14 @@ is also the most frequent profile, about three quarters of the
 population. A small change in its `phi1[1]` therefore moves many
 diseased subjects into the profile that both tests miss, and changes the
 prevalence and the sensitivities. To see this, we fit the model again
-with two other values of `precision` in `profile_prevalence_prior`, one
-smaller and one much larger than the default:
+with two other values of `precision` in `profile_prevalence_prior`, 2
+(the uniform distribution) and the much larger 20:
 
 ``` r
 
-fit_weak <- baysesp(
+fit_uniform <- baysesp(
   data = d,
-  model = saturated(profile_prevalence_prior = prior_beta(mean = 0.5, precision = 1)),
+  model = saturated(profile_prevalence_prior = prior_beta(mean = 0.5, precision = 2)),
   seed = 1
 )
 fit_strong <- baysesp(
@@ -718,28 +721,35 @@ prior_effect <- function(f) {
     Se_A = acc$mean[acc$quantity == "Se[A]"])
 }
 round(rbind(
-  "precision = 1" = prior_effect(fit_weak),
-  "precision = 2 (default)" = prior_effect(fit),
+  "precision = 1 (default)" = prior_effect(fit),
+  "precision = 2 (uniform)" = prior_effect(fit_uniform),
   "precision = 20" = prior_effect(fit_strong)
 ), 3)
 #>                         phi1_00 prevalence  Se_A
-#> precision = 1             0.007      0.149 0.855
-#> precision = 2 (default)   0.009      0.150 0.845
+#> precision = 1 (default)   0.007      0.149 0.855
+#> precision = 2 (uniform)   0.009      0.150 0.845
 #> precision = 20            0.048      0.178 0.705
 ```
 
 The observed proportion in profile (0,0) is 1 out of 211, about 0.005.
-With `precision = 1` (half a diseased and half a healthy subject added)
-the estimate of `phi1[1]` stays close to it, and with the default it is
-slightly higher. With `precision = 20`, ten diseased and ten healthy
-subjects are added to a profile that has only one diseased: `phi1[1]`
-rises to about 0.05, the prevalence goes up and the sensitivity of `A`
-falls well below its true value of 0.85, because the extra diseased
-subjects all fall in the profile where `A` is negative. A prior on
-`phi1` should therefore be wide, as the default is, unless there is real
-knowledge about the proportion of diseased in each profile; with more
-verified subjects in profile (0,0) the differences between the three
-fits would shrink.
+With the default `precision = 1` (half a diseased and half a healthy
+subject added) the estimate of `phi1[1]` stays close to it, and with the
+uniform `precision = 2` it is slightly higher. In simulations with few
+verified negatives the uniform prior underestimated the sensitivities by
+about twice as much as the default; with the default,
+[`baysesp()`](https://giovannitinervia9.github.io/baysesp/reference/baysesp.md)
+raises the target acceptance rate `adapt_delta` of the sampler to 0.95
+for
+[`saturated()`](https://giovannitinervia9.github.io/baysesp/reference/saturated.md),
+because the posterior of `phi1` in such profiles has a long tail. With
+`precision = 20`, ten diseased and ten healthy subjects are added to a
+profile that has only one diseased: `phi1[1]` rises to about 0.05, the
+prevalence goes up and the sensitivity of `A` falls well below its true
+value of 0.85, because the extra diseased subjects all fall in the
+profile where `A` is negative. A prior on `phi1` should therefore be
+weak, as the default is, unless there is real knowledge about the
+proportion of diseased in each profile; with more verified subjects in
+profile (0,0) the differences between the three fits would shrink.
 
 By contrast, priors on *not identified* quantities—whose posteriors stay
 governed by the prior regardless of sample size (Gustafson 2015)—decide
@@ -780,14 +790,14 @@ rule_accuracy(
   level = 0.95
 )
 #>            quantity      mean    median     lower     upper identified
-#> 1  Se[any positive] 0.9552269 0.9613791 0.8845702 0.9941001       TRUE
-#> 2  Sp[any positive] 0.8569402 0.8571079 0.8431659 0.8706390       TRUE
-#> 3 PPV[any positive] 0.5411918 0.5411347 0.5059672 0.5769085       TRUE
-#> 4 NPV[any positive] 0.9906756 0.9921150 0.9742244 0.9988329       TRUE
-#> 5  Se[all positive] 0.5919592 0.5927914 0.5336630 0.6470290       TRUE
-#> 6  Sp[all positive] 0.9961218 0.9962310 0.9934206 0.9981273       TRUE
-#> 7 PPV[all positive] 0.9642211 0.9652163 0.9396475 0.9826121       TRUE
-#> 8 NPV[all positive] 0.9323795 0.9329615 0.9160999 0.9445891       TRUE
+#> 1  Se[any positive] 0.9654283 0.9712121 0.8976839 0.9972180       TRUE
+#> 2  Sp[any positive] 0.8571431 0.8572548 0.8428008 0.8707796       TRUE
+#> 3 PPV[any positive] 0.5410810 0.5411282 0.5048011 0.5767827       TRUE
+#> 4 NPV[any positive] 0.9928732 0.9942463 0.9779697 0.9994548       TRUE
+#> 5  Se[all positive] 0.5996970 0.6003698 0.5420990 0.6521518       TRUE
+#> 6  Sp[all positive] 0.9962931 0.9964309 0.9935558 0.9983632       TRUE
+#> 7 PPV[all positive] 0.9657827 0.9669702 0.9411168 0.9845666       TRUE
+#> 8 NPV[all positive] 0.9343832 0.9349257 0.9197402 0.9456619       TRUE
 ```
 
 - `fit`: the fitted model;
@@ -797,11 +807,11 @@ rule_accuracy(
 Each rule has four rows (`Se`, `Sp`, `PPV`, `NPV`), all with
 `identified` equal to `TRUE`.
 [`any_positive()`](https://giovannitinervia9.github.io/baysesp/reference/any_positive.md)
-lifts sensitivity to 0.955 while lowering specificity (0.857) and `PPV`
+lifts sensitivity to 0.966 while lowering specificity (0.857) and `PPV`
 (0.541);
 [`all_positive()`](https://giovannitinervia9.github.io/baysesp/reference/all_positive.md)
-raises specificity to 0.996 and `PPV` to 0.964 at the cost of
-sensitivity (0.592).
+raises specificity to 0.996 and `PPV` to 0.966 at the cost of
+sensitivity (0.599).
 
 ### Comparing two tests
 
@@ -815,15 +825,15 @@ we compare `first = "A"` against `second = "B"` on `fit = fit` at
 
 compare_tests(fit = fit, first = "A", second = "B", level = 0.95)
 #>                quantity        mean      median       lower       upper
-#> 1         Se[A] - Se[B]  0.14212266  0.14259040  0.08520127  0.19984813
-#> 2         Sp[A] - Sp[B] -0.04811426 -0.04818879 -0.06268891 -0.03334061
-#> 3 Youden[A] - Youden[B]  0.09400841  0.09451092  0.03343420  0.15317230
-#> 4       TPR[A] / TPR[B]  1.20352405  1.20298311  1.11477205  1.29790861
-#> 5       FPR[A] / FPR[B]  1.98928555  1.97697718  1.60437905  2.45085494
+#> 1         Se[A] - Se[B]  0.14444783  0.14404575  0.08734674  0.20242919
+#> 2         Sp[A] - Sp[B] -0.04801876 -0.04786343 -0.06274528 -0.03311421
+#> 3 Youden[A] - Youden[B]  0.09642907  0.09640268  0.03669696  0.15810207
+#> 4       TPR[A] / TPR[B]  1.20465244  1.20330108  1.11887265  1.29968150
+#> 5       FPR[A] / FPR[B]  1.99119139  1.97583106  1.58699670  2.44507637
 #>   identified probability
 #> 1       TRUE     1.00000
 #> 2       TRUE     0.00000
-#> 3       TRUE     0.99925
+#> 3       TRUE     0.99875
 #> 4       TRUE     1.00000
 #> 5       TRUE     1.00000
 ```
@@ -850,20 +860,20 @@ larger; only values near 0.5 leave the question open.
 
 Reading the rows in turn:
 
-- `Se[A] - Se[B]`: `A` detects on average 0.142 more of the diseased
-  subjects than `B`, with a 95% interval from 0.083 to 0.200. The
+- `Se[A] - Se[B]`: `A` detects on average 0.144 more of the diseased
+  subjects than `B`, with a 95% interval from 0.085 to 0.202. The
   posterior probability is 100%: in every draw `A` is the more sensitive
   test. This agrees with the sensitivities of [Section 3](#fitting),
-  0.845 for `A` and 0.703 for `B`.
+  0.855 for `A` and 0.711 for `B`.
 - `Sp[A] - Sp[B]`: the difference is negative, -0.048 on average, with
-  an interval from -0.063 to -0.034 that does not include 0. The
+  an interval from -0.062 to -0.034 that does not include 0. The
   posterior probability is 0%: in no draw is `A` more specific, so `B`
   is the more specific test with posterior probability 100%. Again this
-  agrees with Section 3, where the specificities are 0.902 for `A` and
+  agrees with Section 3, where the specificities are 0.903 for `A` and
   0.951 for `B`.
 - `Youden[A] - Youden[B]`: the Youden index weighs a missed diseased
-  subject and a false alarm equally. The difference is 0.094 (interval
-  0.030 to 0.155) with posterior probability 99.8%, so under this
+  subject and a false alarm equally. The difference is 0.096 (interval
+  0.034 to 0.157) with posterior probability 99.95%, so under this
   weighting the sensitivity that `A` gains outweighs the specificity it
   loses.
 - `TPR[A] / TPR[B]`: `A` declares positive about 1.20 times as many
@@ -1007,7 +1017,7 @@ fit_never <- baysesp(
   model = saturated(
     frequency_prior = prior_dirichlet(concentration = 1),
     verified_prior = prior_beta(mean = 0.5, precision = 2),
-    profile_prevalence_prior = prior_beta(mean = 0.5, precision = 2),
+    profile_prevalence_prior = prior_beta(mean = 0.5, precision = 1),
     unverified_prevalence_prior = q_prior,
     verification = mar()
   ),
@@ -1022,21 +1032,21 @@ and look at the accuracy with
 
 test_accuracy(fit = fit_never)
 #>     quantity      mean    median     lower     upper identified
-#> 1 prevalence 0.1492075 0.1481261 0.1357520 0.1694881      FALSE
-#> 2      Se[A] 0.8603009 0.8698928 0.7584997 0.9111791      FALSE
-#> 3      Sp[A] 0.8903151 0.8903609 0.8807957 0.8999259      FALSE
-#> 4     PPV[A] 0.5785790 0.5783935 0.5479642 0.6081053       TRUE
-#> 5     NPV[A] 0.9729124 0.9754593 0.9486917 0.9837041      FALSE
-#> 6      Se[B] 0.7182794 0.7244295 0.6314962 0.7710579      FALSE
-#> 7      Sp[B] 0.9430364 0.9431545 0.9357494 0.9500481      FALSE
-#> 8     PPV[B] 0.6882160 0.6883063 0.6542167 0.7221322       TRUE
-#> 9     NPV[B] 0.9499864 0.9520448 0.9272793 0.9613813      FALSE
+#> 1 prevalence 0.1495835 0.1482998 0.1355250 0.1710428      FALSE
+#> 2      Se[A] 0.8591001 0.8701860 0.7501779 0.9095316      FALSE
+#> 3      Sp[A] 0.8903306 0.8904161 0.8806635 0.8996459      FALSE
+#> 4     PPV[A] 0.5789228 0.5792059 0.5494842 0.6084434       TRUE
+#> 5     NPV[A] 0.9725644 0.9753479 0.9458009 0.9835119      FALSE
+#> 6      Se[B] 0.7175012 0.7240621 0.6250460 0.7729930      FALSE
+#> 7      Sp[B] 0.9429434 0.9430512 0.9357072 0.9496244      FALSE
+#> 8     PPV[B] 0.6881849 0.6882615 0.6547812 0.7198999       TRUE
+#> 9     NPV[B] 0.9496652 0.9519299 0.9255477 0.9619986      FALSE
 ```
 
-Now `identified` is `FALSE` for `prevalence` (0.149), `Se[A]` (0.860),
+Now `identified` is `FALSE` for `prevalence` (0.150), `Se[A]` (0.859),
 `Se[B]` (0.718), both specificities, and both negative predictive
 values: they depend on `q`, so more data would not shrink their
-intervals to a point. Only `PPV[A]` (0.578) and `PPV[B]` (0.688) have
+intervals to a point. Only `PPV[A]` (0.579) and `PPV[B]` (0.689) have
 `identified` equal to `TRUE`, since test-positive subjects never have
 `(0,0)`.
 
@@ -1061,12 +1071,12 @@ accuracy_ratios(
   level = 0.95
 )
 #>                     quantity      mean    median     lower     upper
-#> 1            TPR[A] / TPR[B] 1.1983600 1.1975868 1.1351967 1.2630118
-#> 2            FPR[A] / FPR[B] 1.9334646 1.9257601 1.6609157 2.2367824
-#> 3 TPR[A] / TPR[any positive] 0.9013892 0.9015498 0.8782802 0.9224918
-#> 4 FPR[A] / FPR[any positive] 0.6900784 0.6902331 0.6548422 0.7250438
-#> 5 TPR[B] / TPR[any positive] 0.7525944 0.7530002 0.7194440 0.7850151
-#> 6 FPR[B] / FPR[any positive] 0.3583590 0.3583011 0.3228859 0.3952715
+#> 1            TPR[A] / TPR[B] 1.1980540 1.1982454 1.1323025 1.2652051
+#> 2            FPR[A] / FPR[B] 1.9291916 1.9238576 1.6638724 2.2249148
+#> 3 TPR[A] / TPR[any positive] 0.9015306 0.9019235 0.8777452 0.9221210
+#> 4 FPR[A] / FPR[any positive] 0.6893784 0.6898009 0.6541186 0.7236518
+#> 5 TPR[B] / TPR[any positive] 0.7529197 0.7530840 0.7204553 0.7852323
+#> 6 FPR[B] / FPR[any positive] 0.3586426 0.3582599 0.3235193 0.3944191
 #>   probability
 #> 1           1
 #> 2           1
@@ -1084,7 +1094,7 @@ accuracy_ratios(
   with `verification = mar()`;
 - `level`: the probability of the credible intervals.
 
-`TPR[A] / TPR[B]` has mean 1.198 (1.136 to 1.266): `A` detects about 20%
+`TPR[A] / TPR[B]` has mean 1.197 (1.135 to 1.265): `A` detects about 20%
 more diseased subjects than `B` (posterior probability 100%). Likewise,
 `FPR[A] / FPR[B]` (1.933, posterior probability 100%) shows `B` is more
 specific. Regardless of the prior on `q`, the data identify which test
@@ -1098,11 +1108,11 @@ vary from 0 to 1 yields bounds that hold under any prior via
 
 accuracy_bounds(fit = fit_never, rules = c("A", "B"), odds_ratio = NULL, level = 0.95)
 #>     quantity lower_bound upper_bound     lower     upper
-#> 1 prevalence   0.1421057   0.8647442 0.1321628 0.8742058
-#> 2      Se[A]   0.1481866   0.9015498 0.1374577 0.9224918
-#> 3      Sp[A]   0.3097669   0.8912308 0.2749562 0.9004752
-#> 4      Se[B]   0.1236671   0.7530002 0.1139037 0.7850151
-#> 5      Sp[B]   0.6416989   0.9435972 0.6047285 0.9503403
+#> 1 prevalence   0.1423110   0.8646793 0.1327297 0.8742681
+#> 2      Se[A]   0.1483609   0.9019235 0.1374477 0.9221210
+#> 3      Sp[A]   0.3101991   0.8913656 0.2763482 0.9004133
+#> 4      Se[B]   0.1238541   0.7530840 0.1142552 0.7852323
+#> 5      Sp[B]   0.6417401   0.9435184 0.6055809 0.9500453
 ```
 
 The arguments match
@@ -1142,25 +1152,25 @@ sens <- sensitivity_analysis(
 sens[sens$quantity %in% c("prevalence", "Se[A]", "Se[B]"),
      c("unverified_prior", "quantity", "mean", "lower", "upper")]
 #>                         unverified_prior   quantity      mean     lower
-#> 1  Beta(mean = 0.005, precision = 197.8) prevalence 0.1457118 0.1345385
-#> 2  Beta(mean = 0.005, precision = 197.8)      Se[A] 0.8797088 0.8252832
-#> 6  Beta(mean = 0.005, precision = 197.8)      Se[B] 0.7344941 0.6826149
-#> 10  Beta(mean = 0.01, precision = 98.19) prevalence 0.1494313 0.1353329
-#> 11  Beta(mean = 0.01, precision = 98.19)      Se[A] 0.8591649 0.7590342
-#> 15  Beta(mean = 0.01, precision = 98.19)      Se[B] 0.7173534 0.6312576
-#> 19  Beta(mean = 0.03, precision = 44.65) prevalence 0.1638548 0.1390973
-#> 20  Beta(mean = 0.03, precision = 44.65)      Se[A] 0.7904529 0.6023619
-#> 24  Beta(mean = 0.03, precision = 44.65)      Se[B] 0.6600053 0.5026472
+#> 1  Beta(mean = 0.005, precision = 197.8) prevalence 0.1458048 0.1348200
+#> 2  Beta(mean = 0.005, precision = 197.8)      Se[A] 0.8798548 0.8246277
+#> 6  Beta(mean = 0.005, precision = 197.8)      Se[B] 0.7348303 0.6815365
+#> 10  Beta(mean = 0.01, precision = 98.19) prevalence 0.1495253 0.1359049
+#> 11  Beta(mean = 0.01, precision = 98.19)      Se[A] 0.8593084 0.7583793
+#> 15  Beta(mean = 0.01, precision = 98.19)      Se[B] 0.7176711 0.6293875
+#> 19  Beta(mean = 0.03, precision = 44.65) prevalence 0.1639462 0.1395020
+#> 20  Beta(mean = 0.03, precision = 44.65)      Se[A] 0.7906569 0.6009929
+#> 24  Beta(mean = 0.03, precision = 44.65)      Se[B] 0.6603407 0.5050427
 #>        upper
-#> 1  0.1584463
-#> 2  0.9146554
-#> 6  0.7746899
-#> 10 0.1699483
-#> 11 0.9098003
-#> 15 0.7713104
-#> 19 0.2125135
-#> 20 0.8953864
-#> 24 0.7552570
+#> 1  0.1586794
+#> 2  0.9142206
+#> 6  0.7759112
+#> 10 0.1706715
+#> 11 0.9103841
+#> 15 0.7711247
+#> 19 0.2130955
+#> 20 0.8962051
+#> 24 0.7574537
 ```
 
 - `fit`: the fitted model;
@@ -1174,7 +1184,7 @@ sens[sens$quantity %in% c("prevalence", "Se[A]", "Se[B]"),
 From `Beta(mean = 0.005, precision = 197.8)` to
 `Beta(mean = 0.03, precision = 44.65)`, placing more diseased subjects
 in `(0,0)` raises `prevalence` (0.146 to 0.164) and lowers `Se[A]`
-(0.879 to 0.790) and `Se[B]` (0.734 to 0.660).
+(0.880 to 0.790) and `Se[B]` (0.735 to 0.661).
 
 To see this graphically, we call
 [`prior_posterior()`](https://giovannitinervia9.github.io/baysesp/reference/prior_posterior.md)
@@ -1264,23 +1274,23 @@ estimates under MAR:
 
 test_accuracy(fit = fit_mar)
 #>     quantity      mean    median     lower     upper identified
-#> 1 prevalence 0.1607179 0.1605903 0.1490482 0.1729679       TRUE
-#> 2      Se[A] 0.8312037 0.8318470 0.7890983 0.8684740       TRUE
-#> 3      Sp[A] 0.8952198 0.8952322 0.8849296 0.9047358       TRUE
-#> 4     PPV[A] 0.6029582 0.6031320 0.5711601 0.6338678       TRUE
-#> 5     NPV[A] 0.9650964 0.9653911 0.9549858 0.9737534       TRUE
-#> 6      Se[B] 0.6747211 0.6752536 0.6325218 0.7151749       TRUE
-#> 7      Sp[B] 0.9438995 0.9439972 0.9366302 0.9511872       TRUE
-#> 8     PPV[B] 0.6971758 0.6973487 0.6621870 0.7313658       TRUE
-#> 9     NPV[B] 0.9380500 0.9383781 0.9269761 0.9477706       TRUE
+#> 1 prevalence 0.1601772 0.1601522 0.1484747 0.1722724       TRUE
+#> 2      Se[A] 0.8332101 0.8343041 0.7887815 0.8714441       TRUE
+#> 3      Sp[A] 0.8953692 0.8954707 0.8852092 0.9050643       TRUE
+#> 4     PPV[A] 0.6029038 0.6026293 0.5705451 0.6346441       TRUE
+#> 5     NPV[A] 0.9656324 0.9660127 0.9545860 0.9745249       TRUE
+#> 6      Se[B] 0.6766593 0.6770481 0.6327725 0.7184057       TRUE
+#> 7      Sp[B] 0.9439405 0.9440077 0.9363812 0.9509999       TRUE
+#> 8     PPV[B] 0.6970712 0.6975368 0.6616692 0.7315544       TRUE
+#> 9     NPV[B] 0.9386278 0.9387890 0.9273849 0.9484886       TRUE
 ```
 
-The MAR estimates are biased: `prevalence` averages 0.161 (true 0.15),
-`Se[A]` 0.831 (0.85), and `Se[B]` 0.675 (0.70). Treating unverified
+The MAR estimates are biased: `prevalence` averages 0.160 (true 0.15),
+`Se[A]` 0.834 (0.85), and `Se[B]` 0.677 (0.70). Treating unverified
 subjects—mostly double-negative—as equally diseased as verified ones
 with the same results imputes too many missed cases. True values still
-sit inside the 95% intervals (0.149 to 0.173, 0.787 to 0.870, 0.632 to
-0.715), yet bias grows with `odds_ratio` and never shrinks with more
+sit inside the 95% intervals (0.149 to 0.172, 0.793 to 0.872, 0.635 to
+0.716), yet bias grows with `odds_ratio` and never shrinks with more
 data. `identified` is `TRUE` only because `verification = mar()` fixes
 `odds_ratio` at 1.
 
@@ -1318,22 +1328,22 @@ grid <- sensitivity_analysis(
 grid[grid$quantity %in% c("prevalence", "Se[A]", "Se[B]"),
      c("odds_ratio", "quantity", "mean", "lower", "upper")]
 #>    odds_ratio   quantity      mean     lower     upper
-#> 1         1.0 prevalence 0.1607179 0.1490482 0.1729679
-#> 2         1.0      Se[A] 0.8312037 0.7890983 0.8684740
-#> 6         1.0      Se[B] 0.6747211 0.6325218 0.7151749
-#> 10        1.5 prevalence 0.1536024 0.1427132 0.1649389
-#> 11        1.5      Se[A] 0.8510886 0.8150137 0.8833652
-#> 15        1.5      Se[B] 0.6969143 0.6581760 0.7346224
-#> 19        2.0 prevalence 0.1495951 0.1389933 0.1604692
-#> 20        2.0      Se[A] 0.8620910 0.8290126 0.8915947
-#> 24        2.0      Se[B] 0.7098282 0.6727232 0.7462982
-#> 28        3.0 prevalence 0.1451481 0.1349528 0.1555601
-#> 29        3.0      Se[A] 0.8739540 0.8440102 0.9009025
-#> 33        3.0      Se[B] 0.7242837 0.6890196 0.7591959
+#> 1         1.0 prevalence 0.1601772 0.1484747 0.1722724
+#> 2         1.0      Se[A] 0.8332101 0.7887815 0.8714441
+#> 6         1.0      Se[B] 0.6766593 0.6327725 0.7184057
+#> 10        1.5 prevalence 0.1531717 0.1422227 0.1642740
+#> 11        1.5      Se[A] 0.8526903 0.8145941 0.8862198
+#> 15        1.5      Se[B] 0.6985115 0.6578343 0.7378417
+#> 19        2.0 prevalence 0.1492222 0.1386837 0.1598403
+#> 20        2.0      Se[A] 0.8634706 0.8287950 0.8941691
+#> 24        2.0      Se[B] 0.7112325 0.6721775 0.7487876
+#> 28        3.0 prevalence 0.1448360 0.1347861 0.1552346
+#> 29        3.0      Se[A] 0.8750960 0.8439579 0.9030690
+#> 33        3.0      Se[B] 0.7254763 0.6881618 0.7608704
 ```
 
-From `odds_ratio` 1.0 to 3.0, mean `prevalence` drops from 0.161 to
-0.145, while `Se[A]` rises from 0.831 to 0.874 and `Se[B]` from 0.675 to
+From `odds_ratio` 1.0 to 3.0, mean `prevalence` drops from 0.160 to
+0.145, while `Se[A]` rises from 0.834 to 0.875 and `Se[B]` from 0.677 to
 0.725, passing near the true values around 1.5 and 2.0. We plot `Se[A]`
 and `Se[B]` from `grid` with [ggplot2](https://ggplot2.tidyverse.org):
 
@@ -1395,20 +1405,20 @@ estimates and intervals:
 
 test_accuracy(fit = fit_mnar)
 #>     quantity      mean    median     lower     upper identified
-#> 1 prevalence 0.1543854 0.1538402 0.1399525 0.1725252      FALSE
-#> 2      Se[A] 0.8487179 0.8510669 0.7956649 0.8891187      FALSE
-#> 3      Sp[A] 0.8928012 0.8928991 0.8815198 0.9032450      FALSE
-#> 4     PPV[A] 0.5908312 0.5904420 0.5527758 0.6300330      FALSE
-#> 5     NPV[A] 0.9698424 0.9706445 0.9557687 0.9792582      FALSE
-#> 6      Se[B] 0.6945125 0.6964636 0.6376733 0.7429893      FALSE
-#> 7      Sp[B] 0.9427617 0.9428219 0.9353302 0.9498356      FALSE
-#> 8     PPV[B] 0.6886902 0.6885961 0.6534170 0.7244867      FALSE
-#> 9     NPV[B] 0.9439903 0.9447331 0.9274953 0.9560154      FALSE
+#> 1 prevalence 0.1537740 0.1531621 0.1398583 0.1710589      FALSE
+#> 2      Se[A] 0.8515086 0.8532857 0.7973739 0.8926636      FALSE
+#> 3      Sp[A] 0.8929023 0.8930026 0.8826106 0.9027891      FALSE
+#> 4     PPV[A] 0.5907086 0.5903189 0.5552961 0.6275223      FALSE
+#> 5     NPV[A] 0.9705257 0.9712456 0.9567793 0.9798487      FALSE
+#> 6      Se[B] 0.6968062 0.6980701 0.6401184 0.7448084      FALSE
+#> 7      Sp[B] 0.9426991 0.9428449 0.9347885 0.9499352      FALSE
+#> 8     PPV[B] 0.6881890 0.6881297 0.6513065 0.7258117      FALSE
+#> 9     NPV[B] 0.9446480 0.9453485 0.9285191 0.9562560      FALSE
 ```
 
 Compared with `fit_mar`, means move toward the true values (0.154 for
-`prevalence`, 0.849 for `Se[A]`, 0.695 for `Se[B]`), and intervals widen
-(0.140 to 0.172, 0.794 to 0.889, 0.638 to 0.744) to include uncertainty
+`prevalence`, 0.851 for `Se[A]`, 0.697 for `Se[B]`), and intervals widen
+(0.140 to 0.171, 0.799 to 0.891, 0.642 to 0.743) to include uncertainty
 on `odds_ratio`. Every row now shows `identified` as `FALSE`: since
 `odds_ratio` is *not identified* in
 [`saturated()`](https://giovannitinervia9.github.io/baysesp/reference/saturated.md),
@@ -1600,10 +1610,10 @@ sensitivities <- function(fits) {
 sensitivities(list(saturated = fit3_sat, independence = fit3_ci,
                    order_2 = fit3_ll2, random_effects = fit3_re))
 #>              model   quantity      mean     lower     upper
-#> 1        saturated prevalence 0.1980985 0.1893703 0.2073230
-#> 2        saturated      Se[A] 0.9076213 0.8822119 0.9277836
-#> 6        saturated      Se[B] 0.8069682 0.7810913 0.8299822
-#> 10       saturated      Se[C] 0.7056746 0.6797928 0.7290973
+#> 1        saturated prevalence 0.1975380 0.1890112 0.2066978
+#> 2        saturated      Se[A] 0.9100854 0.8861893 0.9294005
+#> 6        saturated      Se[B] 0.8090805 0.7852423 0.8309561
+#> 10       saturated      Se[C] 0.7076932 0.6823671 0.7312651
 #> 11    independence prevalence 0.1944187 0.1866260 0.2021907
 #> 21    independence      Se[A] 0.9292161 0.9167961 0.9404657
 #> 61    independence      Se[B] 0.8292508 0.8113633 0.8466420
@@ -1619,7 +1629,7 @@ sensitivities(list(saturated = fit3_sat, independence = fit3_ci,
 ```
 
 Look at how each model compares with the true values (0.2, 0.9, 0.8,
-0.7): `saturated` (0.198, 0.907, 0.807, 0.705), `order_2` (0.197, 0.911,
+0.7): `saturated` (0.197, 0.910, 0.809, 0.708), `order_2` (0.197, 0.911,
 0.811, 0.709), and `random_effects` (0.197, 0.912, 0.811, 0.709) recover
 them well. `independence` (`interaction_order = 1`) overestimates
 `Se[A]` (0.929, 0.916 to 0.941) and `Se[B]` (0.829, 0.811 to 0.847),
@@ -1646,14 +1656,14 @@ confirmed <- test_rule(
 )
 rule_accuracy(fit = fit3_sat, rules = list("A", confirmed))
 #>           quantity      mean    median     lower     upper identified
-#> 1            Se[A] 0.9076213 0.9086642 0.8822119 0.9277836       TRUE
-#> 2            Sp[A] 0.8500793 0.8501695 0.8420425 0.8578691       TRUE
-#> 3           PPV[A] 0.5992607 0.5992730 0.5812258 0.6171677       TRUE
-#> 4           NPV[A] 0.9738273 0.9741783 0.9659583 0.9799447       TRUE
-#> 5  Se[A confirmed] 0.8518019 0.8526567 0.8255755 0.8743196       TRUE
-#> 6  Sp[A confirmed] 0.9689968 0.9690657 0.9647003 0.9730001       TRUE
-#> 7 PPV[A confirmed] 0.8715730 0.8717525 0.8549285 0.8872897       TRUE
-#> 8 NPV[A confirmed] 0.9635691 0.9638323 0.9562294 0.9696407       TRUE
+#> 1            Se[A] 0.9100854 0.9108013 0.8861893 0.9294005       TRUE
+#> 2            Sp[A] 0.8502606 0.8502973 0.8424440 0.8580337       TRUE
+#> 3           PPV[A] 0.5993613 0.5993672 0.5815472 0.6172088       TRUE
+#> 4           NPV[A] 0.9746062 0.9748726 0.9672208 0.9804080       TRUE
+#> 5  Se[A confirmed] 0.8543712 0.8549194 0.8300146 0.8750599       TRUE
+#> 6  Sp[A confirmed] 0.9691841 0.9692131 0.9650192 0.9731322       TRUE
+#> 7 PPV[A confirmed] 0.8721890 0.8721911 0.8551674 0.8883135       TRUE
+#> 8 NPV[A confirmed] 0.9643112 0.9644969 0.9572948 0.9699126       TRUE
 ```
 
 In
@@ -1664,9 +1674,9 @@ the two arguments are:
 - `positive`: function returning `TRUE` for positive profiles and
   `FALSE` otherwise.
 
-In the output, confirmation lowers sensitivity (`Se[A]` 0.907 to
-`Se[A confirmed]` 0.852) while raising specificity (`Sp[A]` 0.850 to
-0.969) and `PPV` (0.599 to 0.872, with `NPV` moving from 0.974 to
+In the output, confirmation lowers sensitivity (`Se[A]` 0.910 to
+`Se[A confirmed]` 0.855) while raising specificity (`Sp[A]` 0.850 to
+0.969) and `PPV` (0.599 to 0.872, with `NPV` moving from 0.975 to
 0.964), and `identified` is `TRUE` throughout. Combined rules must use a
 model allowing dependence (`model = saturated()`,
 `model = loglinear(interaction_order = 2)` or higher, or
@@ -1787,13 +1797,13 @@ exposes the full range compatible with the data, which we inspect via
 
 accuracy_bounds(fit = fit3n_sat)
 #>     quantity lower_bound upper_bound     lower     upper
-#> 1 prevalence   0.1947724   0.7906794 0.1871114 0.7987596
-#> 2      Se[A]   0.2283523   0.9269458 0.2194009 0.9385433
-#> 3      Sp[A]   0.4297837   0.8518039 0.4083169 0.8595403
-#> 4      Se[B]   0.2043803   0.8296528 0.1955207 0.8472767
-#> 5      Sp[B]   0.6216261   0.9016788 0.5998253 0.9080569
-#> 6      Se[C]   0.1765377   0.7165519 0.1680834 0.7375140
-#> 7      Sp[C]   0.8155304   0.9520188 0.7981856 0.9567151
+#> 1 prevalence   0.1947315   0.7907839 0.1870471 0.7988810
+#> 2      Se[A]   0.2283014   0.9275771 0.2193182 0.9394865
+#> 3      Sp[A]   0.4300551   0.8518511 0.4093438 0.8594808
+#> 4      Se[B]   0.2044284   0.8304001 0.1959884 0.8473537
+#> 5      Sp[B]   0.6216856   0.9016274 0.5996531 0.9083369
+#> 6      Se[C]   0.1765709   0.7171430 0.1682307 0.7368904
+#> 7      Sp[C]   0.8155839   0.9520613 0.7975060 0.9568603
 ```
 
 Look at `lower_bound` and `upper_bound` (and credible limits `lower` and
@@ -1885,20 +1895,20 @@ comparison
 #> Expected log predictive density of a new subject (leave-one-out)
 #> 
 #>  model           elpd_loo se_loo elpd_diff se_diff p_loo
-#>  random_effects -18139.02 144.21      0.00    0.00 18.10
-#>  order_2        -18140.35 144.20     -1.33    1.20 19.79
-#>  order_2_mnar   -18141.33 144.25     -2.31    1.40 20.34
-#>  saturated      -18142.30 144.15     -3.28    1.05 21.75
-#>  independence   -18188.07 144.75    -49.05   10.91 14.05
+#>  random_effects -18138.91 144.21      0.00    0.00 18.00
+#>  order_2        -18140.34 144.20     -1.43    1.20 19.79
+#>  order_2_mnar   -18141.33 144.25     -2.43    1.40 20.34
+#>  saturated      -18142.39 144.22     -3.48    1.20 21.98
+#>  independence   -18188.06 144.75    -49.16   10.91 14.05
 #> 
 #> Reliability of the estimates and fit to the data
 #> 
 #>  model          loo_method high_k elpd_waic p_waic ppc_pvalue
-#>  random_effects psis            0 -18139.00  18.08       0.62
-#>  order_2        psis            0 -18140.33  19.77       0.58
-#>  order_2_mnar   psis            0 -18141.31  20.31       0.51
-#>  saturated      exact           - -18142.35  21.80       0.49
-#>  independence   psis            0 -18188.06  14.03       0.00
+#>  random_effects psis            0 -18138.89  17.98       0.62
+#>  order_2        psis            0 -18140.32  19.76       0.56
+#>  order_2_mnar   psis            0 -18141.31  20.31       0.52
+#>  saturated      exact           - -18142.27  21.86       0.49
+#>  independence   psis            0 -18188.05  14.04       0.00
 #> 
 #> elpd_diff: difference from the first model, with standard error se_diff.
 #> high_k: cells with Pareto k > 0.7 (- for exact leave-one-out, which has no k).
@@ -1985,19 +1995,22 @@ each model reproduces the observed counts:
 In the output, `random_effects`—the model that simulated `d3`—ranks
 first (`elpd_loo` -18139.12). Both `order_2` (`elpd_diff` -1.23,
 `se_diff` 1.22) and `order_2_mnar` (-2.21, `se_diff` 1.42) predict
-essentially as well. `saturated` is 3.18 lower (`se_diff` 1.05): it
-reproduces the table just as well but uses more parameters (`p_loo`
-21.73 versus 18.19), a minor difference across 10000 subjects when every
-profile is verified. `independence` is clearly worse, trailing by 48.93
-(`se_diff` 10.92). Across the structured models, `high_k` is 0 so no
-refits were needed, `elpd_waic` agrees with `elpd_loo` within 0.2 for
-all five models, and `ppc_pvalue` lies between 0.50 and 0.61 for four
-models but drops to 0.00 for `independence`: conditional independence
-fails to reproduce the observed table. Allowing verification to depend
-on the disease (`order_2_mnar`) does not improve predictions, though
-this does not confirm MAR because in structured models the verification
-odds ratio is driven by the assumed dependence structure rather than
-directly by the data.
+essentially as well. `saturated` is 3.27 lower (`se_diff` 1.21), more
+than twice `se_diff`: it reproduces the table just as well but uses more
+parameters (`p_loo` 21.98 versus 18.19), and here the extra parameters
+cost some predictive accuracy. The difference is still small on the
+scale of `elpd_loo` (about 3 units over 10000 subjects), so it is a
+preference for the structured models, not a sign that `saturated`
+misfits. `independence` is clearly worse, trailing by 48.88 (`se_diff`
+10.93). Across the structured models, `high_k` is 0 so no refits were
+needed, `elpd_waic` agrees with `elpd_loo` within 0.2 for all five
+models, and `ppc_pvalue` lies between 0.48 and 0.61 for four models but
+drops to 0.00 for `independence`: conditional independence fails to
+reproduce the observed table. Allowing verification to depend on the
+disease (`order_2_mnar`) does not improve predictions, though this does
+not confirm MAR because in structured models the verification odds ratio
+is driven by the assumed dependence structure rather than directly by
+the data.
 
 To see which cells `independence` misses, we inspect the `checks` data
 frame inside `comparison` (one row per model and cell) and filter for
@@ -2007,21 +2020,21 @@ frame inside `comparison` (one row per model and cell) and filter for
 
 checks <- comparison$checks
 checks[checks$model == "independence" & checks$p_value < 0.05, ]
-#>           model profile     cell observed  expected lower upper p_value
-#> 25 independence (0,0,0) diseased        4   0.67125     0     3  0.0120
-#> 35 independence (1,1,0)  healthy      149  87.55575    68   108  0.0000
-#> 37 independence (0,0,1) diseased       34  13.17800     6    21  0.0000
-#> 40 independence (1,0,1) diseased      150 185.04875   152   222  0.0405
-#> 43 independence (0,1,1) diseased       44  65.71950    46    87  0.0315
+#>           model profile     cell observed  expected   lower upper p_value
+#> 25 independence (0,0,0) diseased        4   0.67300   0.000     3  0.0085
+#> 35 independence (1,1,0)  healthy      149  87.23025  68.000   108  0.0000
+#> 37 independence (0,0,1) diseased       34  12.94700   6.000    21  0.0000
+#> 40 independence (1,0,1) diseased      150 185.09500 151.975   223  0.0445
+#> 43 independence (0,1,1) diseased       44  65.84500  46.000    87  0.0340
 ```
 
 Each row reports the `observed` count, the `expected` count under the
 model, the 95% interval of replicated counts (`lower` and `upper`), and
 the two-sided cell `p_value`. Five cells fall outside their intervals.
 The largest discrepancies are in `(1,1,0)` verified healthy—149 observed
-against 87.5 expected (68 to 108), because `A` and `B` err together
+against 87.3 expected (67 to 108), because `A` and `B` err together
 among healthy subjects—and `(0,0,1)` verified diseased—34 observed
-against 13.0 expected (6 to 21). In `(0,0,0)` verified diseased, 4
+against 13.1 expected (6 to 21). In `(0,0,0)` verified diseased, 4
 observed subjects also exceed what conditional independence allows (0 to
 3): when tests are dependent, a diseased subject missed by one test is
 more likely to be missed by the others too.
@@ -2081,14 +2094,14 @@ compare_models(
 #> Expected log predictive density of a new subject (leave-one-out)
 #> 
 #>  model       elpd_loo se_loo elpd_diff se_diff p_loo
-#>  low_prior  -16167.85 148.61      0.00    0.00 19.86
-#>  high_prior -16167.85 148.61      0.00    0.00 19.85
+#>  low_prior  -16167.90 148.65      0.00    0.00 19.97
+#>  high_prior -16167.90 148.65      0.00    0.00 19.97
 #> 
 #> Reliability of the estimates and fit to the data
 #> 
 #>  model      loo_method high_k elpd_waic p_waic ppc_pvalue
-#>  low_prior  exact           - -16168.05  20.06       0.48
-#>  high_prior exact           - -16167.80  19.79       0.49
+#>  low_prior  exact           - -16167.94  20.00       0.48
+#>  high_prior exact           - -16167.78  19.85       0.49
 #> 
 #> elpd_diff: difference from the first model, with standard error se_diff.
 #> high_k: cells with Pareto k > 0.7 (- for exact leave-one-out, which has no k).
@@ -2096,7 +2109,7 @@ compare_models(
 #> between observed and expected counts.
 ```
 
-Both models share the exact same `elpd_loo` (-16167.85) and `elpd_diff`
+Both models share the exact same `elpd_loo` (-16167.90) and `elpd_diff`
 (0.00), and the warning explains why: the proportion of diseased
 subjects in the never-verified profile `(0,0,0)` is *not identified*—its
 prior never enters the likelihood of the observed counts—so the data

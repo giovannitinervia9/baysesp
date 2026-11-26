@@ -20,7 +20,7 @@ parameters from the non-identified ones:
 saturated(
   frequency_prior = prior_dirichlet(1),
   verified_prior = prior_beta(0.5, 2),
-  profile_prevalence_prior = prior_beta(0.5, 2),
+  profile_prevalence_prior = prior_beta(0.5, 1),
   unverified_prevalence_prior = NULL,
   verification = mar()
 )
@@ -62,7 +62,17 @@ saturated(
   The same prior is used, independently, for each such profile, with the
   same rules as `verified_prior`: a prior on a probability acts on the
   proportion, a prior on the real line on its logit. Default
-  `prior_beta(0.5, 2)`, the uniform distribution on (0, 1).
+  `prior_beta(0.5, 1)`, the Jeffreys prior Beta(1/2, 1/2). It matters in
+  profiles with few verified subjects and almost all of one class,
+  typically the profile with all tests negative when few negatives are
+  verified: there the uniform `prior_beta(0.5, 2)` pulls
+  \\\phi^{(1)}\_t\\ towards 0.5 more, moving diseased subjects into that
+  profile, so that the sensitivities are underestimated. In simulations
+  with 5% to 10% of the negatives verified, the Jeffreys prior about
+  halved this bias. With this prior the posterior of
+  \\\mathrm{logit}\\\phi^{(1)}\_t\\ can have a long tail, so
+  [`baysesp()`](https://giovannitinervia9.github.io/baysesp/reference/baysesp.md)
+  uses `adapt_delta = 0.95` for this model.
 
 - unverified_prevalence_prior:
 
@@ -191,21 +201,21 @@ saturated()
 #> <saturated> saturated model, transparent parametrization
 #>   frequency_prior:             Dirichlet(concentration = 1)
 #>   verified_prior:              Beta(mean = 0.5, precision = 2)
-#>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 2)
+#>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 1)
 #>   unverified_prevalence_prior: none
 #>   verification:                mar
 saturated(unverified_prevalence_prior = elicit_beta(mean = 0.005, upper = 0.015))
 #> <saturated> saturated model, transparent parametrization
 #>   frequency_prior:             Dirichlet(concentration = 1)
 #>   verified_prior:              Beta(mean = 0.5, precision = 2)
-#>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 2)
+#>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 1)
 #>   unverified_prevalence_prior: Beta(mean = 0.005, precision = 197.8)
 #>   verification:                mar
 saturated(verification = mnar())
 #> <saturated> saturated model, transparent parametrization
 #>   frequency_prior:             Dirichlet(concentration = 1)
 #>   verified_prior:              Beta(mean = 0.5, precision = 2)
-#>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 2)
+#>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 1)
 #>   unverified_prevalence_prior: none
 #>   verification:                mnar
 ```

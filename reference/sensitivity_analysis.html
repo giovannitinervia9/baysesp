@@ -191,79 +191,79 @@ and median and an equal-tailed credible interval with probability <code>level</c
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="baysesp.html">baysesp</a></span><span class="op">(</span><span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">sensitivity_analysis</span><span class="op">(</span><span class="va">fit</span>, odds_ratios <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1.5</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    odds_ratio unverified_prior   quantity      mean    median     lower</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1.0             &lt;NA&gt; prevalence 0.2092226 0.2089931 0.1902462</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1.0             &lt;NA&gt;      Se[A] 0.8712684 0.8733881 0.8215693</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1.0             &lt;NA&gt;      Sp[A] 0.8430957 0.8431539 0.8248153</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1.0             &lt;NA&gt;     PPV[A] 0.5949234 0.5948473 0.5563297</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1.0             &lt;NA&gt;     NPV[A] 0.9610812 0.9618838 0.9437379</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6         1.0             &lt;NA&gt;      Se[B] 0.7617043 0.7626477 0.7083632</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7         1.0             &lt;NA&gt;      Sp[B] 0.9447449 0.9449223 0.9332584</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8         1.0             &lt;NA&gt;     PPV[B] 0.7847668 0.7851835 0.7443982</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9         1.0             &lt;NA&gt;     NPV[B] 0.9373738 0.9378300 0.9205118</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10        1.5             &lt;NA&gt; prevalence 0.2055242 0.2054128 0.1875115</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11        1.5             &lt;NA&gt;      Se[A] 0.8816344 0.8831522 0.8389579</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12        1.5             &lt;NA&gt;      Sp[A] 0.8424899 0.8425014 0.8242849</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13        1.5             &lt;NA&gt;     PPV[A] 0.5914526 0.5913568 0.5529788</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14        1.5             &lt;NA&gt;     NPV[A] 0.9648806 0.9653994 0.9505215</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15        1.5             &lt;NA&gt;      Se[B] 0.7734285 0.7739942 0.7246175</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16        1.5             &lt;NA&gt;      Sp[B] 0.9445232 0.9446663 0.9330735</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17        1.5             &lt;NA&gt;     PPV[B] 0.7828895 0.7833079 0.7423628</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18        1.5             &lt;NA&gt;     NPV[B] 0.9415361 0.9417545 0.9268275</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19        2.0             &lt;NA&gt; prevalence 0.2035421 0.2034370 0.1859001</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20        2.0             &lt;NA&gt;      Se[A] 0.8871343 0.8882654 0.8478650</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21        2.0             &lt;NA&gt;      Sp[A] 0.8421083 0.8421565 0.8240588</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22        2.0             &lt;NA&gt;     PPV[A] 0.5894395 0.5892667 0.5509857</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23        2.0             &lt;NA&gt;     NPV[A] 0.9668492 0.9672430 0.9545814</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24        2.0             &lt;NA&gt;      Se[B] 0.7797582 0.7802408 0.7331961</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25        2.0             &lt;NA&gt;      Sp[B] 0.9443679 0.9444936 0.9329572</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26        2.0             &lt;NA&gt;     PPV[B] 0.7817375 0.7821610 0.7413572</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27        2.0             &lt;NA&gt;     NPV[B] 0.9437296 0.9438987 0.9302430</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28        3.0             &lt;NA&gt; prevalence 0.2014460 0.2013237 0.1840445</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29        3.0             &lt;NA&gt;      Se[A] 0.8928895 0.8937604 0.8573904</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30        3.0             &lt;NA&gt;      Sp[A] 0.8416580 0.8417122 0.8236370</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31        3.0             &lt;NA&gt;     PPV[A] 0.5871837 0.5870358 0.5489598</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32        3.0             &lt;NA&gt;     NPV[A] 0.9688750 0.9692224 0.9579226</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33        3.0             &lt;NA&gt;      Se[B] 0.7864543 0.7867841 0.7424804</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34        3.0             &lt;NA&gt;      Sp[B] 0.9441679 0.9442843 0.9327506</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35        3.0             &lt;NA&gt;     PPV[B] 0.7803753 0.7807117 0.7397278</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36        3.0             &lt;NA&gt;     NPV[B] 0.9460126 0.9461758 0.9333552</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1         1.0             &lt;NA&gt; prevalence 0.2082286 0.2079712 0.1893950</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2         1.0             &lt;NA&gt;      Se[A] 0.8762867 0.8785089 0.8260178</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3         1.0             &lt;NA&gt;      Sp[A] 0.8435602 0.8437649 0.8243615</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4         1.0             &lt;NA&gt;     PPV[A] 0.5955891 0.5955906 0.5564420</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5         1.0             &lt;NA&gt;     NPV[A] 0.9627779 0.9635954 0.9457191</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6         1.0             &lt;NA&gt;      Se[B] 0.7660146 0.7677679 0.7121700</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7         1.0             &lt;NA&gt;      Sp[B] 0.9449760 0.9451315 0.9336026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8         1.0             &lt;NA&gt;     PPV[B] 0.7853938 0.7857336 0.7453550</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9         1.0             &lt;NA&gt;     NPV[B] 0.9387860 0.9394644 0.9215035</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10        1.5             &lt;NA&gt; prevalence 0.2048240 0.2046451 0.1864402</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11        1.5             &lt;NA&gt;      Se[A] 0.8855456 0.8872652 0.8425733</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12        1.5             &lt;NA&gt;      Sp[A] 0.8428985 0.8431162 0.8236745</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13        1.5             &lt;NA&gt;     PPV[A] 0.5921307 0.5920850 0.5529181</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14        1.5             &lt;NA&gt;     NPV[A] 0.9661582 0.9667204 0.9522381</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15        1.5             &lt;NA&gt;      Se[B] 0.7767573 0.7781269 0.7267921</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16        1.5             &lt;NA&gt;      Sp[B] 0.9447324 0.9448851 0.9334296</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17        1.5             &lt;NA&gt;     PPV[B] 0.7835142 0.7839017 0.7431078</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18        1.5             &lt;NA&gt;     NPV[B] 0.9425792 0.9430994 0.9275236</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19        2.0             &lt;NA&gt; prevalence 0.2029912 0.2028133 0.1847511</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20        2.0             &lt;NA&gt;      Se[A] 0.8904596 0.8918907 0.8518888</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21        2.0             &lt;NA&gt;      Sp[A] 0.8424890 0.8427305 0.8231370</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22        2.0             &lt;NA&gt;     PPV[A] 0.5901248 0.5901812 0.5511408</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23        2.0             &lt;NA&gt;     NPV[A] 0.9679143 0.9684844 0.9555194</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24        2.0             &lt;NA&gt;      Se[B] 0.7825642 0.7839111 0.7354772</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25        2.0             &lt;NA&gt;      Sp[B] 0.9445662 0.9447018 0.9333302</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26        2.0             &lt;NA&gt;     PPV[B] 0.7823615 0.7826878 0.7418470</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27        2.0             &lt;NA&gt;     NPV[B] 0.9445853 0.9450387 0.9303725</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28        3.0             &lt;NA&gt; prevalence 0.2010462 0.2009173 0.1832823</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29        3.0             &lt;NA&gt;      Se[A] 0.8956048 0.8969019 0.8600836</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30        3.0             &lt;NA&gt;      Sp[A] 0.8420107 0.8422476 0.8227577</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31        3.0             &lt;NA&gt;     PPV[A] 0.5878774 0.5879977 0.5488226</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32        3.0             &lt;NA&gt;     NPV[A] 0.9697255 0.9701466 0.9584984</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33        3.0             &lt;NA&gt;      Se[B] 0.7887133 0.7896355 0.7440247</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34        3.0             &lt;NA&gt;      Sp[B] 0.9443553 0.9445156 0.9331566</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35        3.0             &lt;NA&gt;     PPV[B] 0.7809997 0.7813678 0.7403787</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36        3.0             &lt;NA&gt;     NPV[B] 0.9466789 0.9471055 0.9335824</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        upper</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.2288867</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.9108137</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.8598069</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.6333556</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.9737539</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.8085791</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.9554404</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8  0.8233076</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.9515504</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.2239159</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11 0.9163834</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12 0.8592548</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13 0.6300658</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14 0.9757131</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15 0.8177608</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16 0.9552004</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17 0.8213861</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18 0.9541086</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19 0.2216201</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 20 0.9194891</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 21 0.8588371</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 22 0.6280094</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 23 0.9768072</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 24 0.8227492</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 25 0.9550404</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 26 0.8199734</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 27 0.9555378</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 28 0.2193324</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 29 0.9229309</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 30 0.8583656</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 31 0.6255749</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 32 0.9779935</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 33 0.8277532</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 34 0.9548433</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 35 0.8185556</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 36 0.9570919</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.2275395</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.9156483</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.8612695</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.6342342</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.9752787</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6  0.8123563</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7  0.9552643</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8  0.8227042</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9  0.9527518</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10 0.2235666</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11 0.9201676</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12 0.8605234</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13 0.6308545</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14 0.9768598</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15 0.8199500</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16 0.9551056</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17 0.8210365</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18 0.9551448</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19 0.2214544</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 20 0.9225797</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 21 0.8601487</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 22 0.6287071</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 23 0.9777076</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 24 0.8241869</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 25 0.9549732</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 26 0.8201899</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 27 0.9564633</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 28 0.2193333</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 29 0.9255052</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 30 0.8597946</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 31 0.6264751</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 32 0.9787697</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 33 0.8289792</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 34 0.9547125</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 35 0.8188682</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 36 0.9579274</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

@@ -181,18 +181,18 @@ fit <- baysesp(d, saturated(unverified_prevalence_prior = elicit_beta(0.03, 0.06
                seed = 1)
 accuracy_ratios(fit, rules = list("A", "B", any_positive()))
 #>                     quantity      mean    median     lower     upper
-#> 1            TPR[A] / TPR[B] 1.1257685 1.1243562 1.0559413 1.2038481
-#> 2            FPR[A] / FPR[B] 2.9924388 2.9679967 2.3650247 3.7902284
-#> 3 TPR[A] / TPR[any positive] 0.9037443 0.9044398 0.8722572 0.9318102
-#> 4 FPR[A] / FPR[any positive] 0.7846215 0.7847116 0.7381380 0.8285368
-#> 5 TPR[B] / TPR[any positive] 0.8033899 0.8041101 0.7607886 0.8432921
-#> 6 FPR[B] / FPR[any positive] 0.2651496 0.2645190 0.2176734 0.3149205
+#> 1            TPR[A] / TPR[B] 1.1257133 1.1244594 1.0542048 1.2023885
+#> 2            FPR[A] / FPR[B] 3.0049022 2.9699549 2.3516809 3.8055525
+#> 3 TPR[A] / TPR[any positive] 0.9038729 0.9045453 0.8711354 0.9325346
+#> 4 FPR[A] / FPR[any positive] 0.7841286 0.7845892 0.7366917 0.8283043
+#> 5 TPR[B] / TPR[any positive] 0.8035287 0.8044312 0.7618647 0.8420550
+#> 6 FPR[B] / FPR[any positive] 0.2640154 0.2639032 0.2171594 0.3151010
 #>   probability
-#> 1           1
-#> 2           1
-#> 3           0
-#> 4           0
-#> 5           0
-#> 6           0
+#> 1      0.9995
+#> 2      1.0000
+#> 3      0.0000
+#> 4      0.0000
+#> 5      0.0000
+#> 6      0.0000
 # }
 ```

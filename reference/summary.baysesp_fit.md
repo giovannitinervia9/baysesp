@@ -110,21 +110,21 @@ summary(fit)
 #> Priors:
 #>   frequency_prior           Dirichlet(concentration = 1)
 #>   verified_prior            Beta(mean = 0.5, precision = 2)
-#>   profile_prevalence_prior  Beta(mean = 0.5, precision = 2)
+#>   profile_prevalence_prior  Beta(mean = 0.5, precision = 1)
 #> 
 #> Sampling: 4 chains x 1000 draws (rstan)
-#>   max R-hat 1.002, min bulk ESS 4568, min tail ESS 1724, divergent transitions 0
+#>   max R-hat 1.003, min bulk ESS 2426, min tail ESS 989, divergent transitions 0
 #> 
 #> Accuracy (95% credible intervals):
 #>    quantity  mean median lower upper identified
-#>  prevalence 0.205  0.205 0.180 0.232       TRUE
-#>       Se[A] 0.885  0.887 0.823 0.932       TRUE
-#>       Sp[A] 0.849  0.849 0.823 0.873       TRUE
-#>      PPV[A] 0.602  0.602 0.545 0.659       TRUE
-#>      NPV[A] 0.966  0.967 0.946 0.981       TRUE
-#>       Se[B] 0.788  0.789 0.719 0.851       TRUE
-#>       Sp[B] 0.947  0.947 0.930 0.961       TRUE
-#>      PPV[B] 0.792  0.793 0.734 0.845       TRUE
-#>      NPV[B] 0.945  0.946 0.924 0.963       TRUE
+#>  prevalence 0.203  0.203 0.178 0.230       TRUE
+#>       Se[A] 0.895  0.897 0.841 0.937       TRUE
+#>       Sp[A] 0.850  0.850 0.824 0.875       TRUE
+#>      PPV[A] 0.603  0.603 0.545 0.660       TRUE
+#>      NPV[A] 0.969  0.970 0.951 0.982       TRUE
+#>       Se[B] 0.798  0.799 0.733 0.855       TRUE
+#>       Sp[B] 0.947  0.947 0.930 0.962       TRUE
+#>      PPV[B] 0.794  0.795 0.735 0.848       TRUE
+#>      NPV[B] 0.948  0.949 0.929 0.964       TRUE
 # }
 ```

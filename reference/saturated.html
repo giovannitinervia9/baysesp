@@ -80,7 +80,7 @@ equals its prior (Gustafson, 2015).</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">saturated</span><span class="op">(</span></span>
 <span>  frequency_prior <span class="op">=</span> <span class="fu"><a href="prior_dirichlet.html">prior_dirichlet</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span>,</span>
 <span>  verified_prior <span class="op">=</span> <span class="fu"><a href="prior_beta.html">prior_beta</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  profile_prevalence_prior <span class="op">=</span> <span class="fu"><a href="prior_beta.html">prior_beta</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  profile_prevalence_prior <span class="op">=</span> <span class="fu"><a href="prior_beta.html">prior_beta</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  unverified_prevalence_prior <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verification <span class="op">=</span> <span class="fu"><a href="mar.html">mar</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -116,7 +116,15 @@ diseased among the verified subjects of each profile with at least one
 verified subject. The same prior is used, independently, for each such
 profile, with the same rules as <code>verified_prior</code>: a prior on a probability
 acts on the proportion, a prior on the real line on its logit. Default
-<code>prior_beta(0.5, 2)</code>, the uniform distribution on (0, 1).</p></dd>
+<code>prior_beta(0.5, 1)</code>, the Jeffreys prior Beta(1/2, 1/2). It matters in
+profiles with few verified subjects and almost all of one class, typically
+the profile with all tests negative when few negatives are verified: there
+the uniform <code>prior_beta(0.5, 2)</code> pulls \(\phi^{(1)}_t\) towards 0.5 more,
+moving diseased subjects into that profile, so that the sensitivities are
+underestimated. In simulations with 5% to 10% of the negatives verified,
+the Jeffreys prior about halved this bias. With this prior the posterior of
+\(\mathrm{logit}\,\phi^{(1)}_t\) can have a long tail, so <code><a href="baysesp.html">baysesp()</a></code>
+uses <code>adapt_delta = 0.95</code> for this model.</p></dd>
 
 
 <dt id="arg-unverified-prevalence-prior">unverified_prevalence_prior<a class="anchor" aria-label="anchor" href="#arg-unverified-prevalence-prior"></a></dt>
@@ -210,21 +218,21 @@ profiles enter \(\pi\) through \(q_t\), whose posterior equals its prior.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;saturated&gt; saturated model, transparent parametrization</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   frequency_prior:             Dirichlet(concentration = 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   verified_prior:              Beta(mean = 0.5, precision = 2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 2)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   unverified_prevalence_prior: none</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   verification:                mar</span>
 <span class="r-in"><span><span class="fu">saturated</span><span class="op">(</span>unverified_prevalence_prior <span class="op">=</span> <span class="fu"><a href="elicit_beta.html">elicit_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.005</span>, upper <span class="op">=</span> <span class="fl">0.015</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;saturated&gt; saturated model, transparent parametrization</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   frequency_prior:             Dirichlet(concentration = 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   verified_prior:              Beta(mean = 0.5, precision = 2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 2)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   unverified_prevalence_prior: Beta(mean = 0.005, precision = 197.8)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   verification:                mar</span>
 <span class="r-in"><span><span class="fu">saturated</span><span class="op">(</span>verification <span class="op">=</span> <span class="fu"><a href="mnar.html">mnar</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;saturated&gt; saturated model, transparent parametrization</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   frequency_prior:             Dirichlet(concentration = 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   verified_prior:              Beta(mean = 0.5, precision = 2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 2)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   profile_prevalence_prior:    Beta(mean = 0.5, precision = 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   unverified_prevalence_prior: none</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   verification:                mnar</span>
 </code></pre></div>

@@ -391,18 +391,18 @@ diagnostics and the estimates:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">fit</span></span>
 <span><span class="co">#&gt; &lt;baysesp_fit&gt; saturated model, MAR verification, 4 chains x 1000 draws (rstan)</span></span>
-<span><span class="co">#&gt; Convergence: max R-hat 1.004, min bulk ESS 4124, min tail ESS 2138, 0 divergent transitions</span></span>
+<span><span class="co">#&gt; Convergence: max R-hat 1.003, min bulk ESS 3398, min tail ESS 1865, 0 divergent transitions</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;    quantity  mean median lower upper identified</span></span>
-<span><span class="co">#&gt;  prevalence 0.150  0.150 0.135 0.167       TRUE</span></span>
-<span><span class="co">#&gt;       Se[A] 0.845  0.849 0.775 0.893       TRUE</span></span>
-<span><span class="co">#&gt;       Sp[A] 0.902  0.903 0.891 0.914       TRUE</span></span>
-<span><span class="co">#&gt;      PPV[A] 0.605  0.605 0.565 0.645       TRUE</span></span>
-<span><span class="co">#&gt;      NPV[A] 0.970  0.971 0.954 0.981       TRUE</span></span>
-<span><span class="co">#&gt;       Se[B] 0.703  0.704 0.641 0.756       TRUE</span></span>
-<span><span class="co">#&gt;       Sp[B] 0.951  0.951 0.941 0.959       TRUE</span></span>
-<span><span class="co">#&gt;      PPV[B] 0.715  0.716 0.672 0.757       TRUE</span></span>
-<span><span class="co">#&gt;      NPV[B] 0.947  0.948 0.931 0.959       TRUE</span></span>
+<span><span class="co">#&gt;  prevalence 0.149  0.148 0.135 0.164       TRUE</span></span>
+<span><span class="co">#&gt;       Se[A] 0.855  0.858 0.791 0.899       TRUE</span></span>
+<span><span class="co">#&gt;       Sp[A] 0.903  0.903 0.890 0.914       TRUE</span></span>
+<span><span class="co">#&gt;      PPV[A] 0.605  0.605 0.564 0.644       TRUE</span></span>
+<span><span class="co">#&gt;      NPV[A] 0.973  0.974 0.958 0.982       TRUE</span></span>
+<span><span class="co">#&gt;       Se[B] 0.710  0.712 0.649 0.762       TRUE</span></span>
+<span><span class="co">#&gt;       Sp[B] 0.951  0.951 0.942 0.959       TRUE</span></span>
+<span><span class="co">#&gt;      PPV[B] 0.716  0.715 0.669 0.758       TRUE</span></span>
+<span><span class="co">#&gt;      NPV[B] 0.949  0.950 0.934 0.960       TRUE</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Odds ratio of verification fixed at 1 (MAR).</span></span></code></pre></div>
 <p>Four parts appear in the output. First, the header line summarizes
@@ -412,9 +412,9 @@ the fit: a <code>saturated</code> model, <code>MAR</code> verification,
 (MCMC) to draw samples from the posterior distribution, the
 <code>Convergence:</code> line checks whether the chains converged,
 reporting the worst diagnostic across all parameters: largest R-hat
-1.004 (measuring agreement across chains; values below 1.01 indicate
-good mixing), smallest bulk and tail effective sample sizes 5602 and
-2433 (effectively independent draws in the center and tails of the
+1.003 (measuring agreement across chains; values below 1.01 indicate
+good mixing), smallest bulk and tail effective sample sizes 3368 and
+1822 (effectively independent draws in the center and tails of the
 posterior; values above a few hundred are desirable), and 0 divergent
 transitions (a nonzero count warns of numerical sampling trouble). All
 four checks look healthy; <a href="#sampler">Section 4</a> shows how to
@@ -445,8 +445,8 @@ quantity with 95% posterior probability), and <code>identified</code>.
 Here <code>identified</code> is <code>TRUE</code> for every row—meaning
 each quantity is <em>identified</em> (estimated from the data, so its
 interval shrinks around the true value with more data)—because every
-profile has verified subjects under MAR. The posterior means (0.150
-prevalence, 0.845 and 0.703 sensitivities, 0.902 and 0.951
+profile has verified subjects under MAR. The posterior means (0.149
+prevalence, 0.855 and 0.711 sensitivities, 0.903 and 0.951
 specificities) closely recover the simulation truth (0.15, 0.85, 0.70,
 0.90, 0.95).</p>
 <p>Fourth, the closing line states that the odds ratio of verification
@@ -460,15 +460,15 @@ computations or to change the credible level—call
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/test_accuracy.html">test_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity      mean    median     lower     upper identified</span></span>
-<span><span class="co">#&gt; 1 prevalence 0.1502432 0.1498875 0.1354257 0.1672890       TRUE</span></span>
-<span><span class="co">#&gt; 2      Se[A] 0.8446544 0.8488566 0.7754855 0.8934065       TRUE</span></span>
-<span><span class="co">#&gt; 3      Sp[A] 0.9024739 0.9025993 0.8906182 0.9142404       TRUE</span></span>
-<span><span class="co">#&gt; 4     PPV[A] 0.6047388 0.6047673 0.5651597 0.6452495       TRUE</span></span>
-<span><span class="co">#&gt; 5     NPV[A] 0.9703282 0.9713977 0.9540481 0.9805913       TRUE</span></span>
-<span><span class="co">#&gt; 6      Se[B] 0.7025317 0.7035913 0.6413860 0.7563585       TRUE</span></span>
-<span><span class="co">#&gt; 7      Sp[B] 0.9505881 0.9506894 0.9414966 0.9588167       TRUE</span></span>
-<span><span class="co">#&gt; 8     PPV[B] 0.7152426 0.7156096 0.6718545 0.7567017       TRUE</span></span>
-<span><span class="co">#&gt; 9     NPV[B] 0.9474618 0.9481076 0.9314664 0.9592382       TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 prevalence 0.1486269 0.1484610 0.1345253 0.1642666       TRUE</span></span>
+<span><span class="co">#&gt; 2      Se[A] 0.8547865 0.8582099 0.7907496 0.8990307       TRUE</span></span>
+<span><span class="co">#&gt; 3      Sp[A] 0.9027087 0.9030288 0.8902295 0.9142242       TRUE</span></span>
+<span><span class="co">#&gt; 4     PPV[A] 0.6051829 0.6054918 0.5642558 0.6442772       TRUE</span></span>
+<span><span class="co">#&gt; 5     NPV[A] 0.9725721 0.9735550 0.9580490 0.9816665       TRUE</span></span>
+<span><span class="co">#&gt; 6      Se[B] 0.7103387 0.7117765 0.6487106 0.7623055       TRUE</span></span>
+<span><span class="co">#&gt; 7      Sp[B] 0.9507275 0.9509512 0.9415632 0.9592667       TRUE</span></span>
+<span><span class="co">#&gt; 8     PPV[B] 0.7155223 0.7154751 0.6694452 0.7575708       TRUE</span></span>
+<span><span class="co">#&gt; 9     NPV[B] 0.9494104 0.9500429 0.9344898 0.9603626       TRUE</span></span></code></pre></div>
 <ul>
 <li>
 <code>fit</code>: the fitted model returned by
@@ -488,8 +488,8 @@ computations.</p>
 <p><img src="baysesp_files/figure-html/unnamed-chunk-10-1.png" class="r-plt" alt="" width="672"></p>
 <p>The resulting figure shows each quantity’s estimate and 95% credible
 interval side by side, making the higher sensitivity of <code>A</code>
-(0.845 vs 0.703) and higher specificity of <code>B</code> (0.951 vs
-0.902) immediate before we examine the sampler diagnostics in <a href="#sampler">Section 4</a>.</p>
+(0.855 vs 0.711) and higher specificity of <code>B</code> (0.951 vs
+0.903) immediate before we examine the sampler diagnostics in <a href="#sampler">Section 4</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="sampler">4. Checking the sampler<a class="anchor" aria-label="anchor" href="#sampler"></a>
@@ -513,22 +513,22 @@ table:</p>
 <span><span class="co">#&gt; Priors:</span></span>
 <span><span class="co">#&gt;   frequency_prior           Dirichlet(concentration = 1)</span></span>
 <span><span class="co">#&gt;   verified_prior            Beta(mean = 0.5, precision = 2)</span></span>
-<span><span class="co">#&gt;   profile_prevalence_prior  Beta(mean = 0.5, precision = 2)</span></span>
+<span><span class="co">#&gt;   profile_prevalence_prior  Beta(mean = 0.5, precision = 1)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Sampling: 4 chains x 1000 draws (rstan)</span></span>
-<span><span class="co">#&gt;   max R-hat 1.004, min bulk ESS 4124, min tail ESS 2138, divergent transitions 0</span></span>
+<span><span class="co">#&gt;   max R-hat 1.003, min bulk ESS 3398, min tail ESS 1865, divergent transitions 0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Accuracy (95% credible intervals):</span></span>
 <span><span class="co">#&gt;    quantity  mean median lower upper identified</span></span>
-<span><span class="co">#&gt;  prevalence 0.150  0.150 0.135 0.167       TRUE</span></span>
-<span><span class="co">#&gt;       Se[A] 0.845  0.849 0.775 0.893       TRUE</span></span>
-<span><span class="co">#&gt;       Sp[A] 0.902  0.903 0.891 0.914       TRUE</span></span>
-<span><span class="co">#&gt;      PPV[A] 0.605  0.605 0.565 0.645       TRUE</span></span>
-<span><span class="co">#&gt;      NPV[A] 0.970  0.971 0.954 0.981       TRUE</span></span>
-<span><span class="co">#&gt;       Se[B] 0.703  0.704 0.641 0.756       TRUE</span></span>
-<span><span class="co">#&gt;       Sp[B] 0.951  0.951 0.941 0.959       TRUE</span></span>
-<span><span class="co">#&gt;      PPV[B] 0.715  0.716 0.672 0.757       TRUE</span></span>
-<span><span class="co">#&gt;      NPV[B] 0.947  0.948 0.931 0.959       TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt;  prevalence 0.149  0.148 0.135 0.164       TRUE</span></span>
+<span><span class="co">#&gt;       Se[A] 0.855  0.858 0.791 0.899       TRUE</span></span>
+<span><span class="co">#&gt;       Sp[A] 0.903  0.903 0.890 0.914       TRUE</span></span>
+<span><span class="co">#&gt;      PPV[A] 0.605  0.605 0.564 0.644       TRUE</span></span>
+<span><span class="co">#&gt;      NPV[A] 0.973  0.974 0.958 0.982       TRUE</span></span>
+<span><span class="co">#&gt;       Se[B] 0.710  0.712 0.649 0.762       TRUE</span></span>
+<span><span class="co">#&gt;       Sp[B] 0.951  0.951 0.942 0.959       TRUE</span></span>
+<span><span class="co">#&gt;      PPV[B] 0.716  0.715 0.669 0.758       TRUE</span></span>
+<span><span class="co">#&gt;      NPV[B] 0.949  0.950 0.934 0.960       TRUE</span></span></code></pre></div>
 <ul>
 <li>
 <code>object</code>: the fitted model returned by
@@ -543,18 +543,19 @@ no never-verified profiles, using the three default priors of
 <code><a href="../reference/saturated.html">saturated()</a></code> (<code>Dirichlet(concentration = 1)</code> for
 <code>frequency_prior</code>, and
 <code>Beta(mean = 0.5, precision = 2)</code> for
-<code>verified_prior</code> and <code>profile_prevalence_prior</code>).
-Under <code>Sampling:</code>, the 4 chains of 1000 draws each converged
-cleanly: the largest R-hat is 1.004 (below the 1.01 threshold), the
-smallest effective sample sizes are 5602 in the bulk and 2433 in the
-tails (well above the usual target of at least 100 per chain), and there
-are 0 divergent transitions <span class="citation">(Vehtari et al.
-2021)</span>. Below the diagnostics, <code>Accuracy</code> repeats the
-95% credible interval table of <code><a href="../reference/test_accuracy.html">test_accuracy()</a></code>, such as
-<code>prevalence</code> 0.150 (0.136 to 0.167), <code>Se[A]</code> 0.845
-(0.775 to 0.893), and <code>Sp[A]</code> 0.902 (0.891 to 0.914). The
-returned object is also a list: <code>summary(fit)$diagnostics</code>
-extracts the sampler diagnostics as a one-row data frame, and
+<code>verified_prior</code> and
+<code>Beta(mean = 0.5, precision = 1)</code> for
+<code>profile_prevalence_prior</code>). Under <code>Sampling:</code>,
+the 4 chains of 1000 draws each converged cleanly: the largest R-hat is
+1.003 (below the 1.01 threshold), the smallest effective sample sizes
+are 3368 in the bulk and 1822 in the tails (well above the usual target
+of at least 100 per chain), and there are 0 divergent transitions <span class="citation">(Vehtari et al. 2021)</span>. Below the diagnostics,
+<code>Accuracy</code> repeats the 95% credible interval table of
+<code><a href="../reference/test_accuracy.html">test_accuracy()</a></code>, such as <code>prevalence</code> 0.149
+(0.135 to 0.165), <code>Se[A]</code> 0.855 (0.790 to 0.899), and
+<code>Sp[A]</code> 0.903 (0.891 to 0.914). The returned object is also a
+list: <code>summary(fit)$diagnostics</code> extracts the sampler
+diagnostics as a one-row data frame, and
 <code>summary(fit)$priors</code> returns the priors as a data frame.</p>
 <p>For a detailed check across individual parameters,
 <code><a href="https://mc-stan.org/posterior/reference/draws_summary.html" class="external-link">posterior::summarise_draws()</a></code> computes the same diagnostics
@@ -566,27 +567,27 @@ for every parameter in the <a href="https://mc-stan.org/posterior/" class="exter
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 21 × 4</span></span></span>
 <span><span class="co">#&gt;    variable           rhat ess_bulk ess_tail</span></span>
 <span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> prevalence        1.00     <span style="text-decoration: underline;">6</span>758.    <span style="text-decoration: underline;">3</span>319.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> theta_healthy[1]  1.00     <span style="text-decoration: underline;">6</span>538.    <span style="text-decoration: underline;">3</span>757.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> theta_healthy[2]  1.00     <span style="text-decoration: underline;">6</span>163.    <span style="text-decoration: underline;">3</span>182.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> theta_healthy[3]  1.00     <span style="text-decoration: underline;">6</span>097.    <span style="text-decoration: underline;">3</span>351.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> theta_healthy[4]  1.00     <span style="text-decoration: underline;">5</span>576.    <span style="text-decoration: underline;">2</span>757.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> theta_diseased[1] 1.00     <span style="text-decoration: underline;">4</span>822.    <span style="text-decoration: underline;">2</span>535.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> theta_diseased[2] 1.00     <span style="text-decoration: underline;">6</span>412.    <span style="text-decoration: underline;">3</span>235.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> theta_diseased[3] 1.00     <span style="text-decoration: underline;">6</span>432.    <span style="text-decoration: underline;">2</span>773.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> theta_diseased[4] 1.00     <span style="text-decoration: underline;">5</span>889.    <span style="text-decoration: underline;">3</span>065.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> omega[1]          1.00     <span style="text-decoration: underline;">8</span>888.    <span style="text-decoration: underline;">3</span>300.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> omega[2]          1.00     <span style="text-decoration: underline;">5</span>963.    <span style="text-decoration: underline;">2</span>780.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> omega[3]          1.00     <span style="text-decoration: underline;">5</span>672.    <span style="text-decoration: underline;">3</span>218.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> omega[4]          1.00     <span style="text-decoration: underline;">6</span>919.    <span style="text-decoration: underline;">3</span>299.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> v[1]              1.00     <span style="text-decoration: underline;">6</span>408.    <span style="text-decoration: underline;">3</span>060.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> v[2]              1.00     <span style="text-decoration: underline;">5</span>596.    <span style="text-decoration: underline;">2</span>374.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> v[3]              1.00     <span style="text-decoration: underline;">5</span>677.    <span style="text-decoration: underline;">2</span>512.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span> v[4]              1.000    <span style="text-decoration: underline;">4</span>124.    <span style="text-decoration: underline;">2</span>138.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span> phi1[1]           1.00     <span style="text-decoration: underline;">4</span>823.    <span style="text-decoration: underline;">2</span>553.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span> phi1[2]           1.00     <span style="text-decoration: underline;">6</span>762.    <span style="text-decoration: underline;">2</span>837.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span> phi1[3]           1.000    <span style="text-decoration: underline;">7</span>113.    <span style="text-decoration: underline;">3</span>328.</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">21</span> phi1[4]           1.00     <span style="text-decoration: underline;">5</span>636.    <span style="text-decoration: underline;">2</span>694.</span></span></code></pre></div>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> prevalence        1.000    <span style="text-decoration: underline;">5</span>208.    <span style="text-decoration: underline;">3</span>364.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> theta_healthy[1]  1.00     <span style="text-decoration: underline;">4</span>758.    <span style="text-decoration: underline;">3</span>233.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> theta_healthy[2]  1.00     <span style="text-decoration: underline;">4</span>425.    <span style="text-decoration: underline;">3</span>392.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> theta_healthy[3]  1.00     <span style="text-decoration: underline;">4</span>139.    <span style="text-decoration: underline;">3</span>054.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> theta_healthy[4]  1.00     <span style="text-decoration: underline;">4</span>486.    <span style="text-decoration: underline;">2</span>576.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> theta_diseased[1] 1.00     <span style="text-decoration: underline;">3</span>901.    <span style="text-decoration: underline;">1</span>959.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> theta_diseased[2] 1.00     <span style="text-decoration: underline;">4</span>348.    <span style="text-decoration: underline;">2</span>868.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> theta_diseased[3] 1.00     <span style="text-decoration: underline;">4</span>191.    <span style="text-decoration: underline;">2</span>814.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> theta_diseased[4] 1.00     <span style="text-decoration: underline;">4</span>635.    <span style="text-decoration: underline;">3</span>029.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> omega[1]          1.00     <span style="text-decoration: underline;">6</span>088.    <span style="text-decoration: underline;">2</span>998.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">11</span> omega[2]          1.00     <span style="text-decoration: underline;">3</span>912.    <span style="text-decoration: underline;">2</span>823.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">12</span> omega[3]          1.00     <span style="text-decoration: underline;">3</span>770.    <span style="text-decoration: underline;">3</span>072.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">13</span> omega[4]          1.00     <span style="text-decoration: underline;">4</span>554.    <span style="text-decoration: underline;">3</span>227.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">14</span> v[1]              1.00     <span style="text-decoration: underline;">4</span>410.    <span style="text-decoration: underline;">2</span>488.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">15</span> v[2]              1.00     <span style="text-decoration: underline;">5</span>231.    <span style="text-decoration: underline;">2</span>739.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">16</span> v[3]              1.00     <span style="text-decoration: underline;">4</span>442.    <span style="text-decoration: underline;">3</span>207.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">17</span> v[4]              1.000    <span style="text-decoration: underline;">3</span>398.    <span style="text-decoration: underline;">1</span>865.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">18</span> phi1[1]           1.00     <span style="text-decoration: underline;">3</span>913.    <span style="text-decoration: underline;">1</span>948.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">19</span> phi1[2]           1.000    <span style="text-decoration: underline;">5</span>035.    <span style="text-decoration: underline;">3</span>088.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">20</span> phi1[3]           1.00     <span style="text-decoration: underline;">4</span>623.    <span style="text-decoration: underline;">3</span>086.</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">21</span> phi1[4]           1.00     <span style="text-decoration: underline;">4</span>302.    <span style="text-decoration: underline;">2</span>284.</span></span></code></pre></div>
 <p>The rows are not the accuracy measures of <a href="#fitting">Section
 3</a> but the parameters that Stan samples. With two tests there are
 four response profiles, numbered in the order of <a href="#profiles">Section 2</a>: 1 is (0,0), 2 is (1,0), 3 is (0,1) and 4
@@ -628,19 +629,20 @@ convergence problem in any of these parameters would carry over to the
 measures computed from it, which is why the diagnostics are checked on
 all of them.</p>
 <p>Across all 21 parameters, <code>rhat</code> (agreement across chains,
-ideally below 1.01) is at most 1.004, while <code>ess_bulk</code> and
+ideally below 1.01) is at most 1.003, while <code>ess_bulk</code> and
 <code>ess_tail</code> (effective independent draws in the center and in
 the tails of the posterior, ideally above a few hundred) are at least
-5602 and 2433, matching the values reported by
+3368 and 1822, matching the values reported by
 <code><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary()</a></code>.</p>
-<p>If divergent transitions occur, pass
-<code>control = list(adapt_delta = 0.95)</code> (or 0.99) to
-<code><a href="../reference/baysesp.html">baysesp()</a></code> for a smaller step size; if effective sample
-sizes are small, increase <code>iter_sampling</code>.
-<code>cores = 4</code> runs the four chains in parallel, and
-<code>fit@stan_fit</code> holds the Stan object for other diagnostics.
-Having checked the sampler, <a href="#priors">Section 5</a> turns to the
-priors.</p>
+<p>If divergent transitions occur, pass a higher target acceptance rate
+to <code><a href="../reference/baysesp.html">baysesp()</a></code> for a smaller step size, for example
+<code>control = list(adapt_delta = 0.99)</code>
+(<code><a href="../reference/saturated.html">saturated()</a></code> already uses 0.95, the other models the Stan
+default 0.8); if effective sample sizes are small, increase
+<code>iter_sampling</code>. <code>cores = 4</code> runs the four chains
+in parallel, and <code>fit@stan_fit</code> holds the Stan object for
+other diagnostics. Having checked the sampler, <a href="#priors">Section
+5</a> turns to the priors.</p>
 </div>
 <div class="section level2">
 <h2 id="priors">5. Priors<a class="anchor" aria-label="anchor" href="#priors"></a>
@@ -682,7 +684,7 @@ has its own prior, and these are the arguments of
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span></span>
 <span>  frequency_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_dirichlet.html">prior_dirichlet</a></span><span class="op">(</span>concentration <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  verified_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  profile_prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  profile_prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  unverified_prevalence_prior <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verification <span class="op">=</span> <span class="fu"><a href="../reference/mar.html">mar</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -707,8 +709,8 @@ of diseased among the verified subjects of each profile,
 <code>phi1</code>. <code>prior_beta(mean, precision)</code> works like
 adding <code>mean * precision</code> diseased and
 <code>(1 - mean) * precision</code> healthy subjects to the verified
-subjects of every profile: the default adds one of each. This is the
-prior that can move the accuracy, as shown below.</li>
+subjects of every profile: the default, the Jeffreys prior, adds half of
+each. This is the prior that can move the accuracy, as shown below.</li>
 <li>
 <code>unverified_prevalence_prior</code>: the prior on the
 proportion of diseased in profiles that are never verified. It is
@@ -754,12 +756,12 @@ profile, about three quarters of the population. A small change in its
 <code>phi1[1]</code> therefore moves many diseased subjects into the
 profile that both tests miss, and changes the prevalence and the
 sensitivities. To see this, we fit the model again with two other values
-of <code>precision</code> in <code>profile_prevalence_prior</code>, one
-smaller and one much larger than the default:</p>
+of <code>precision</code> in <code>profile_prevalence_prior</code>, 2
+(the uniform distribution) and the much larger 20:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">fit_weak</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">fit_uniform</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="va">d</span>,</span>
-<span>  model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span>profile_prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span>profile_prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">fit_strong</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/baysesp.html">baysesp</a></span><span class="op">(</span></span>
@@ -778,27 +780,33 @@ of <code>phi1[1]</code>, of the prevalence and of the sensitivity of
 <span>    Se_A <span class="op">=</span> <span class="va">acc</span><span class="op">$</span><span class="va">mean</span><span class="op">[</span><span class="va">acc</span><span class="op">$</span><span class="va">quantity</span> <span class="op">==</span> <span class="st">"Se[A]"</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
-<span>  <span class="st">"precision = 1"</span> <span class="op">=</span> <span class="fu">prior_effect</span><span class="op">(</span><span class="va">fit_weak</span><span class="op">)</span>,</span>
-<span>  <span class="st">"precision = 2 (default)"</span> <span class="op">=</span> <span class="fu">prior_effect</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>,</span>
+<span>  <span class="st">"precision = 1 (default)"</span> <span class="op">=</span> <span class="fu">prior_effect</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span>,</span>
+<span>  <span class="st">"precision = 2 (uniform)"</span> <span class="op">=</span> <span class="fu">prior_effect</span><span class="op">(</span><span class="va">fit_uniform</span><span class="op">)</span>,</span>
 <span>  <span class="st">"precision = 20"</span> <span class="op">=</span> <span class="fu">prior_effect</span><span class="op">(</span><span class="va">fit_strong</span><span class="op">)</span></span>
 <span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                         phi1_00 prevalence  Se_A</span></span>
-<span><span class="co">#&gt; precision = 1             0.007      0.149 0.855</span></span>
-<span><span class="co">#&gt; precision = 2 (default)   0.009      0.150 0.845</span></span>
+<span><span class="co">#&gt; precision = 1 (default)   0.007      0.149 0.855</span></span>
+<span><span class="co">#&gt; precision = 2 (uniform)   0.009      0.150 0.845</span></span>
 <span><span class="co">#&gt; precision = 20            0.048      0.178 0.705</span></span></code></pre></div>
 <p>The observed proportion in profile (0,0) is 1 out of 211, about
-0.005. With <code>precision = 1</code> (half a diseased and half a
-healthy subject added) the estimate of <code>phi1[1]</code> stays close
-to it, and with the default it is slightly higher. With
-<code>precision = 20</code>, ten diseased and ten healthy subjects are
-added to a profile that has only one diseased: <code>phi1[1]</code>
-rises to about 0.05, the prevalence goes up and the sensitivity of
-<code>A</code> falls well below its true value of 0.85, because the
-extra diseased subjects all fall in the profile where <code>A</code> is
-negative. A prior on <code>phi1</code> should therefore be wide, as the
-default is, unless there is real knowledge about the proportion of
-diseased in each profile; with more verified subjects in profile (0,0)
-the differences between the three fits would shrink.</p>
+0.005. With the default <code>precision = 1</code> (half a diseased and
+half a healthy subject added) the estimate of <code>phi1[1]</code> stays
+close to it, and with the uniform <code>precision = 2</code> it is
+slightly higher. In simulations with few verified negatives the uniform
+prior underestimated the sensitivities by about twice as much as the
+default; with the default, <code><a href="../reference/baysesp.html">baysesp()</a></code> raises the target
+acceptance rate <code>adapt_delta</code> of the sampler to 0.95 for
+<code><a href="../reference/saturated.html">saturated()</a></code>, because the posterior of <code>phi1</code> in
+such profiles has a long tail. With <code>precision = 20</code>, ten
+diseased and ten healthy subjects are added to a profile that has only
+one diseased: <code>phi1[1]</code> rises to about 0.05, the prevalence
+goes up and the sensitivity of <code>A</code> falls well below its true
+value of 0.85, because the extra diseased subjects all fall in the
+profile where <code>A</code> is negative. A prior on <code>phi1</code>
+should therefore be weak, as the default is, unless there is real
+knowledge about the proportion of diseased in each profile; with more
+verified subjects in profile (0,0) the differences between the three
+fits would shrink.</p>
 <p>By contrast, priors on <em>not identified</em> quantities—whose
 posteriors stay governed by the prior regardless of sample size <span class="citation">(Gustafson 2015)</span>—decide the results: prevalence
 in never-verified profiles (<a href="#never-verified">Section 7</a>) and
@@ -833,14 +841,14 @@ the saturated model estimates directly. Below, we call
 <span>  level <span class="op">=</span> <span class="fl">0.95</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;            quantity      mean    median     lower     upper identified</span></span>
-<span><span class="co">#&gt; 1  Se[any positive] 0.9552269 0.9613791 0.8845702 0.9941001       TRUE</span></span>
-<span><span class="co">#&gt; 2  Sp[any positive] 0.8569402 0.8571079 0.8431659 0.8706390       TRUE</span></span>
-<span><span class="co">#&gt; 3 PPV[any positive] 0.5411918 0.5411347 0.5059672 0.5769085       TRUE</span></span>
-<span><span class="co">#&gt; 4 NPV[any positive] 0.9906756 0.9921150 0.9742244 0.9988329       TRUE</span></span>
-<span><span class="co">#&gt; 5  Se[all positive] 0.5919592 0.5927914 0.5336630 0.6470290       TRUE</span></span>
-<span><span class="co">#&gt; 6  Sp[all positive] 0.9961218 0.9962310 0.9934206 0.9981273       TRUE</span></span>
-<span><span class="co">#&gt; 7 PPV[all positive] 0.9642211 0.9652163 0.9396475 0.9826121       TRUE</span></span>
-<span><span class="co">#&gt; 8 NPV[all positive] 0.9323795 0.9329615 0.9160999 0.9445891       TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  Se[any positive] 0.9654283 0.9712121 0.8976839 0.9972180       TRUE</span></span>
+<span><span class="co">#&gt; 2  Sp[any positive] 0.8571431 0.8572548 0.8428008 0.8707796       TRUE</span></span>
+<span><span class="co">#&gt; 3 PPV[any positive] 0.5410810 0.5411282 0.5048011 0.5767827       TRUE</span></span>
+<span><span class="co">#&gt; 4 NPV[any positive] 0.9928732 0.9942463 0.9779697 0.9994548       TRUE</span></span>
+<span><span class="co">#&gt; 5  Se[all positive] 0.5996970 0.6003698 0.5420990 0.6521518       TRUE</span></span>
+<span><span class="co">#&gt; 6  Sp[all positive] 0.9962931 0.9964309 0.9935558 0.9983632       TRUE</span></span>
+<span><span class="co">#&gt; 7 PPV[all positive] 0.9657827 0.9669702 0.9411168 0.9845666       TRUE</span></span>
+<span><span class="co">#&gt; 8 NPV[all positive] 0.9343832 0.9349257 0.9197402 0.9456619       TRUE</span></span></code></pre></div>
 <ul>
 <li>
 <code>fit</code>: the fitted model;</li>
@@ -852,10 +860,10 @@ the saturated model estimates directly. Below, we call
 <p>Each rule has four rows (<code>Se</code>, <code>Sp</code>,
 <code>PPV</code>, <code>NPV</code>), all with <code>identified</code>
 equal to <code>TRUE</code>. <code><a href="../reference/any_positive.html">any_positive()</a></code> lifts
-sensitivity to 0.955 while lowering specificity (0.857) and
+sensitivity to 0.966 while lowering specificity (0.857) and
 <code>PPV</code> (0.541); <code><a href="../reference/all_positive.html">all_positive()</a></code> raises specificity
-to 0.996 and <code>PPV</code> to 0.964 at the cost of sensitivity
-(0.592).</p>
+to 0.996 and <code>PPV</code> to 0.966 at the cost of sensitivity
+(0.599).</p>
 </div>
 <div class="section level3">
 <h3 id="comparing-two-tests">Comparing two tests<a class="anchor" aria-label="anchor" href="#comparing-two-tests"></a>
@@ -868,15 +876,15 @@ against <code>second = "B"</code> on <code>fit = fit</code> at
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/compare_tests.html">compare_tests</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit</span>, first <span class="op">=</span> <span class="st">"A"</span>, second <span class="op">=</span> <span class="st">"B"</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                quantity        mean      median       lower       upper</span></span>
-<span><span class="co">#&gt; 1         Se[A] - Se[B]  0.14212266  0.14259040  0.08520127  0.19984813</span></span>
-<span><span class="co">#&gt; 2         Sp[A] - Sp[B] -0.04811426 -0.04818879 -0.06268891 -0.03334061</span></span>
-<span><span class="co">#&gt; 3 Youden[A] - Youden[B]  0.09400841  0.09451092  0.03343420  0.15317230</span></span>
-<span><span class="co">#&gt; 4       TPR[A] / TPR[B]  1.20352405  1.20298311  1.11477205  1.29790861</span></span>
-<span><span class="co">#&gt; 5       FPR[A] / FPR[B]  1.98928555  1.97697718  1.60437905  2.45085494</span></span>
+<span><span class="co">#&gt; 1         Se[A] - Se[B]  0.14444783  0.14404575  0.08734674  0.20242919</span></span>
+<span><span class="co">#&gt; 2         Sp[A] - Sp[B] -0.04801876 -0.04786343 -0.06274528 -0.03311421</span></span>
+<span><span class="co">#&gt; 3 Youden[A] - Youden[B]  0.09642907  0.09640268  0.03669696  0.15810207</span></span>
+<span><span class="co">#&gt; 4       TPR[A] / TPR[B]  1.20465244  1.20330108  1.11887265  1.29968150</span></span>
+<span><span class="co">#&gt; 5       FPR[A] / FPR[B]  1.99119139  1.97583106  1.58699670  2.44507637</span></span>
 <span><span class="co">#&gt;   identified probability</span></span>
 <span><span class="co">#&gt; 1       TRUE     1.00000</span></span>
 <span><span class="co">#&gt; 2       TRUE     0.00000</span></span>
-<span><span class="co">#&gt; 3       TRUE     0.99925</span></span>
+<span><span class="co">#&gt; 3       TRUE     0.99875</span></span>
 <span><span class="co">#&gt; 4       TRUE     1.00000</span></span>
 <span><span class="co">#&gt; 5       TRUE     1.00000</span></span></code></pre></div>
 <ul>
@@ -906,24 +914,24 @@ larger; only values near 0.5 leave the question open.</p>
 <p>Reading the rows in turn:</p>
 <ul>
 <li>
-<code>Se[A] - Se[B]</code>: <code>A</code> detects on average 0.142
+<code>Se[A] - Se[B]</code>: <code>A</code> detects on average 0.144
 more of the diseased subjects than <code>B</code>, with a 95% interval
-from 0.083 to 0.200. The posterior probability is 100%: in every draw
+from 0.085 to 0.202. The posterior probability is 100%: in every draw
 <code>A</code> is the more sensitive test. This agrees with the
-sensitivities of <a href="#fitting">Section 3</a>, 0.845 for
-<code>A</code> and 0.703 for <code>B</code>.</li>
+sensitivities of <a href="#fitting">Section 3</a>, 0.855 for
+<code>A</code> and 0.711 for <code>B</code>.</li>
 <li>
 <code>Sp[A] - Sp[B]</code>: the difference is negative, -0.048 on
-average, with an interval from -0.063 to -0.034 that does not include 0.
+average, with an interval from -0.062 to -0.034 that does not include 0.
 The posterior probability is 0%: in no draw is <code>A</code> more
 specific, so <code>B</code> is the more specific test with posterior
 probability 100%. Again this agrees with Section 3, where the
-specificities are 0.902 for <code>A</code> and 0.951 for
+specificities are 0.903 for <code>A</code> and 0.951 for
 <code>B</code>.</li>
 <li>
 <code>Youden[A] - Youden[B]</code>: the Youden index weighs a missed
-diseased subject and a false alarm equally. The difference is 0.094
-(interval 0.030 to 0.155) with posterior probability 99.8%, so under
+diseased subject and a false alarm equally. The difference is 0.096
+(interval 0.034 to 0.157) with posterior probability 99.95%, so under
 this weighting the sensitivity that <code>A</code> gains outweighs the
 specificity it loses.</li>
 <li>
@@ -1063,7 +1071,7 @@ so that the whole model is visible:</p>
 <span>  model <span class="op">=</span> <span class="fu"><a href="../reference/saturated.html">saturated</a></span><span class="op">(</span></span>
 <span>    frequency_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_dirichlet.html">prior_dirichlet</a></span><span class="op">(</span>concentration <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    verified_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    profile_prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    profile_prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    unverified_prevalence_prior <span class="op">=</span> <span class="va">q_prior</span>,</span>
 <span>    verification <span class="op">=</span> <span class="fu"><a href="../reference/mar.html">mar</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
@@ -1073,21 +1081,21 @@ so that the whole model is visible:</p>
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/test_accuracy.html">test_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit_never</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity      mean    median     lower     upper identified</span></span>
-<span><span class="co">#&gt; 1 prevalence 0.1492075 0.1481261 0.1357520 0.1694881      FALSE</span></span>
-<span><span class="co">#&gt; 2      Se[A] 0.8603009 0.8698928 0.7584997 0.9111791      FALSE</span></span>
-<span><span class="co">#&gt; 3      Sp[A] 0.8903151 0.8903609 0.8807957 0.8999259      FALSE</span></span>
-<span><span class="co">#&gt; 4     PPV[A] 0.5785790 0.5783935 0.5479642 0.6081053       TRUE</span></span>
-<span><span class="co">#&gt; 5     NPV[A] 0.9729124 0.9754593 0.9486917 0.9837041      FALSE</span></span>
-<span><span class="co">#&gt; 6      Se[B] 0.7182794 0.7244295 0.6314962 0.7710579      FALSE</span></span>
-<span><span class="co">#&gt; 7      Sp[B] 0.9430364 0.9431545 0.9357494 0.9500481      FALSE</span></span>
-<span><span class="co">#&gt; 8     PPV[B] 0.6882160 0.6883063 0.6542167 0.7221322       TRUE</span></span>
-<span><span class="co">#&gt; 9     NPV[B] 0.9499864 0.9520448 0.9272793 0.9613813      FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 prevalence 0.1495835 0.1482998 0.1355250 0.1710428      FALSE</span></span>
+<span><span class="co">#&gt; 2      Se[A] 0.8591001 0.8701860 0.7501779 0.9095316      FALSE</span></span>
+<span><span class="co">#&gt; 3      Sp[A] 0.8903306 0.8904161 0.8806635 0.8996459      FALSE</span></span>
+<span><span class="co">#&gt; 4     PPV[A] 0.5789228 0.5792059 0.5494842 0.6084434       TRUE</span></span>
+<span><span class="co">#&gt; 5     NPV[A] 0.9725644 0.9753479 0.9458009 0.9835119      FALSE</span></span>
+<span><span class="co">#&gt; 6      Se[B] 0.7175012 0.7240621 0.6250460 0.7729930      FALSE</span></span>
+<span><span class="co">#&gt; 7      Sp[B] 0.9429434 0.9430512 0.9357072 0.9496244      FALSE</span></span>
+<span><span class="co">#&gt; 8     PPV[B] 0.6881849 0.6882615 0.6547812 0.7198999       TRUE</span></span>
+<span><span class="co">#&gt; 9     NPV[B] 0.9496652 0.9519299 0.9255477 0.9619986      FALSE</span></span></code></pre></div>
 <p>Now <code>identified</code> is <code>FALSE</code> for
-<code>prevalence</code> (0.149), <code>Se[A]</code> (0.860),
+<code>prevalence</code> (0.150), <code>Se[A]</code> (0.859),
 <code>Se[B]</code> (0.718), both specificities, and both negative
 predictive values: they depend on <code>q</code>, so more data would not
-shrink their intervals to a point. Only <code>PPV[A]</code> (0.578) and
-<code>PPV[B]</code> (0.688) have <code>identified</code> equal to
+shrink their intervals to a point. Only <code>PPV[A]</code> (0.579) and
+<code>PPV[B]</code> (0.689) have <code>identified</code> equal to
 <code>TRUE</code>, since test-positive subjects never have
 <code>(0,0)</code>.</p>
 </div>
@@ -1110,12 +1118,12 @@ computes these ratios for <code>"A"</code>, <code>"B"</code>, and
 <span>  level <span class="op">=</span> <span class="fl">0.95</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt;                     quantity      mean    median     lower     upper</span></span>
-<span><span class="co">#&gt; 1            TPR[A] / TPR[B] 1.1983600 1.1975868 1.1351967 1.2630118</span></span>
-<span><span class="co">#&gt; 2            FPR[A] / FPR[B] 1.9334646 1.9257601 1.6609157 2.2367824</span></span>
-<span><span class="co">#&gt; 3 TPR[A] / TPR[any positive] 0.9013892 0.9015498 0.8782802 0.9224918</span></span>
-<span><span class="co">#&gt; 4 FPR[A] / FPR[any positive] 0.6900784 0.6902331 0.6548422 0.7250438</span></span>
-<span><span class="co">#&gt; 5 TPR[B] / TPR[any positive] 0.7525944 0.7530002 0.7194440 0.7850151</span></span>
-<span><span class="co">#&gt; 6 FPR[B] / FPR[any positive] 0.3583590 0.3583011 0.3228859 0.3952715</span></span>
+<span><span class="co">#&gt; 1            TPR[A] / TPR[B] 1.1980540 1.1982454 1.1323025 1.2652051</span></span>
+<span><span class="co">#&gt; 2            FPR[A] / FPR[B] 1.9291916 1.9238576 1.6638724 2.2249148</span></span>
+<span><span class="co">#&gt; 3 TPR[A] / TPR[any positive] 0.9015306 0.9019235 0.8777452 0.9221210</span></span>
+<span><span class="co">#&gt; 4 FPR[A] / FPR[any positive] 0.6893784 0.6898009 0.6541186 0.7236518</span></span>
+<span><span class="co">#&gt; 5 TPR[B] / TPR[any positive] 0.7529197 0.7530840 0.7204553 0.7852323</span></span>
+<span><span class="co">#&gt; 6 FPR[B] / FPR[any positive] 0.3586426 0.3582599 0.3235193 0.3944191</span></span>
 <span><span class="co">#&gt;   probability</span></span>
 <span><span class="co">#&gt; 1           1</span></span>
 <span><span class="co">#&gt; 2           1</span></span>
@@ -1137,7 +1145,7 @@ diseased and healthy subjects (<a href="#mnar">Section 8</a>);
 <li>
 <code>level</code>: the probability of the credible intervals.</li>
 </ul>
-<p><code>TPR[A] / TPR[B]</code> has mean 1.198 (1.136 to 1.266):
+<p><code>TPR[A] / TPR[B]</code> has mean 1.197 (1.135 to 1.265):
 <code>A</code> detects about 20% more diseased subjects than
 <code>B</code> (posterior probability 100%). Likewise,
 <code>FPR[A] / FPR[B]</code> (1.933, posterior probability 100%) shows
@@ -1150,11 +1158,11 @@ any prior via <code><a href="../reference/accuracy_bounds.html">accuracy_bounds(
 <div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/accuracy_bounds.html">accuracy_bounds</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit_never</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="st">"B"</span><span class="op">)</span>, odds_ratio <span class="op">=</span> <span class="cn">NULL</span>, level <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity lower_bound upper_bound     lower     upper</span></span>
-<span><span class="co">#&gt; 1 prevalence   0.1421057   0.8647442 0.1321628 0.8742058</span></span>
-<span><span class="co">#&gt; 2      Se[A]   0.1481866   0.9015498 0.1374577 0.9224918</span></span>
-<span><span class="co">#&gt; 3      Sp[A]   0.3097669   0.8912308 0.2749562 0.9004752</span></span>
-<span><span class="co">#&gt; 4      Se[B]   0.1236671   0.7530002 0.1139037 0.7850151</span></span>
-<span><span class="co">#&gt; 5      Sp[B]   0.6416989   0.9435972 0.6047285 0.9503403</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 prevalence   0.1423110   0.8646793 0.1327297 0.8742681</span></span>
+<span><span class="co">#&gt; 2      Se[A]   0.1483609   0.9019235 0.1374477 0.9221210</span></span>
+<span><span class="co">#&gt; 3      Sp[A]   0.3101991   0.8913656 0.2763482 0.9004133</span></span>
+<span><span class="co">#&gt; 4      Se[B]   0.1238541   0.7530840 0.1142552 0.7852323</span></span>
+<span><span class="co">#&gt; 5      Sp[B]   0.6417401   0.9435184 0.6055809 0.9500453</span></span></code></pre></div>
 <p>The arguments match <code><a href="../reference/accuracy_ratios.html">accuracy_ratios()</a></code>, with
 <code>rules</code> defaulting to individual tests. Here
 <code>lower_bound</code> and <code>upper_bound</code> give the bounds
@@ -1192,25 +1200,25 @@ number generator samples the new priors), we compare priors at
 <span><span class="va">sens</span><span class="op">[</span><span class="va">sens</span><span class="op">$</span><span class="va">quantity</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"prevalence"</span>, <span class="st">"Se[A]"</span>, <span class="st">"Se[B]"</span><span class="op">)</span>,</span>
 <span>     <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"unverified_prior"</span>, <span class="st">"quantity"</span>, <span class="st">"mean"</span>, <span class="st">"lower"</span>, <span class="st">"upper"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;                         unverified_prior   quantity      mean     lower</span></span>
-<span><span class="co">#&gt; 1  Beta(mean = 0.005, precision = 197.8) prevalence 0.1457118 0.1345385</span></span>
-<span><span class="co">#&gt; 2  Beta(mean = 0.005, precision = 197.8)      Se[A] 0.8797088 0.8252832</span></span>
-<span><span class="co">#&gt; 6  Beta(mean = 0.005, precision = 197.8)      Se[B] 0.7344941 0.6826149</span></span>
-<span><span class="co">#&gt; 10  Beta(mean = 0.01, precision = 98.19) prevalence 0.1494313 0.1353329</span></span>
-<span><span class="co">#&gt; 11  Beta(mean = 0.01, precision = 98.19)      Se[A] 0.8591649 0.7590342</span></span>
-<span><span class="co">#&gt; 15  Beta(mean = 0.01, precision = 98.19)      Se[B] 0.7173534 0.6312576</span></span>
-<span><span class="co">#&gt; 19  Beta(mean = 0.03, precision = 44.65) prevalence 0.1638548 0.1390973</span></span>
-<span><span class="co">#&gt; 20  Beta(mean = 0.03, precision = 44.65)      Se[A] 0.7904529 0.6023619</span></span>
-<span><span class="co">#&gt; 24  Beta(mean = 0.03, precision = 44.65)      Se[B] 0.6600053 0.5026472</span></span>
+<span><span class="co">#&gt; 1  Beta(mean = 0.005, precision = 197.8) prevalence 0.1458048 0.1348200</span></span>
+<span><span class="co">#&gt; 2  Beta(mean = 0.005, precision = 197.8)      Se[A] 0.8798548 0.8246277</span></span>
+<span><span class="co">#&gt; 6  Beta(mean = 0.005, precision = 197.8)      Se[B] 0.7348303 0.6815365</span></span>
+<span><span class="co">#&gt; 10  Beta(mean = 0.01, precision = 98.19) prevalence 0.1495253 0.1359049</span></span>
+<span><span class="co">#&gt; 11  Beta(mean = 0.01, precision = 98.19)      Se[A] 0.8593084 0.7583793</span></span>
+<span><span class="co">#&gt; 15  Beta(mean = 0.01, precision = 98.19)      Se[B] 0.7176711 0.6293875</span></span>
+<span><span class="co">#&gt; 19  Beta(mean = 0.03, precision = 44.65) prevalence 0.1639462 0.1395020</span></span>
+<span><span class="co">#&gt; 20  Beta(mean = 0.03, precision = 44.65)      Se[A] 0.7906569 0.6009929</span></span>
+<span><span class="co">#&gt; 24  Beta(mean = 0.03, precision = 44.65)      Se[B] 0.6603407 0.5050427</span></span>
 <span><span class="co">#&gt;        upper</span></span>
-<span><span class="co">#&gt; 1  0.1584463</span></span>
-<span><span class="co">#&gt; 2  0.9146554</span></span>
-<span><span class="co">#&gt; 6  0.7746899</span></span>
-<span><span class="co">#&gt; 10 0.1699483</span></span>
-<span><span class="co">#&gt; 11 0.9098003</span></span>
-<span><span class="co">#&gt; 15 0.7713104</span></span>
-<span><span class="co">#&gt; 19 0.2125135</span></span>
-<span><span class="co">#&gt; 20 0.8953864</span></span>
-<span><span class="co">#&gt; 24 0.7552570</span></span></code></pre></div>
+<span><span class="co">#&gt; 1  0.1586794</span></span>
+<span><span class="co">#&gt; 2  0.9142206</span></span>
+<span><span class="co">#&gt; 6  0.7759112</span></span>
+<span><span class="co">#&gt; 10 0.1706715</span></span>
+<span><span class="co">#&gt; 11 0.9103841</span></span>
+<span><span class="co">#&gt; 15 0.7711247</span></span>
+<span><span class="co">#&gt; 19 0.2130955</span></span>
+<span><span class="co">#&gt; 20 0.8962051</span></span>
+<span><span class="co">#&gt; 24 0.7574537</span></span></code></pre></div>
 <ul>
 <li>
 <code>fit</code>: the fitted model;</li>
@@ -1231,8 +1239,8 @@ individual tests;</li>
 <p>From <code>Beta(mean = 0.005, precision = 197.8)</code> to
 <code>Beta(mean = 0.03, precision = 44.65)</code>, placing more diseased
 subjects in <code>(0,0)</code> raises <code>prevalence</code> (0.146 to
-0.164) and lowers <code>Se[A]</code> (0.879 to 0.790) and
-<code>Se[B]</code> (0.734 to 0.660).</p>
+0.164) and lowers <code>Se[A]</code> (0.880 to 0.790) and
+<code>Se[B]</code> (0.735 to 0.661).</p>
 <p>To see this graphically, we call <code><a href="../reference/prior_posterior.html">prior_posterior()</a></code> on
 <code>fit = fit_never</code> (<code>rules = NULL</code>,
 <code>level = 0.95</code>, <code>seed = 1</code>):</p>
@@ -1307,21 +1315,21 @@ posterior estimates under MAR:</p>
 <div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/test_accuracy.html">test_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit_mar</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity      mean    median     lower     upper identified</span></span>
-<span><span class="co">#&gt; 1 prevalence 0.1607179 0.1605903 0.1490482 0.1729679       TRUE</span></span>
-<span><span class="co">#&gt; 2      Se[A] 0.8312037 0.8318470 0.7890983 0.8684740       TRUE</span></span>
-<span><span class="co">#&gt; 3      Sp[A] 0.8952198 0.8952322 0.8849296 0.9047358       TRUE</span></span>
-<span><span class="co">#&gt; 4     PPV[A] 0.6029582 0.6031320 0.5711601 0.6338678       TRUE</span></span>
-<span><span class="co">#&gt; 5     NPV[A] 0.9650964 0.9653911 0.9549858 0.9737534       TRUE</span></span>
-<span><span class="co">#&gt; 6      Se[B] 0.6747211 0.6752536 0.6325218 0.7151749       TRUE</span></span>
-<span><span class="co">#&gt; 7      Sp[B] 0.9438995 0.9439972 0.9366302 0.9511872       TRUE</span></span>
-<span><span class="co">#&gt; 8     PPV[B] 0.6971758 0.6973487 0.6621870 0.7313658       TRUE</span></span>
-<span><span class="co">#&gt; 9     NPV[B] 0.9380500 0.9383781 0.9269761 0.9477706       TRUE</span></span></code></pre></div>
-<p>The MAR estimates are biased: <code>prevalence</code> averages 0.161
-(true 0.15), <code>Se[A]</code> 0.831 (0.85), and <code>Se[B]</code>
-0.675 (0.70). Treating unverified subjects—mostly double-negative—as
+<span><span class="co">#&gt; 1 prevalence 0.1601772 0.1601522 0.1484747 0.1722724       TRUE</span></span>
+<span><span class="co">#&gt; 2      Se[A] 0.8332101 0.8343041 0.7887815 0.8714441       TRUE</span></span>
+<span><span class="co">#&gt; 3      Sp[A] 0.8953692 0.8954707 0.8852092 0.9050643       TRUE</span></span>
+<span><span class="co">#&gt; 4     PPV[A] 0.6029038 0.6026293 0.5705451 0.6346441       TRUE</span></span>
+<span><span class="co">#&gt; 5     NPV[A] 0.9656324 0.9660127 0.9545860 0.9745249       TRUE</span></span>
+<span><span class="co">#&gt; 6      Se[B] 0.6766593 0.6770481 0.6327725 0.7184057       TRUE</span></span>
+<span><span class="co">#&gt; 7      Sp[B] 0.9439405 0.9440077 0.9363812 0.9509999       TRUE</span></span>
+<span><span class="co">#&gt; 8     PPV[B] 0.6970712 0.6975368 0.6616692 0.7315544       TRUE</span></span>
+<span><span class="co">#&gt; 9     NPV[B] 0.9386278 0.9387890 0.9273849 0.9484886       TRUE</span></span></code></pre></div>
+<p>The MAR estimates are biased: <code>prevalence</code> averages 0.160
+(true 0.15), <code>Se[A]</code> 0.834 (0.85), and <code>Se[B]</code>
+0.677 (0.70). Treating unverified subjects—mostly double-negative—as
 equally diseased as verified ones with the same results imputes too many
 missed cases. True values still sit inside the 95% intervals (0.149 to
-0.173, 0.787 to 0.870, 0.632 to 0.715), yet bias grows with
+0.172, 0.793 to 0.872, 0.635 to 0.716), yet bias grows with
 <code>odds_ratio</code> and never shrinks with more data.
 <code>identified</code> is <code>TRUE</code> only because
 <code>verification = mar()</code> fixes <code>odds_ratio</code> at
@@ -1361,21 +1369,21 @@ results from <code>fit = fit_mar</code> at
 <span><span class="va">grid</span><span class="op">[</span><span class="va">grid</span><span class="op">$</span><span class="va">quantity</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"prevalence"</span>, <span class="st">"Se[A]"</span>, <span class="st">"Se[B]"</span><span class="op">)</span>,</span>
 <span>     <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"odds_ratio"</span>, <span class="st">"quantity"</span>, <span class="st">"mean"</span>, <span class="st">"lower"</span>, <span class="st">"upper"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;    odds_ratio   quantity      mean     lower     upper</span></span>
-<span><span class="co">#&gt; 1         1.0 prevalence 0.1607179 0.1490482 0.1729679</span></span>
-<span><span class="co">#&gt; 2         1.0      Se[A] 0.8312037 0.7890983 0.8684740</span></span>
-<span><span class="co">#&gt; 6         1.0      Se[B] 0.6747211 0.6325218 0.7151749</span></span>
-<span><span class="co">#&gt; 10        1.5 prevalence 0.1536024 0.1427132 0.1649389</span></span>
-<span><span class="co">#&gt; 11        1.5      Se[A] 0.8510886 0.8150137 0.8833652</span></span>
-<span><span class="co">#&gt; 15        1.5      Se[B] 0.6969143 0.6581760 0.7346224</span></span>
-<span><span class="co">#&gt; 19        2.0 prevalence 0.1495951 0.1389933 0.1604692</span></span>
-<span><span class="co">#&gt; 20        2.0      Se[A] 0.8620910 0.8290126 0.8915947</span></span>
-<span><span class="co">#&gt; 24        2.0      Se[B] 0.7098282 0.6727232 0.7462982</span></span>
-<span><span class="co">#&gt; 28        3.0 prevalence 0.1451481 0.1349528 0.1555601</span></span>
-<span><span class="co">#&gt; 29        3.0      Se[A] 0.8739540 0.8440102 0.9009025</span></span>
-<span><span class="co">#&gt; 33        3.0      Se[B] 0.7242837 0.6890196 0.7591959</span></span></code></pre></div>
+<span><span class="co">#&gt; 1         1.0 prevalence 0.1601772 0.1484747 0.1722724</span></span>
+<span><span class="co">#&gt; 2         1.0      Se[A] 0.8332101 0.7887815 0.8714441</span></span>
+<span><span class="co">#&gt; 6         1.0      Se[B] 0.6766593 0.6327725 0.7184057</span></span>
+<span><span class="co">#&gt; 10        1.5 prevalence 0.1531717 0.1422227 0.1642740</span></span>
+<span><span class="co">#&gt; 11        1.5      Se[A] 0.8526903 0.8145941 0.8862198</span></span>
+<span><span class="co">#&gt; 15        1.5      Se[B] 0.6985115 0.6578343 0.7378417</span></span>
+<span><span class="co">#&gt; 19        2.0 prevalence 0.1492222 0.1386837 0.1598403</span></span>
+<span><span class="co">#&gt; 20        2.0      Se[A] 0.8634706 0.8287950 0.8941691</span></span>
+<span><span class="co">#&gt; 24        2.0      Se[B] 0.7112325 0.6721775 0.7487876</span></span>
+<span><span class="co">#&gt; 28        3.0 prevalence 0.1448360 0.1347861 0.1552346</span></span>
+<span><span class="co">#&gt; 29        3.0      Se[A] 0.8750960 0.8439579 0.9030690</span></span>
+<span><span class="co">#&gt; 33        3.0      Se[B] 0.7254763 0.6881618 0.7608704</span></span></code></pre></div>
 <p>From <code>odds_ratio</code> 1.0 to 3.0, mean <code>prevalence</code>
-drops from 0.161 to 0.145, while <code>Se[A]</code> rises from 0.831 to
-0.874 and <code>Se[B]</code> from 0.675 to 0.725, passing near the true
+drops from 0.160 to 0.145, while <code>Se[A]</code> rises from 0.834 to
+0.875 and <code>Se[B]</code> from 0.677 to 0.725, passing near the true
 values around 1.5 and 2.0. We plot <code>Se[A]</code> and
 <code>Se[B]</code> from <code>grid</code> with
 <a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a>:</p>
@@ -1435,19 +1443,19 @@ posterior estimates and intervals:</p>
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/test_accuracy.html">test_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit_mnar</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity      mean    median     lower     upper identified</span></span>
-<span><span class="co">#&gt; 1 prevalence 0.1543854 0.1538402 0.1399525 0.1725252      FALSE</span></span>
-<span><span class="co">#&gt; 2      Se[A] 0.8487179 0.8510669 0.7956649 0.8891187      FALSE</span></span>
-<span><span class="co">#&gt; 3      Sp[A] 0.8928012 0.8928991 0.8815198 0.9032450      FALSE</span></span>
-<span><span class="co">#&gt; 4     PPV[A] 0.5908312 0.5904420 0.5527758 0.6300330      FALSE</span></span>
-<span><span class="co">#&gt; 5     NPV[A] 0.9698424 0.9706445 0.9557687 0.9792582      FALSE</span></span>
-<span><span class="co">#&gt; 6      Se[B] 0.6945125 0.6964636 0.6376733 0.7429893      FALSE</span></span>
-<span><span class="co">#&gt; 7      Sp[B] 0.9427617 0.9428219 0.9353302 0.9498356      FALSE</span></span>
-<span><span class="co">#&gt; 8     PPV[B] 0.6886902 0.6885961 0.6534170 0.7244867      FALSE</span></span>
-<span><span class="co">#&gt; 9     NPV[B] 0.9439903 0.9447331 0.9274953 0.9560154      FALSE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 prevalence 0.1537740 0.1531621 0.1398583 0.1710589      FALSE</span></span>
+<span><span class="co">#&gt; 2      Se[A] 0.8515086 0.8532857 0.7973739 0.8926636      FALSE</span></span>
+<span><span class="co">#&gt; 3      Sp[A] 0.8929023 0.8930026 0.8826106 0.9027891      FALSE</span></span>
+<span><span class="co">#&gt; 4     PPV[A] 0.5907086 0.5903189 0.5552961 0.6275223      FALSE</span></span>
+<span><span class="co">#&gt; 5     NPV[A] 0.9705257 0.9712456 0.9567793 0.9798487      FALSE</span></span>
+<span><span class="co">#&gt; 6      Se[B] 0.6968062 0.6980701 0.6401184 0.7448084      FALSE</span></span>
+<span><span class="co">#&gt; 7      Sp[B] 0.9426991 0.9428449 0.9347885 0.9499352      FALSE</span></span>
+<span><span class="co">#&gt; 8     PPV[B] 0.6881890 0.6881297 0.6513065 0.7258117      FALSE</span></span>
+<span><span class="co">#&gt; 9     NPV[B] 0.9446480 0.9453485 0.9285191 0.9562560      FALSE</span></span></code></pre></div>
 <p>Compared with <code>fit_mar</code>, means move toward the true values
-(0.154 for <code>prevalence</code>, 0.849 for <code>Se[A]</code>, 0.695
-for <code>Se[B]</code>), and intervals widen (0.140 to 0.172, 0.794 to
-0.889, 0.638 to 0.744) to include uncertainty on
+(0.154 for <code>prevalence</code>, 0.851 for <code>Se[A]</code>, 0.697
+for <code>Se[B]</code>), and intervals widen (0.140 to 0.171, 0.799 to
+0.891, 0.642 to 0.743) to include uncertainty on
 <code>odds_ratio</code>. Every row now shows <code>identified</code> as
 <code>FALSE</code>: since <code>odds_ratio</code> is <em>not
 identified</em> in <code><a href="../reference/saturated.html">saturated()</a></code>, more data cannot shrink
@@ -1644,10 +1652,10 @@ calls <code><a href="../reference/test_accuracy.html">test_accuracy()</a></code>
 <span><span class="fu">sensitivities</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>saturated <span class="op">=</span> <span class="va">fit3_sat</span>, independence <span class="op">=</span> <span class="va">fit3_ci</span>,</span>
 <span>                   order_2 <span class="op">=</span> <span class="va">fit3_ll2</span>, random_effects <span class="op">=</span> <span class="va">fit3_re</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              model   quantity      mean     lower     upper</span></span>
-<span><span class="co">#&gt; 1        saturated prevalence 0.1980985 0.1893703 0.2073230</span></span>
-<span><span class="co">#&gt; 2        saturated      Se[A] 0.9076213 0.8822119 0.9277836</span></span>
-<span><span class="co">#&gt; 6        saturated      Se[B] 0.8069682 0.7810913 0.8299822</span></span>
-<span><span class="co">#&gt; 10       saturated      Se[C] 0.7056746 0.6797928 0.7290973</span></span>
+<span><span class="co">#&gt; 1        saturated prevalence 0.1975380 0.1890112 0.2066978</span></span>
+<span><span class="co">#&gt; 2        saturated      Se[A] 0.9100854 0.8861893 0.9294005</span></span>
+<span><span class="co">#&gt; 6        saturated      Se[B] 0.8090805 0.7852423 0.8309561</span></span>
+<span><span class="co">#&gt; 10       saturated      Se[C] 0.7076932 0.6823671 0.7312651</span></span>
 <span><span class="co">#&gt; 11    independence prevalence 0.1944187 0.1866260 0.2021907</span></span>
 <span><span class="co">#&gt; 21    independence      Se[A] 0.9292161 0.9167961 0.9404657</span></span>
 <span><span class="co">#&gt; 61    independence      Se[B] 0.8292508 0.8113633 0.8466420</span></span>
@@ -1661,7 +1669,7 @@ calls <code><a href="../reference/test_accuracy.html">test_accuracy()</a></code>
 <span><span class="co">#&gt; 63  random_effects      Se[B] 0.8114346 0.7903588 0.8313092</span></span>
 <span><span class="co">#&gt; 103 random_effects      Se[C] 0.7092199 0.6862007 0.7312607</span></span></code></pre></div>
 <p>Look at how each model compares with the true values (0.2, 0.9, 0.8,
-0.7): <code>saturated</code> (0.198, 0.907, 0.807, 0.705),
+0.7): <code>saturated</code> (0.197, 0.910, 0.809, 0.708),
 <code>order_2</code> (0.197, 0.911, 0.811, 0.709), and
 <code>random_effects</code> (0.197, 0.912, 0.811, 0.709) recover them
 well. <code>independence</code> (<code>interaction_order = 1</code>)
@@ -1687,14 +1695,14 @@ it”) and compare <code>"A"</code> with <code>confirmed</code> via
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/rule_accuracy.html">rule_accuracy</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit3_sat</span>, rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"A"</span>, <span class="va">confirmed</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;           quantity      mean    median     lower     upper identified</span></span>
-<span><span class="co">#&gt; 1            Se[A] 0.9076213 0.9086642 0.8822119 0.9277836       TRUE</span></span>
-<span><span class="co">#&gt; 2            Sp[A] 0.8500793 0.8501695 0.8420425 0.8578691       TRUE</span></span>
-<span><span class="co">#&gt; 3           PPV[A] 0.5992607 0.5992730 0.5812258 0.6171677       TRUE</span></span>
-<span><span class="co">#&gt; 4           NPV[A] 0.9738273 0.9741783 0.9659583 0.9799447       TRUE</span></span>
-<span><span class="co">#&gt; 5  Se[A confirmed] 0.8518019 0.8526567 0.8255755 0.8743196       TRUE</span></span>
-<span><span class="co">#&gt; 6  Sp[A confirmed] 0.9689968 0.9690657 0.9647003 0.9730001       TRUE</span></span>
-<span><span class="co">#&gt; 7 PPV[A confirmed] 0.8715730 0.8717525 0.8549285 0.8872897       TRUE</span></span>
-<span><span class="co">#&gt; 8 NPV[A confirmed] 0.9635691 0.9638323 0.9562294 0.9696407       TRUE</span></span></code></pre></div>
+<span><span class="co">#&gt; 1            Se[A] 0.9100854 0.9108013 0.8861893 0.9294005       TRUE</span></span>
+<span><span class="co">#&gt; 2            Sp[A] 0.8502606 0.8502973 0.8424440 0.8580337       TRUE</span></span>
+<span><span class="co">#&gt; 3           PPV[A] 0.5993613 0.5993672 0.5815472 0.6172088       TRUE</span></span>
+<span><span class="co">#&gt; 4           NPV[A] 0.9746062 0.9748726 0.9672208 0.9804080       TRUE</span></span>
+<span><span class="co">#&gt; 5  Se[A confirmed] 0.8543712 0.8549194 0.8300146 0.8750599       TRUE</span></span>
+<span><span class="co">#&gt; 6  Sp[A confirmed] 0.9691841 0.9692131 0.9650192 0.9731322       TRUE</span></span>
+<span><span class="co">#&gt; 7 PPV[A confirmed] 0.8721890 0.8721911 0.8551674 0.8883135       TRUE</span></span>
+<span><span class="co">#&gt; 8 NPV[A confirmed] 0.9643112 0.9644969 0.9572948 0.9699126       TRUE</span></span></code></pre></div>
 <p>In <code><a href="../reference/test_rule.html">test_rule()</a></code>, the two arguments are:</p>
 <ul>
 <li>
@@ -1704,9 +1712,9 @@ it”) and compare <code>"A"</code> with <code>confirmed</code> via
 positive profiles and <code>FALSE</code> otherwise.</li>
 </ul>
 <p>In the output, confirmation lowers sensitivity (<code>Se[A]</code>
-0.907 to <code>Se[A confirmed]</code> 0.852) while raising specificity
+0.910 to <code>Se[A confirmed]</code> 0.855) while raising specificity
 (<code>Sp[A]</code> 0.850 to 0.969) and <code>PPV</code> (0.599 to
-0.872, with <code>NPV</code> moving from 0.974 to 0.964), and
+0.872, with <code>NPV</code> moving from 0.975 to 0.964), and
 <code>identified</code> is <code>TRUE</code> throughout. Combined rules
 must use a model allowing dependence (<code>model = saturated()</code>,
 <code>model = loglinear(interaction_order = 2)</code> or higher, or
@@ -1814,13 +1822,13 @@ compatible with the data, which we inspect via
 <div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/accuracy_bounds.html">accuracy_bounds</a></span><span class="op">(</span>fit <span class="op">=</span> <span class="va">fit3n_sat</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     quantity lower_bound upper_bound     lower     upper</span></span>
-<span><span class="co">#&gt; 1 prevalence   0.1947724   0.7906794 0.1871114 0.7987596</span></span>
-<span><span class="co">#&gt; 2      Se[A]   0.2283523   0.9269458 0.2194009 0.9385433</span></span>
-<span><span class="co">#&gt; 3      Sp[A]   0.4297837   0.8518039 0.4083169 0.8595403</span></span>
-<span><span class="co">#&gt; 4      Se[B]   0.2043803   0.8296528 0.1955207 0.8472767</span></span>
-<span><span class="co">#&gt; 5      Sp[B]   0.6216261   0.9016788 0.5998253 0.9080569</span></span>
-<span><span class="co">#&gt; 6      Se[C]   0.1765377   0.7165519 0.1680834 0.7375140</span></span>
-<span><span class="co">#&gt; 7      Sp[C]   0.8155304   0.9520188 0.7981856 0.9567151</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 prevalence   0.1947315   0.7907839 0.1870471 0.7988810</span></span>
+<span><span class="co">#&gt; 2      Se[A]   0.2283014   0.9275771 0.2193182 0.9394865</span></span>
+<span><span class="co">#&gt; 3      Sp[A]   0.4300551   0.8518511 0.4093438 0.8594808</span></span>
+<span><span class="co">#&gt; 4      Se[B]   0.2044284   0.8304001 0.1959884 0.8473537</span></span>
+<span><span class="co">#&gt; 5      Sp[B]   0.6216856   0.9016274 0.5996531 0.9083369</span></span>
+<span><span class="co">#&gt; 6      Se[C]   0.1765709   0.7171430 0.1682307 0.7368904</span></span>
+<span><span class="co">#&gt; 7      Sp[C]   0.8155839   0.9520613 0.7975060 0.9568603</span></span></code></pre></div>
 <p>Look at <code>lower_bound</code> and <code>upper_bound</code> (and
 credible limits <code>lower</code> and <code>upper</code>):
 <code>prevalence</code> can lie from 0.195 to 0.791 (0.187 to 0.799),
@@ -1941,20 +1949,20 @@ of order 2 where verification may depend on the disease
 <span><span class="co">#&gt; Expected log predictive density of a new subject (leave-one-out)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model           elpd_loo se_loo elpd_diff se_diff p_loo</span></span>
-<span><span class="co">#&gt;  random_effects -18139.02 144.21      0.00    0.00 18.10</span></span>
-<span><span class="co">#&gt;  order_2        -18140.35 144.20     -1.33    1.20 19.79</span></span>
-<span><span class="co">#&gt;  order_2_mnar   -18141.33 144.25     -2.31    1.40 20.34</span></span>
-<span><span class="co">#&gt;  saturated      -18142.30 144.15     -3.28    1.05 21.75</span></span>
-<span><span class="co">#&gt;  independence   -18188.07 144.75    -49.05   10.91 14.05</span></span>
+<span><span class="co">#&gt;  random_effects -18138.91 144.21      0.00    0.00 18.00</span></span>
+<span><span class="co">#&gt;  order_2        -18140.34 144.20     -1.43    1.20 19.79</span></span>
+<span><span class="co">#&gt;  order_2_mnar   -18141.33 144.25     -2.43    1.40 20.34</span></span>
+<span><span class="co">#&gt;  saturated      -18142.39 144.22     -3.48    1.20 21.98</span></span>
+<span><span class="co">#&gt;  independence   -18188.06 144.75    -49.16   10.91 14.05</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Reliability of the estimates and fit to the data</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model          loo_method high_k elpd_waic p_waic ppc_pvalue</span></span>
-<span><span class="co">#&gt;  random_effects psis            0 -18139.00  18.08       0.62</span></span>
-<span><span class="co">#&gt;  order_2        psis            0 -18140.33  19.77       0.58</span></span>
-<span><span class="co">#&gt;  order_2_mnar   psis            0 -18141.31  20.31       0.51</span></span>
-<span><span class="co">#&gt;  saturated      exact           - -18142.35  21.80       0.49</span></span>
-<span><span class="co">#&gt;  independence   psis            0 -18188.06  14.03       0.00</span></span>
+<span><span class="co">#&gt;  random_effects psis            0 -18138.89  17.98       0.62</span></span>
+<span><span class="co">#&gt;  order_2        psis            0 -18140.32  19.76       0.56</span></span>
+<span><span class="co">#&gt;  order_2_mnar   psis            0 -18141.31  20.31       0.52</span></span>
+<span><span class="co">#&gt;  saturated      exact           - -18142.27  21.86       0.49</span></span>
+<span><span class="co">#&gt;  independence   psis            0 -18188.05  14.04       0.00</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; elpd_diff: difference from the first model, with standard error se_diff.</span></span>
 <span><span class="co">#&gt; high_k: cells with Pareto k &gt; 0.7 (- for exact leave-one-out, which has no k).</span></span>
@@ -2061,15 +2069,18 @@ the probability that a model is true.</li>
 <code>d3</code>—ranks first (<code>elpd_loo</code> -18139.12). Both
 <code>order_2</code> (<code>elpd_diff</code> -1.23, <code>se_diff</code>
 1.22) and <code>order_2_mnar</code> (-2.21, <code>se_diff</code> 1.42)
-predict essentially as well. <code>saturated</code> is 3.18 lower
-(<code>se_diff</code> 1.05): it reproduces the table just as well but
-uses more parameters (<code>p_loo</code> 21.73 versus 18.19), a minor
-difference across 10000 subjects when every profile is verified.
-<code>independence</code> is clearly worse, trailing by 48.93
-(<code>se_diff</code> 10.92). Across the structured models,
-<code>high_k</code> is 0 so no refits were needed,
+predict essentially as well. <code>saturated</code> is 3.27 lower
+(<code>se_diff</code> 1.21), more than twice <code>se_diff</code>: it
+reproduces the table just as well but uses more parameters
+(<code>p_loo</code> 21.98 versus 18.19), and here the extra parameters
+cost some predictive accuracy. The difference is still small on the
+scale of <code>elpd_loo</code> (about 3 units over 10000 subjects), so
+it is a preference for the structured models, not a sign that
+<code>saturated</code> misfits. <code>independence</code> is clearly
+worse, trailing by 48.88 (<code>se_diff</code> 10.93). Across the
+structured models, <code>high_k</code> is 0 so no refits were needed,
 <code>elpd_waic</code> agrees with <code>elpd_loo</code> within 0.2 for
-all five models, and <code>ppc_pvalue</code> lies between 0.50 and 0.61
+all five models, and <code>ppc_pvalue</code> lies between 0.48 and 0.61
 for four models but drops to 0.00 for <code>independence</code>:
 conditional independence fails to reproduce the observed table. Allowing
 verification to depend on the disease (<code>order_2_mnar</code>) does
@@ -2082,21 +2093,21 @@ per model and cell) and filter for <code>p_value &lt; 0.05</code>:</p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">checks</span> <span class="op">&lt;-</span> <span class="va">comparison</span><span class="op">$</span><span class="va">checks</span></span>
 <span><span class="va">checks</span><span class="op">[</span><span class="va">checks</span><span class="op">$</span><span class="va">model</span> <span class="op">==</span> <span class="st">"independence"</span> <span class="op">&amp;</span> <span class="va">checks</span><span class="op">$</span><span class="va">p_value</span> <span class="op">&lt;</span> <span class="fl">0.05</span>, <span class="op">]</span></span>
-<span><span class="co">#&gt;           model profile     cell observed  expected lower upper p_value</span></span>
-<span><span class="co">#&gt; 25 independence (0,0,0) diseased        4   0.67125     0     3  0.0120</span></span>
-<span><span class="co">#&gt; 35 independence (1,1,0)  healthy      149  87.55575    68   108  0.0000</span></span>
-<span><span class="co">#&gt; 37 independence (0,0,1) diseased       34  13.17800     6    21  0.0000</span></span>
-<span><span class="co">#&gt; 40 independence (1,0,1) diseased      150 185.04875   152   222  0.0405</span></span>
-<span><span class="co">#&gt; 43 independence (0,1,1) diseased       44  65.71950    46    87  0.0315</span></span></code></pre></div>
+<span><span class="co">#&gt;           model profile     cell observed  expected   lower upper p_value</span></span>
+<span><span class="co">#&gt; 25 independence (0,0,0) diseased        4   0.67300   0.000     3  0.0085</span></span>
+<span><span class="co">#&gt; 35 independence (1,1,0)  healthy      149  87.23025  68.000   108  0.0000</span></span>
+<span><span class="co">#&gt; 37 independence (0,0,1) diseased       34  12.94700   6.000    21  0.0000</span></span>
+<span><span class="co">#&gt; 40 independence (1,0,1) diseased      150 185.09500 151.975   223  0.0445</span></span>
+<span><span class="co">#&gt; 43 independence (0,1,1) diseased       44  65.84500  46.000    87  0.0340</span></span></code></pre></div>
 <p>Each row reports the <code>observed</code> count, the
 <code>expected</code> count under the model, the 95% interval of
 replicated counts (<code>lower</code> and <code>upper</code>), and the
 two-sided cell <code>p_value</code>. Five cells fall outside their
 intervals. The largest discrepancies are in <code>(1,1,0)</code>
-verified healthy—149 observed against 87.5 expected (68 to 108), because
+verified healthy—149 observed against 87.3 expected (67 to 108), because
 <code>A</code> and <code>B</code> err together among healthy
 subjects—and <code>(0,0,1)</code> verified diseased—34 observed against
-13.0 expected (6 to 21). In <code>(0,0,0)</code> verified diseased, 4
+13.1 expected (6 to 21). In <code>(0,0,0)</code> verified diseased, 4
 observed subjects also exceed what conditional independence allows (0 to
 3): when tests are dependent, a diseased subject missed by one test is
 more likely to be missed by the others too.</p>
@@ -2147,20 +2158,20 @@ and compare it with <code>fit3n_sat</code>:</p>
 <span><span class="co">#&gt; Expected log predictive density of a new subject (leave-one-out)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model       elpd_loo se_loo elpd_diff se_diff p_loo</span></span>
-<span><span class="co">#&gt;  low_prior  -16167.85 148.61      0.00    0.00 19.86</span></span>
-<span><span class="co">#&gt;  high_prior -16167.85 148.61      0.00    0.00 19.85</span></span>
+<span><span class="co">#&gt;  low_prior  -16167.90 148.65      0.00    0.00 19.97</span></span>
+<span><span class="co">#&gt;  high_prior -16167.90 148.65      0.00    0.00 19.97</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Reliability of the estimates and fit to the data</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model      loo_method high_k elpd_waic p_waic ppc_pvalue</span></span>
-<span><span class="co">#&gt;  low_prior  exact           - -16168.05  20.06       0.48</span></span>
-<span><span class="co">#&gt;  high_prior exact           - -16167.80  19.79       0.49</span></span>
+<span><span class="co">#&gt;  low_prior  exact           - -16167.94  20.00       0.48</span></span>
+<span><span class="co">#&gt;  high_prior exact           - -16167.78  19.85       0.49</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; elpd_diff: difference from the first model, with standard error se_diff.</span></span>
 <span><span class="co">#&gt; high_k: cells with Pareto k &gt; 0.7 (- for exact leave-one-out, which has no k).</span></span>
 <span><span class="co">#&gt; ppc_pvalue: posterior predictive p-value of the chi-square discrepancy</span></span>
 <span><span class="co">#&gt; between observed and expected counts.</span></span></code></pre></div>
-<p>Both models share the exact same <code>elpd_loo</code> (-16167.85)
+<p>Both models share the exact same <code>elpd_loo</code> (-16167.90)
 and <code>elpd_diff</code> (0.00), and the warning explains why: the
 proportion of diseased subjects in the never-verified profile
 <code>(0,0,0)</code> is <em>not identified</em>—its prior never enters

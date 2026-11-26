@@ -124,7 +124,10 @@ reproducible. A number is used directly as the seed of the sampler.</p></dd>
 <code>"rstan"</code> (for example <code>cores</code>, to run the chains in parallel, or
 <code>control</code>, for example <code>list(adapt_delta = 0.95)</code>), or to the <code>$sample()</code>
 method of <code>cmdstanr</code> when <code>backend</code> is <code>"cmdstanr"</code> (for example
-<code>parallel_chains</code>, or <code>adapt_delta</code>). Do not repeat <code>chains</code>,
+<code>parallel_chains</code>, or <code>adapt_delta</code>). With <code><a href="saturated.html">saturated()</a></code> the target
+acceptance rate <code>adapt_delta</code> is 0.95 unless given here, instead of the
+Stan default 0.8: see the <code>profile_prevalence_prior</code> argument of
+<code><a href="saturated.html">saturated()</a></code>. Do not repeat <code>chains</code>,
 <code>iter_warmup</code>, <code>iter_sampling</code> or <code>seed</code>, which <code>baysesp()</code> already passes to
 the backend.</p></dd>
 
@@ -205,15 +208,15 @@ the model, and every quantity reported by the package is computed from them.</p>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">baysesp</span><span class="op">(</span><span class="va">d</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="test_accuracy.html">test_accuracy</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>     quantity      mean    median     lower     upper identified</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 prevalence 0.2052042 0.2048145 0.1795179 0.2316453       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2      Se[A] 0.8851116 0.8871800 0.8226758 0.9317420       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3      Sp[A] 0.8488080 0.8492479 0.8232210 0.8731027       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4     PPV[A] 0.6017400 0.6018114 0.5445422 0.6591683       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5     NPV[A] 0.9661723 0.9671865 0.9458064 0.9805380       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6      Se[B] 0.7878260 0.7892088 0.7192221 0.8507625       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7      Sp[B] 0.9465961 0.9470981 0.9301900 0.9614485       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8     PPV[B] 0.7920101 0.7926048 0.7341592 0.8445836       TRUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9     NPV[B] 0.9452112 0.9460813 0.9240182 0.9626702       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 prevalence 0.2032967 0.2029564 0.1776183 0.2304198       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2      Se[A] 0.8949437 0.8973944 0.8408835 0.9370849       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3      Sp[A] 0.8497024 0.8498352 0.8236039 0.8748486       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4     PPV[A] 0.6030221 0.6031086 0.5445309 0.6599996       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5     NPV[A] 0.9693508 0.9702629 0.9513761 0.9822349       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6      Se[B] 0.7975647 0.7987924 0.7329281 0.8545418       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7      Sp[B] 0.9472373 0.9474472 0.9303955 0.9620185       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8     PPV[B] 0.7940863 0.7951280 0.7353305 0.8484074       TRUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9     NPV[B] 0.9482413 0.9488913 0.9291204 0.9637223       TRUE</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

@@ -133,26 +133,26 @@ fit <- baysesp(d, saturated(unverified_prevalence_prior = elicit_beta(0.03, 0.06
 pp <- prior_posterior(fit, seed = 1)
 pp
 #>    quantity distribution   mean median   lower  upper
-#>  prevalence        prior 0.3827 0.3664 0.08152 0.7666
-#>  prevalence    posterior 0.2192 0.2183 0.19521 0.2476
-#>       Se[A]        prior 0.6464 0.7051 0.08913 0.9846
-#>       Se[A]    posterior 0.8261 0.8306 0.73691 0.8905
-#>       Sp[A]        prior 0.5846 0.6095 0.10014 0.9661
-#>       Sp[A]    posterior 0.8388 0.8389 0.81909 0.8570
-#>      PPV[A]        prior 0.5009 0.5011 0.08033 0.9181
-#>      PPV[A]    posterior 0.5895 0.5898 0.54674 0.6296
-#>      NPV[A]        prior 0.7377 0.7945 0.21845 0.9779
-#>      NPV[A]    posterior 0.9445 0.9467 0.90768 0.9679
-#>       Se[B]        prior 0.6420 0.6964 0.09622 0.9827
-#>       Se[B]    posterior 0.7344 0.7373 0.65181 0.8031
-#>       Sp[B]        prior 0.5845 0.6053 0.11372 0.9628
-#>       Sp[B]    posterior 0.9455 0.9458 0.93359 0.9565
-#>      PPV[B]        prior 0.4967 0.4896 0.07872 0.9242
-#>      PPV[B]    posterior 0.7907 0.7914 0.75091 0.8302
-#>      NPV[B]        prior 0.7317 0.7899 0.21307 0.9774
-#>      NPV[B]    posterior 0.9265 0.9283 0.89448 0.9492
-#>        q[1]        prior 0.0298 0.0269 0.00726 0.0680
-#>        q[1]    posterior 0.0300 0.0273 0.00695 0.0693
+#>  prevalence        prior 0.3769 0.3525 0.05291 0.8161
+#>  prevalence    posterior 0.2191 0.2184 0.19574 0.2469
+#>       Se[A]        prior 0.6369 0.7104 0.04289 0.9901
+#>       Se[A]    posterior 0.8256 0.8293 0.73899 0.8910
+#>       Sp[A]        prior 0.5977 0.6245 0.08895 0.9856
+#>       Sp[A]    posterior 0.8388 0.8391 0.81930 0.8572
+#>      PPV[A]        prior 0.4968 0.4865 0.02429 0.9764
+#>      PPV[A]    posterior 0.5893 0.5894 0.54859 0.6287
+#>      NPV[A]        prior 0.7397 0.8227 0.16199 0.9890
+#>      NPV[A]    posterior 0.9444 0.9463 0.90977 0.9678
+#>       Se[B]        prior 0.6319 0.7031 0.04945 0.9917
+#>       Se[B]    posterior 0.7340 0.7362 0.65379 0.8005
+#>       Sp[B]        prior 0.5989 0.6344 0.08157 0.9839
+#>       Sp[B]    posterior 0.9457 0.9461 0.93364 0.9570
+#>      PPV[B]        prior 0.4937 0.4889 0.02383 0.9785
+#>      PPV[B]    posterior 0.7911 0.7917 0.74845 0.8317
+#>      NPV[B]        prior 0.7373 0.8200 0.15561 0.9901
+#>      NPV[B]    posterior 0.9265 0.9277 0.89612 0.9484
+#>        q[1]        prior 0.0303 0.0276 0.00742 0.0693
+#>        q[1]    posterior 0.0302 0.0278 0.00765 0.0671
 plot(pp)
 
 # }

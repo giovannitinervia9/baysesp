@@ -7,6 +7,8 @@ This is the first submission of baysesp.
 * local Windows 11, R 4.6.0
 * GitHub Actions: windows-latest, macos-latest (R release); ubuntu-latest
   (R devel, release and oldrel-1)
+* R-hub: linux, macos-arm64 and windows (R devel)
+* win-builder: R devel and release
 
 ## R CMD check results
 

@@ -16,6 +16,11 @@ This is the first submission of baysesp.
 
 * New submission.
 
+* Possibly misspelled words in DESCRIPTION: Barnhart, Begg, Buzoianu,
+  Dendukuri, Greenes, Kadane, Kosinski, al, et, ignorable.
+  These are authors of the cited references, "et al." and the technical term
+  "non-ignorable" (verification that depends on the disease status).
+
 * Suggests or Enhances not in mainstream repositories: cmdstanr.
   'cmdstanr' is an optional backend, available from the repository declared in
   `Additional_repositories` (https://stan-dev.r-universe.dev). It is used only

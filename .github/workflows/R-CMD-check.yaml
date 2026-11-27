@@ -42,9 +42,10 @@ jobs:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
+          # cmdstanr (Suggests) is not on CRAN (see Additional_repositories)
+          extra-repositories: 'https://stan-dev.r-universe.dev'
 
-      # cmdstanr (Suggests) is not on CRAN: it comes from Additional_repositories,
-      # and the tests that need CmdStan are skipped when it is not installed.
+      # The tests that need CmdStan are skipped: cmdstanr is installed, CmdStan is not.
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck

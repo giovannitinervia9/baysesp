@@ -12,7 +12,7 @@ This is the first submission of baysesp.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 1 note on Windows; 3 notes expected on Linux and macOS
+0 errors | 0 warnings | 1 note
 
 * New submission.
 
@@ -27,12 +27,12 @@ This is the first submission of baysesp.
   conditionally (`requireNamespace()`); examples, tests and the vignette run
   without it.
 
-* installed size is large; sub-directory 'libs' is large. (Linux and macOS)
+* Installed size (reported as INFO on Linux and macOS, about 108 Mb).
   The package contains three Stan models precompiled with 'rstantools', as
   usual for packages built on 'rstan'; the size of the compiled code depends
   on the platform.
 
-* GNU make is a SystemRequirements. (Linux and macOS)
+* GNU make is a SystemRequirements (if reported).
   Required by 'rstantools' to compile the Stan models.
 
 ## Run time

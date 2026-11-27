@@ -8,3 +8,8 @@
 ^docs$
 ^pkgdown$
 ^man-roxygen$
+^inst/stan/.*\.exe$
+^cran-comments\.md$
+^CRAN-SUBMISSION$
+^\.gitignore$
+^\.git$

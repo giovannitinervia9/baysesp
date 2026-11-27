@@ -185,7 +185,7 @@ prior_normal <- S7::new_class(
 #' than the normal. When it is given to a probability, it acts on its logit.
 #'
 #' @param df Degrees of freedom: a single positive number. Default 3.
-#' @param location Location, the centre of the distribution: a single finite
+#' @param location Location, the center of the distribution: a single finite
 #'   number. Default 0.
 #' @param scale Scale: a single positive number. Default 1.
 #' @return An object of class `prior_student`.
@@ -223,7 +223,7 @@ prior_student <- S7::new_class(
 #' Dirichlet prior
 #'
 #' A Dirichlet distribution for a vector of probabilities that sum to one, such
-#' as the frequencies of the test result profiles. It generalises the Beta
+#' as the frequencies of the test result profiles. It generalizes the Beta
 #' distribution to more than two components: each component is Beta distributed
 #' on its own.
 #'

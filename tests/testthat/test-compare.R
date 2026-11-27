@@ -127,7 +127,8 @@ test_that("update() fits a new model with the same settings", {
                    list(chains = 2, iter_warmup = 300, iter_sampling = 300, seed = 3))
   same <- update(fit)
   expect_identical(same@draws, fit@draws)
-  ci <- update(fit, model = loglinear(), iter_sampling = 200)
+  # a short run: only the settings are checked, not the convergence
+  ci <- suppressWarnings(update(fit, model = loglinear(), iter_sampling = 200))
   expect_true(S7::S7_inherits(ci@model, loglinear))
   expect_identical(ci@settings$iter_sampling, 200)
   expect_identical(posterior::nchains(ci@draws), 2L)

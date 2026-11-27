@@ -267,10 +267,14 @@ convergence <- function(fit) {
 #' @usage \method{update}{baysesp_fit}(object, model = object@model, ...)
 NULL
 
-S7::method(update_generic, baysesp_fit) <- function(object, model = object@model, ...) {
+# Named functions (here and for summary()), so that R CMD check finds the documented methods
+#' @export
+#' @noRd
+update.baysesp_fit <- function(object, model = object@model, ...) {
   args <- utils::modifyList(c(list(backend = object@backend), object@settings), list(...))
   do.call(baysesp, c(list(data = object@data, model = model), args))
 }
+S7::method(update_generic, baysesp_fit) <- update.baysesp_fit
 
 #' Summary of a fitted model
 #'
@@ -333,7 +337,9 @@ S7::method(update_generic, baysesp_fit) <- function(object, model = object@model
 #' @usage \method{summary}{baysesp_fit}(object, level = 0.95, ...)
 NULL
 
-S7::method(summary_generic, baysesp_fit) <- function(object, level = 0.95, ...) {
+#' @export
+#' @noRd
+summary.baysesp_fit <- function(object, level = 0.95, ...) {
   check_level(level)
   model <- object@model
   verification <- model@verification
@@ -366,6 +372,7 @@ S7::method(summary_generic, baysesp_fit) <- function(object, level = 0.95, ...) 
     level = level
   ), class = "fit_summary")
 }
+S7::method(summary_generic, baysesp_fit) <- summary.baysesp_fit
 
 class_label <- function(x) sub("^baysesp::", "", class(x)[1])
 

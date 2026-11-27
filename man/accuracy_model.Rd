@@ -6,6 +6,10 @@
 \usage{
 accuracy_model(verification = verification_mechanism())
 }
+\arguments{
+\item{verification}{Verification mechanism: an object created with \code{\link[=mar]{mar()}}
+or \code{\link[=mnar]{mnar()}}.}
+}
 \description{
 \code{accuracy_model} is the abstract parent class of the models for the joint
 distribution of the test results and of the disease status. It cannot be

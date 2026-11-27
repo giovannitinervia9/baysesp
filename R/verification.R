@@ -158,7 +158,7 @@ S7::method(print_generic, mar) <- function(x, ...) {
 #'   verification between diseased and healthy subjects with the same profile.
 #'   It must act on the real line, such as `prior_normal()` or
 #'   `prior_student()`; a prior on a probability, such as `prior_beta()`, is
-#'   not accepted. The default `prior_normal(0, 1)` centres \eqn{\beta} at 0,
+#'   not accepted. The default `prior_normal(0, 1)` centers \eqn{\beta} at 0,
 #'   which is missing at random, and gives 95% of its prior mass to odds
 #'   ratios between about 0.14 and 7.1.
 #' @param intercepts_prior Prior on the verification intercepts \eqn{\alpha_t},

@@ -19,7 +19,7 @@ NULL
 #' \eqn{m} tests, and \eqn{\eta_d} is the vector of the corresponding
 #' class-specific parameters \eqn{\eta_{d,S}}. Equivalently,
 #' \deqn{\theta_{d,t} \propto \exp\Big(\sum_{S} \eta_{d,S}\, x_S(t)\Big),}
-#' where the normalisation runs over all \eqn{2^K} profiles. Log-linear models
+#' where the normalization runs over all \eqn{2^K} profiles. Log-linear models
 #' of this kind are used for multiple tests with partial verification (Baker, 1995).
 #'
 #' The order controls the structure of the dependence:

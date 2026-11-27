@@ -17,7 +17,7 @@ model for the tests, the disease and the verification process, written in
 
 ## Features
 
-- Joint modelling of **K binary tests**. The saturated model makes no
+- Joint modeling of **K binary tests**. The saturated model makes no
   assumption on how the tests depend on each other; log-linear and random
   effects models assume a structure for that dependence.
 - Accuracy of **combination rules**: any test positive, all positive,

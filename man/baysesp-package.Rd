@@ -31,7 +31,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Giovanni Tinervia \email{giovannitinervia9@gmail.com}
+\strong{Maintainer}: Giovanni Tinervia \email{giovannitinervia9@gmail.com} (\href{https://orcid.org/0009-0000-3928-2998}{ORCID})
 
 }
 \keyword{internal}

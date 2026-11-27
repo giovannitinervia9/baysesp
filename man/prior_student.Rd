@@ -9,7 +9,7 @@ prior_student(df = 3, location = 0, scale = 1)
 \arguments{
 \item{df}{Degrees of freedom: a single positive number. Default 3.}
 
-\item{location}{Location, the centre of the distribution: a single finite
+\item{location}{Location, the center of the distribution: a single finite
 number. Default 0.}
 
 \item{scale}{Scale: a single positive number. Default 1.}

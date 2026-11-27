@@ -120,9 +120,9 @@ rule_accuracy <- function(fit, rules, level = 0.95) {
 #'
 #' - **differences**: \eqn{\Delta Se = Se_R - Se_{R'}},
 #'   \eqn{\Delta Sp = Sp_R - Sp_{R'}} and, for the Youden index
-#'   \eqn{J_R = Se_R + Sp_R - 1}, which summarises the accuracy in one number
+#'   \eqn{J_R = Se_R + Sp_R - 1}, which summarizes the accuracy in one number
 #'   (0 for a useless test, 1 for a perfect one),
-#'   \eqn{\Delta J = \Delta Se + \Delta Sp}. A positive difference favours the
+#'   \eqn{\Delta J = \Delta Se + \Delta Sp}. A positive difference favors the
 #'   first rule;
 #' - **ratios** of the true positive rates,
 #'   \eqn{rTPR = Se_R / Se_{R'}}, and of the false positive rates,

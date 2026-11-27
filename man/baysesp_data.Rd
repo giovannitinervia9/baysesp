@@ -24,7 +24,7 @@ row, for data that are already aggregated.}
 An object of class \code{baysesp_data}.
 }
 \description{
-Summarises a study in which \code{K} binary tests are performed on every subject
+Summarizes a study in which \code{K} binary tests are performed on every subject
 and the disease status is ascertained by the reference standard only for the
 verified subjects (Begg and Greenes, 1983; Baker, 1995). The data are reduced, without loss of information, to the
 counts of verified diseased, verified healthy and unverified subjects for

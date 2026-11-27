@@ -20,6 +20,8 @@ NULL
 #' disease status. A model object holds the priors and the verification
 #' mechanism; the data are supplied to `baysesp()`, which fits the model.
 #'
+#' @param verification Verification mechanism: an object created with [mar()]
+#'   or [mnar()].
 #' @seealso [saturated()], [loglinear()], [random_effects()]
 #' @export
 accuracy_model <- S7::new_class(

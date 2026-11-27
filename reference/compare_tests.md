@@ -82,9 +82,9 @@ For two rules \\R\\ (`first`) and \\R'\\ (`second`):
 
 - **differences**: \\\Delta Se = Se_R - Se\_{R'}\\, \\\Delta Sp = Sp_R -
   Sp\_{R'}\\ and, for the Youden index \\J_R = Se_R + Sp_R - 1\\, which
-  summarises the accuracy in one number (0 for a useless test, 1 for a
+  summarizes the accuracy in one number (0 for a useless test, 1 for a
   perfect one), \\\Delta J = \Delta Se + \Delta Sp\\. A positive
-  difference favours the first rule;
+  difference favors the first rule;
 
 - **ratios** of the true positive rates, \\rTPR = Se_R / Se\_{R'}\\, and
   of the false positive rates, \\rFPR = (1 - Sp_R) / (1 - Sp\_{R'})\\.

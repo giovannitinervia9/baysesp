@@ -15,6 +15,15 @@ each with its own constructor.
 accuracy_model(verification = verification_mechanism())
 ```
 
+## Arguments
+
+- verification:
+
+  Verification mechanism: an object created with
+  [`mar()`](https://giovannitinervia9.github.io/baysesp/reference/mar.md)
+  or
+  [`mnar()`](https://giovannitinervia9.github.io/baysesp/reference/mnar.md).
+
 ## Details
 
 Every model has the property `verification`, an object of class

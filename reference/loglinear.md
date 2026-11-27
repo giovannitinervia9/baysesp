@@ -82,7 +82,7 @@ S} t_k\\, one for each set \\S\\ of at most \\m\\ tests, and \\\eta_d\\
 is the vector of the corresponding class-specific parameters
 \\\eta\_{d,S}\\. Equivalently, \$\$\theta\_{d,t} \propto
 \exp\Big(\sum\_{S} \eta\_{d,S}\\ x_S(t)\Big),\$\$ where the
-normalisation runs over all \\2^K\\ profiles. Log-linear models of this
+normalization runs over all \\2^K\\ profiles. Log-linear models of this
 kind are used for multiple tests with partial verification (Baker,
 1995).
 

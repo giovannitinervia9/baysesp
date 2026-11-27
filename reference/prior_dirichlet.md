@@ -1,7 +1,7 @@
 # Dirichlet prior
 
 A Dirichlet distribution for a vector of probabilities that sum to one,
-such as the frequencies of the test result profiles. It generalises the
+such as the frequencies of the test result profiles. It generalizes the
 Beta distribution to more than two components: each component is Beta
 distributed on its own.
 

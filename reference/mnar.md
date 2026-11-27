@@ -30,7 +30,7 @@ mnar(
   [`prior_student()`](https://giovannitinervia9.github.io/baysesp/reference/prior_student.md);
   a prior on a probability, such as
   [`prior_beta()`](https://giovannitinervia9.github.io/baysesp/reference/prior_beta.md),
-  is not accepted. The default `prior_normal(0, 1)` centres \\\beta\\ at
+  is not accepted. The default `prior_normal(0, 1)` centers \\\beta\\ at
   0, which is missing at random, and gives 95% of its prior mass to odds
   ratios between about 0.14 and 7.1.
 

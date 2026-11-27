@@ -18,7 +18,7 @@ prior_student(df = 3, location = 0, scale = 1)
 
 - location:
 
-  Location, the centre of the distribution: a single finite number.
+  Location, the center of the distribution: a single finite number.
   Default 0.
 
 - scale:

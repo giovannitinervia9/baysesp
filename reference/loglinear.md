@@ -13,7 +13,8 @@ as its `model` argument.
 loglinear(
   interaction_order = 1L,
   prevalence_prior = prior_beta(0.5, 2),
-  main_effects_prior = prior_normal(0, 1.5),
+  sensitivity_prior = prior_beta(0.5, 2),
+  specificity_prior = prior_beta(0.5, 2),
   interactions_prior = prior_normal(0, 1),
   verification = mar()
 )
@@ -38,12 +39,18 @@ loglinear(
   which acts on \\\mathrm{logit}\\\pi\\. Default `prior_beta(0.5, 2)`,
   the uniform distribution on (0, 1).
 
-- main_effects_prior:
+- sensitivity_prior, specificity_prior:
 
-  A single prior on the real line, applied to each class-specific main
-  effect \\\eta\_{d,k}\\ (one per test and disease class). Default
-  `prior_normal(0, 1.5)`. With order 1 these parameters are logits of
-  sensitivities and of false positive rates.
+  Priors on the sensitivity and on the specificity of the tests: a
+  single prior on a probability,
+  [`prior_beta()`](https://giovannitinervia9.github.io/baysesp/reference/prior_beta.md)
+  or
+  [`elicit_beta()`](https://giovannitinervia9.github.io/baysesp/reference/elicit_beta.md),
+  used for all tests, or a list with one such prior per test, in the
+  order of the tests. Default `prior_beta(0.5, 2)`, the uniform
+  distribution on (0, 1). With `interaction_order` of 2 or more they act
+  on conditional sensitivities and specificities: see the section
+  "Priors on sensitivity and specificity".
 
 - interactions_prior:
 
@@ -137,6 +144,35 @@ not from the data, and it is fragile if the structure is wrong (Albert
 and Dodd, 2004). With order \\K\\ the model imposes no restriction and
 \\\beta\\ is not identified (Gustafson, 2015).
 
+## Priors on sensitivity and specificity
+
+The model is fitted on the main effects \\\eta\_{d,k}\\, and
+`sensitivity_prior` and `specificity_prior` are translated into priors
+on them. With `interaction_order = 1` the main effects are the logits of
+the accuracy, \$\$\eta\_{1,k} = \mathrm{logit}\\\mathrm{Se}\_k, \qquad
+\eta\_{0,k} = \mathrm{logit}(1 - \mathrm{Sp}\_k),\$\$ so a prior
+\\\mathrm{Beta}(a, b)\\ given to `sensitivity_prior` is the prior of
+\\\mathrm{Se}\_k\\, and one given to `specificity_prior` is the prior of
+\\\mathrm{Sp}\_k\\ (that is, \\\mathrm{Beta}(b, a)\\ on the false
+positive rate \\1 - \mathrm{Sp}\_k\\).
+
+With `interaction_order` of 2 or more the main effects are logits of
+conditional probabilities: the probability that test \\k\\ is positive
+among the subjects of class \\d\\ who are negative on all the other
+tests, \$\$\mathrm{expit}\\\eta\_{d,k} = P(T_k = 1 \mid D = d,\\ T_j = 0
+\\ (j \neq k)).\$\$ So `sensitivity_prior` acts on the conditional
+sensitivity \$\$P(T_k = 1 \mid D = 1,\\ T_j = 0 \\ (j \neq k)) =
+\mathrm{expit}\\\eta\_{1,k},\$\$ and `specificity_prior` on the
+conditional specificity \$\$P(T_k = 0 \mid D = 0,\\ T_j = 0 \\ (j \neq
+k)) = 1 - \mathrm{expit}\\\eta\_{0,k},\$\$ not on the marginal
+\\\mathrm{Se}\_k\\ and \\\mathrm{Sp}\_k\\. The priors implied on the
+marginal sensitivity and specificity also depend on
+`interactions_prior`. With the default priors and three tests they are
+close to the uniform, but the interactions move the marginal sensitivity
+slightly up and the marginal specificity slightly down (medians about
+0.54 and 0.46). An informative `sensitivity_prior` or
+`specificity_prior` should be set with this in mind.
+
 ## References
 
 Albert, P. S. and Dodd, L. E. (2004). A cautionary note on the
@@ -195,13 +231,15 @@ for the verification mechanisms.
 loglinear()                       # conditional independence
 #> <loglinear> log-linear model of order 1
 #>   prevalence_prior:   Beta(mean = 0.5, precision = 2)
-#>   main_effects_prior: Normal(mean = 0, sd = 1.5)
+#>   sensitivity_prior:  Beta(mean = 0.5, precision = 2)
+#>   specificity_prior:  Beta(mean = 0.5, precision = 2)
 #>   interactions_prior: Normal(mean = 0, sd = 1)
 #>   verification:       mar
 loglinear(interaction_order = 2)  # pairwise dependence
 #> <loglinear> log-linear model of order 2
 #>   prevalence_prior:   Beta(mean = 0.5, precision = 2)
-#>   main_effects_prior: Normal(mean = 0, sd = 1.5)
+#>   sensitivity_prior:  Beta(mean = 0.5, precision = 2)
+#>   specificity_prior:  Beta(mean = 0.5, precision = 2)
 #>   interactions_prior: Normal(mean = 0, sd = 1)
 #>   verification:       mar
 ```

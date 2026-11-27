@@ -11,7 +11,8 @@ because they share \\Z\\. The model needs at least two tests.
 ``` r
 random_effects(
   prevalence_prior = prior_beta(0.5, 2),
-  intercepts_prior = prior_normal(0, 1.5),
+  sensitivity_prior = prior_beta(0.5, 2),
+  specificity_prior = prior_beta(0.5, 2),
   loadings_prior = prior_normal(0, 1),
   positive_loadings = TRUE,
   verification = mar()
@@ -30,15 +31,17 @@ random_effects(
   which acts on \\\mathrm{logit}\\\pi\\. Default `prior_beta(0.5, 2)`,
   the uniform distribution on (0, 1).
 
-- intercepts_prior:
+- sensitivity_prior, specificity_prior:
 
-  Prior on the marginal probits \\m\_{dk}\\, a real-valued prior applied
-  to all \\2K\\ values (\\K\\ tests for each class) with the same prior,
-  for example
-  [`prior_normal()`](https://giovannitinervia9.github.io/baysesp/reference/prior_normal.md).
-  For the diseased class it is a prior on the probit of the sensitivity,
-  for the healthy class on the probit of one minus the specificity.
-  Default `prior_normal(0, 1.5)`.
+  Priors on the sensitivity and on the specificity of the tests: a
+  single prior on a probability,
+  [`prior_beta()`](https://giovannitinervia9.github.io/baysesp/reference/prior_beta.md)
+  or
+  [`elicit_beta()`](https://giovannitinervia9.github.io/baysesp/reference/elicit_beta.md),
+  used for all tests, or a list with one such prior per test, in the
+  order of the tests. Default `prior_beta(0.5, 2)`, the uniform
+  distribution on (0, 1). They are the priors of the marginal
+  sensitivity and specificity, see Details.
 
 - loadings_prior:
 
@@ -98,7 +101,12 @@ D = d) = \Phi(m\_{dk}), \qquad m\_{dk} = \frac{a\_{dk}}{\sqrt{1 +
 b\_{dk}^2}},\$\$ so that the sensitivity of test \\k\\ is \\Se_k =
 \Phi(m\_{1k})\\ and its specificity is \\Sp_k = 1 - \Phi(m\_{0k})\\. The
 model is sampled in the marginal probits \\m\_{dk}\\, which the data
-inform directly, and \\a\_{dk} = m\_{dk}\sqrt{1 + b\_{dk}^2}\\.
+inform directly, and \\a\_{dk} = m\_{dk}\sqrt{1 + b\_{dk}^2}\\. Since
+\\Se_k = \Phi(m\_{1k})\\ and \\Sp_k = 1 - \Phi(m\_{0k})\\ whatever the
+loadings, `sensitivity_prior` and `specificity_prior` are translated
+into priors on \\m\_{1k}\\ and \\m\_{0k}\\ and are exactly the priors of
+the marginal sensitivity and specificity. The uniform default
+corresponds to a standard normal prior on \\m\_{dk}\\.
 
 The loadings describe the dependence between the tests within each
 class. Given \\D = d\\, the covariance between tests \\j\\ and \\k\\ has
@@ -222,14 +230,16 @@ Rubin, D. B. (1976). Inference and missing data. *Biometrika*, 63(3),
 ``` r
 random_effects()
 #> <random_effects> random effects model, Gauss-Hermite quadrature
-#>   prevalence_prior: Beta(mean = 0.5, precision = 2)
-#>   intercepts_prior: Normal(mean = 0, sd = 1.5)
-#>   loadings_prior:   Normal(mean = 0, sd = 1), all loadings positive
-#>   verification:     mar
+#>   prevalence_prior:  Beta(mean = 0.5, precision = 2)
+#>   sensitivity_prior: Beta(mean = 0.5, precision = 2)
+#>   specificity_prior: Beta(mean = 0.5, precision = 2)
+#>   loadings_prior:    Normal(mean = 0, sd = 1), all loadings positive
+#>   verification:      mar
 random_effects(positive_loadings = FALSE)
 #> <random_effects> random effects model, Gauss-Hermite quadrature
-#>   prevalence_prior: Beta(mean = 0.5, precision = 2)
-#>   intercepts_prior: Normal(mean = 0, sd = 1.5)
-#>   loadings_prior:   Normal(mean = 0, sd = 1), first loading positive
-#>   verification:     mar
+#>   prevalence_prior:  Beta(mean = 0.5, precision = 2)
+#>   sensitivity_prior: Beta(mean = 0.5, precision = 2)
+#>   specificity_prior: Beta(mean = 0.5, precision = 2)
+#>   loadings_prior:    Normal(mean = 0, sd = 1), first loading positive
+#>   verification:      mar
 ```

@@ -56,7 +56,8 @@ object is passed to <code><a href="baysesp.html">baysesp()</a></code> as its <co
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">loglinear</span><span class="op">(</span></span>
 <span>  interaction_order <span class="op">=</span> <span class="fl">1L</span>,</span>
 <span>  prevalence_prior <span class="op">=</span> <span class="fu"><a href="prior_beta.html">prior_beta</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span>,</span>
-<span>  main_effects_prior <span class="op">=</span> <span class="fu"><a href="prior_normal.html">prior_normal</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1.5</span><span class="op">)</span>,</span>
+<span>  sensitivity_prior <span class="op">=</span> <span class="fu"><a href="prior_beta.html">prior_beta</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  specificity_prior <span class="op">=</span> <span class="fu"><a href="prior_beta.html">prior_beta</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span>,</span>
 <span>  interactions_prior <span class="op">=</span> <span class="fu"><a href="prior_normal.html">prior_normal</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>,</span>
 <span>  verification <span class="op">=</span> <span class="fu"><a href="mar.html">mar</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -81,11 +82,15 @@ or on the real line, such as <code><a href="prior_normal.html">prior_normal()</a
 distribution on (0, 1).</p></dd>
 
 
-<dt id="arg-main-effects-prior">main_effects_prior<a class="anchor" aria-label="anchor" href="#arg-main-effects-prior"></a></dt>
-<dd><p>A single prior on the real line, applied to each
-class-specific main effect \(\eta_{d,k}\) (one per test and disease
-class). Default <code>prior_normal(0, 1.5)</code>. With order 1 these parameters are
-logits of sensitivities and of false positive rates.</p></dd>
+<dt id="arg-sensitivity-prior-specificity-prior">sensitivity_prior, specificity_prior<a class="anchor" aria-label="anchor" href="#arg-sensitivity-prior-specificity-prior"></a></dt>
+<dd><p>Priors on the sensitivity and
+on the specificity of the tests: a single prior on a probability,
+<code><a href="prior_beta.html">prior_beta()</a></code> or <code><a href="elicit_beta.html">elicit_beta()</a></code>, used for all tests, or a list with one
+such prior per test, in the order of the tests. Default
+<code>prior_beta(0.5, 2)</code>, the uniform distribution on (0, 1). With
+<code>interaction_order</code> of 2 or more they act on conditional sensitivities
+and specificities: see the section "Priors on sensitivity and
+specificity".</p></dd>
 
 
 <dt id="arg-interactions-prior">interactions_prior<a class="anchor" aria-label="anchor" href="#arg-interactions-prior"></a></dt>
@@ -165,6 +170,38 @@ from the data, and it is fragile if the structure is wrong (Albert and Dodd, 200
 \(K\) the model imposes no restriction and \(\beta\) is not identified (Gustafson, 2015).</p>
     </div>
     <div class="section level2">
+    <h2 id="priors-on-sensitivity-and-specificity">Priors on sensitivity and specificity<a class="anchor" aria-label="anchor" href="#priors-on-sensitivity-and-specificity"></a></h2>
+
+
+<p>The model is fitted on the main effects \(\eta_{d,k}\), and
+<code>sensitivity_prior</code> and <code>specificity_prior</code> are translated into priors on
+them. With <code>interaction_order = 1</code> the main effects are the logits of the
+accuracy,
+$$\eta_{1,k} = \mathrm{logit}\,\mathrm{Se}_k, \qquad
+      \eta_{0,k} = \mathrm{logit}(1 - \mathrm{Sp}_k),$$
+so a prior \(\mathrm{Beta}(a, b)\) given to <code>sensitivity_prior</code> is the
+prior of \(\mathrm{Se}_k\), and one given to <code>specificity_prior</code> is the
+prior of \(\mathrm{Sp}_k\) (that is, \(\mathrm{Beta}(b, a)\) on the
+false positive rate \(1 - \mathrm{Sp}_k\)).</p>
+<p>With <code>interaction_order</code> of 2 or more the main effects are logits of
+conditional probabilities: the probability that test \(k\) is positive
+among the subjects of class \(d\) who are negative on all the other
+tests,
+$$\mathrm{expit}\,\eta_{d,k} = P(T_k = 1 \mid D = d,\ T_j = 0
+      \ (j \neq k)).$$
+So <code>sensitivity_prior</code> acts on the conditional sensitivity
+$$P(T_k = 1 \mid D = 1,\ T_j = 0 \ (j \neq k)) = \mathrm{expit}\,\eta_{1,k},$$
+and <code>specificity_prior</code> on the conditional specificity
+$$P(T_k = 0 \mid D = 0,\ T_j = 0 \ (j \neq k)) = 1 - \mathrm{expit}\,\eta_{0,k},$$
+not on the marginal \(\mathrm{Se}_k\) and \(\mathrm{Sp}_k\). The
+priors implied on the marginal sensitivity and specificity also depend on
+<code>interactions_prior</code>. With the default priors and three tests they are
+close to the uniform, but the interactions move the marginal sensitivity
+slightly up and the marginal specificity slightly down (medians about 0.54
+and 0.46). An informative <code>sensitivity_prior</code> or <code>specificity_prior</code> should
+be set with this in mind.</p>
+    </div>
+    <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Albert, P. S. and Dodd, L. E. (2004). A cautionary note on the robustness of latent class models for estimating diagnostic error without a gold standard. <em>Biometrics</em>, 60(2), 427–435. <a href="https://doi.org/10.1111/j.0006-341X.2004.00187.x" class="external-link">doi:10.1111/j.0006-341X.2004.00187.x</a></p>
 <p>Albert, P. S. and Dodd, L. E. (2008). On estimating diagnostic accuracy from studies with multiple raters and partial gold standard evaluation. <em>Journal of the American Statistical Association</em>, 103(481), 61–73. <a href="https://doi.org/10.1198/016214507000000329" class="external-link">doi:10.1198/016214507000000329</a></p>
@@ -187,13 +224,15 @@ distribution, <code><a href="mar.html">mar()</a></code> and <code><a href="mnar.
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">loglinear</span><span class="op">(</span><span class="op">)</span>                       <span class="co"># conditional independence</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;loglinear&gt; log-linear model of order 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   prevalence_prior:   Beta(mean = 0.5, precision = 2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   main_effects_prior: Normal(mean = 0, sd = 1.5)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   sensitivity_prior:  Beta(mean = 0.5, precision = 2)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   specificity_prior:  Beta(mean = 0.5, precision = 2)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   interactions_prior: Normal(mean = 0, sd = 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   verification:       mar</span>
 <span class="r-in"><span><span class="fu">loglinear</span><span class="op">(</span>interaction_order <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>  <span class="co"># pairwise dependence</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> &lt;loglinear&gt; log-linear model of order 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   prevalence_prior:   Beta(mean = 0.5, precision = 2)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   main_effects_prior: Normal(mean = 0, sd = 1.5)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   sensitivity_prior:  Beta(mean = 0.5, precision = 2)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   specificity_prior:  Beta(mean = 0.5, precision = 2)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   interactions_prior: Normal(mean = 0, sd = 1)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   verification:       mar</span>
 </code></pre></div>

@@ -1544,7 +1544,8 @@ fit3_ci <- baysesp(
   model = loglinear(
     interaction_order = 1,
     prevalence_prior = prior_beta(mean = 0.5, precision = 2),
-    main_effects_prior = prior_normal(mean = 0, sd = 1.5),
+    sensitivity_prior = prior_beta(mean = 0.5, precision = 2),
+    specificity_prior = prior_beta(mean = 0.5, precision = 2),
     interactions_prior = prior_normal(mean = 0, sd = 1),
     verification = mar()
   ),
@@ -1555,7 +1556,8 @@ fit3_re <- baysesp(
   data = d3,
   model = random_effects(
     prevalence_prior = prior_beta(mean = 0.5, precision = 2),
-    intercepts_prior = prior_normal(mean = 0, sd = 1.5),
+    sensitivity_prior = prior_beta(mean = 0.5, precision = 2),
+    specificity_prior = prior_beta(mean = 0.5, precision = 2),
     loadings_prior = prior_normal(mean = 0, sd = 1),
     positive_loadings = TRUE,
     verification = mar()
@@ -1566,13 +1568,23 @@ fit3_re <- baysesp(
 
 For
 [`loglinear()`](https://giovannitinervia9.github.io/baysesp/reference/loglinear.md),
-the five arguments are:
+the six arguments are:
 
 - `interaction_order`: largest number of tests in an interaction, from 1
   up to the number of tests;
 - `prevalence_prior`: prior on the prevalence;
-- `main_effects_prior`: prior on the main effects, which with order 1
-  are the logits of the sensitivities and false positive rates;
+- `sensitivity_prior` and `specificity_prior`: priors on the sensitivity
+  and on the specificity, a beta prior
+  ([`prior_beta()`](https://giovannitinervia9.github.io/baysesp/reference/prior_beta.md)
+  or
+  [`elicit_beta()`](https://giovannitinervia9.github.io/baysesp/reference/elicit_beta.md))
+  for all tests or a list with one per test (default uniform). With
+  `interaction_order = 1` they are the priors of \mathrm{Se}\_k and
+  \mathrm{Sp}\_k. With order 2 or more they act on the sensitivity and
+  specificity of test k among the subjects negative on all the other
+  tests, P(T_k = 1 \mid D = 1, T_j = 0\\ (j \neq k)) and P(T_k = 0 \mid
+  D = 0, T_j = 0\\ (j \neq k)); the priors implied on the marginal
+  \mathrm{Se}\_k and \mathrm{Sp}\_k also depend on `interactions_prior`;
 - `interactions_prior`: prior on the interactions (log odds ratios
   between tests); unused with order 1;
 - `verification`: verification assumption (`verification = mar()` or
@@ -1581,11 +1593,14 @@ the five arguments are:
 
 For
 [`random_effects()`](https://giovannitinervia9.github.io/baysesp/reference/random_effects.md),
-the five arguments are:
+the six arguments are:
 
 - `prevalence_prior`: prior on the prevalence;
-- `intercepts_prior`: prior on the probits (inverse normal quantiles) of
-  the sensitivities and false positive rates;
+- `sensitivity_prior` and `specificity_prior`: priors on the sensitivity
+  and on the specificity, as in
+  [`loglinear()`](https://giovannitinervia9.github.io/baysesp/reference/loglinear.md).
+  Here they are exactly the priors of \mathrm{Se}\_k and \mathrm{Sp}\_k,
+  whatever the loadings;
 - `loadings_prior`: prior on the loadings;
 - `positive_loadings`: `TRUE` (default) keeps loadings positive so tests
   correlate positively, as usual when measuring one condition; `FALSE`
@@ -1614,25 +1629,25 @@ sensitivities(list(saturated = fit3_sat, independence = fit3_ci,
 #> 2        saturated      Se[A] 0.9100854 0.8861893 0.9294005
 #> 6        saturated      Se[B] 0.8090805 0.7852423 0.8309561
 #> 10       saturated      Se[C] 0.7076932 0.6823671 0.7312651
-#> 11    independence prevalence 0.1944187 0.1866260 0.2021907
-#> 21    independence      Se[A] 0.9292161 0.9167961 0.9404657
-#> 61    independence      Se[B] 0.8292508 0.8113633 0.8466420
-#> 101   independence      Se[C] 0.7163965 0.6942242 0.7374734
-#> 12         order_2 prevalence 0.1972167 0.1886171 0.2059753
-#> 22         order_2      Se[A] 0.9112071 0.8931643 0.9277840
-#> 62         order_2      Se[B] 0.8103481 0.7885902 0.8300613
-#> 102        order_2      Se[C] 0.7083245 0.6852729 0.7303382
-#> 13  random_effects prevalence 0.1970222 0.1887660 0.2053168
-#> 23  random_effects      Se[A] 0.9125926 0.8948424 0.9286064
-#> 63  random_effects      Se[B] 0.8114346 0.7903588 0.8313092
-#> 103 random_effects      Se[C] 0.7092199 0.6862007 0.7312607
+#> 11    independence prevalence 0.1945184 0.1868211 0.2026585
+#> 21    independence      Se[A] 0.9292717 0.9165834 0.9413578
+#> 61    independence      Se[B] 0.8289812 0.8115444 0.8460859
+#> 101   independence      Se[C] 0.7162347 0.6950885 0.7364342
+#> 12         order_2 prevalence 0.1971844 0.1888755 0.2056009
+#> 22         order_2      Se[A] 0.9118878 0.8934664 0.9286490
+#> 62         order_2      Se[B] 0.8110037 0.7901856 0.8312461
+#> 102        order_2      Se[C] 0.7086037 0.6854871 0.7310606
+#> 13  random_effects prevalence 0.1971092 0.1888146 0.2053050
+#> 23  random_effects      Se[A] 0.9119951 0.8942614 0.9278114
+#> 63  random_effects      Se[B] 0.8111520 0.7898761 0.8306977
+#> 103 random_effects      Se[C] 0.7087627 0.6870552 0.7312027
 ```
 
 Look at how each model compares with the true values (0.2, 0.9, 0.8,
 0.7): `saturated` (0.197, 0.910, 0.809, 0.708), `order_2` (0.197, 0.911,
 0.811, 0.709), and `random_effects` (0.197, 0.912, 0.811, 0.709) recover
 them well. `independence` (`interaction_order = 1`) overestimates
-`Se[A]` (0.929, 0.916 to 0.941) and `Se[B]` (0.829, 0.811 to 0.847),
+`Se[A]` (0.929, 0.917 to 0.941) and `Se[B]` (0.829, 0.811 to 0.847),
 excluding 0.9 and 0.8, because treating dependent tests as independent
 makes shared errors look like accuracy. With every profile verified,
 [`saturated()`](https://giovannitinervia9.github.io/baysesp/reference/saturated.md)
@@ -1743,34 +1758,35 @@ fit3n_sat <- baysesp(
 ```
 
 Notice the [rstan](https://mc-stan.org/rstan/) warnings on `fit3n_re`:
-`The largest R-hat is 1.53` (meaning the Markov chains did not mix) and
-both bulk and tail effective sample sizes are too low. Next, we run
-`sensitivities()` on the three structured fits:
+one divergent transition, `The largest R-hat is 1.53` (meaning the
+Markov chains did not mix) and both bulk and tail effective sample sizes
+are too low. Next, we run `sensitivities()` on the three structured
+fits:
 
 ``` r
 
 sensitivities(list(independence = fit3n_ci, order_2 = fit3n_ll2,
                    random_effects = fit3n_re))
 #>              model   quantity      mean     lower     upper
-#> 1     independence prevalence 0.1954272 0.1874668 0.2035214
-#> 2     independence      Se[A] 0.9274888 0.9144174 0.9397045
-#> 6     independence      Se[B] 0.8323080 0.8148901 0.8494855
-#> 10    independence      Se[C] 0.7120112 0.6906662 0.7330975
-#> 11         order_2 prevalence 0.2001823 0.1913762 0.2097581
-#> 21         order_2      Se[A] 0.9029107 0.8796328 0.9220461
-#> 61         order_2      Se[B] 0.8085621 0.7832055 0.8302638
-#> 101        order_2      Se[C] 0.6978200 0.6719325 0.7218759
-#> 12  random_effects prevalence 0.2931367 0.1912347 0.5873901
-#> 22  random_effects      Se[A] 0.7499224 0.2779922 0.9228573
-#> 62  random_effects      Se[B] 0.6712067 0.2484340 0.8307187
-#> 102 random_effects      Se[C] 0.5800861 0.2160296 0.7213823
+#> 1     independence prevalence 0.1953353 0.1874344 0.2032667
+#> 2     independence      Se[A] 0.9276658 0.9145406 0.9400566
+#> 6     independence      Se[B] 0.8322502 0.8146705 0.8498236
+#> 10    independence      Se[C] 0.7122842 0.6923109 0.7325706
+#> 11         order_2 prevalence 0.1999705 0.1916471 0.2086709
+#> 21         order_2      Se[A] 0.9028841 0.8775643 0.9224495
+#> 61         order_2      Se[B] 0.8084350 0.7829065 0.8309064
+#> 101        order_2      Se[C] 0.6979987 0.6736609 0.7211821
+#> 12  random_effects prevalence 0.2931294 0.1913374 0.5879100
+#> 22  random_effects      Se[A] 0.7497621 0.2781880 0.9230916
+#> 62  random_effects      Se[B] 0.6708816 0.2481710 0.8299138
+#> 102 random_effects      Se[C] 0.5798321 0.2156167 0.7216010
 ```
 
 The three models give three different answers: `independence` again
 overestimates `Se[A]` (0.928), `Se[B]` (0.832), and `Se[C]` (0.712)
-without any warning; `order_2` stays near truth (0.200, 0.903, 0.809,
+without any warning; `order_2` stays near truth (0.200, 0.904, 0.809,
 0.698); and `random_effects` gives a distorted `prevalence` mean (0.481,
-0.194 to 0.593) and `Se[A]` (0.438, 0.276 to 0.918). To see why
+0.194 to 0.594) and `Se[A]` (0.438, 0.276 to 0.918). To see why
 `fit3n_re` failed, we check each chain’s mean `prevalence` via
 [`posterior::extract_variable_matrix()`](https://mc-stan.org/posterior/reference/extract_variable_matrix.html):
 
@@ -1778,11 +1794,11 @@ without any warning; `order_2` stays near truth (0.200, 0.903, 0.809,
 
 colMeans(posterior::extract_variable_matrix(fit3n_re@draws, "prevalence"))
 #>         1         2         3         4 
-#> 0.5742174 0.1994957 0.1992896 0.1995440
+#> 0.5741164 0.1994698 0.1995423 0.1993891
 ```
 
 Chain 3 averages 0.199 (near 0.2), while chains 1, 2, and 4 average
-0.575, 0.574, and 0.575, placing most diseased subjects in `0 0 0`.
+0.574, 0.575, and 0.575, placing most diseased subjects in `0 0 0`.
 Without verified `0 0 0` subjects, both explanations fit the data under
 [`random_effects()`](https://giovannitinervia9.github.io/baysesp/reference/random_effects.md),
 splitting the chains across separated modes; a non-convergent fit like
@@ -1895,20 +1911,20 @@ comparison
 #> Expected log predictive density of a new subject (leave-one-out)
 #> 
 #>  model           elpd_loo se_loo elpd_diff se_diff p_loo
-#>  random_effects -18138.91 144.21      0.00    0.00 18.00
-#>  order_2        -18140.34 144.20     -1.43    1.20 19.79
-#>  order_2_mnar   -18141.33 144.25     -2.43    1.40 20.34
-#>  saturated      -18142.39 144.22     -3.48    1.20 21.98
-#>  independence   -18188.06 144.75    -49.16   10.91 14.05
+#>  random_effects -18138.86 144.17      0.00    0.00 17.93
+#>  order_2        -18140.21 144.22     -1.35    1.21 19.64
+#>  order_2_mnar   -18141.28 144.26     -2.42    1.38 20.25
+#>  saturated      -18142.39 144.22     -3.53    1.19 21.98
+#>  independence   -18188.03 144.73    -49.17   10.95 14.01
 #> 
 #> Reliability of the estimates and fit to the data
 #> 
 #>  model          loo_method high_k elpd_waic p_waic ppc_pvalue
-#>  random_effects psis            0 -18138.89  17.98       0.62
-#>  order_2        psis            0 -18140.32  19.76       0.56
-#>  order_2_mnar   psis            0 -18141.31  20.31       0.52
+#>  random_effects psis            0 -18138.84  17.91       0.62
+#>  order_2        psis            0 -18140.19  19.62       0.58
+#>  order_2_mnar   psis            0 -18141.26  20.23       0.52
 #>  saturated      exact           - -18142.27  21.86       0.49
-#>  independence   psis            0 -18188.05  14.04       0.00
+#>  independence   psis            0 -18188.01  14.00       0.00
 #> 
 #> elpd_diff: difference from the first model, with standard error se_diff.
 #> high_k: cells with Pareto k > 0.7 (- for exact leave-one-out, which has no k).
@@ -1993,18 +2009,18 @@ each model reproduces the observed counts:
   probability that a model is true.
 
 In the output, `random_effects`—the model that simulated `d3`—ranks
-first (`elpd_loo` -18139.12). Both `order_2` (`elpd_diff` -1.23,
-`se_diff` 1.22) and `order_2_mnar` (-2.21, `se_diff` 1.42) predict
-essentially as well. `saturated` is 3.27 lower (`se_diff` 1.21), more
+first (`elpd_loo` -18138.68). Both `order_2` (`elpd_diff` -1.66,
+`se_diff` 1.19) and `order_2_mnar` (-2.54, `se_diff` 1.37) predict
+essentially as well. `saturated` is 3.70 lower (`se_diff` 1.19), more
 than twice `se_diff`: it reproduces the table just as well but uses more
-parameters (`p_loo` 21.98 versus 18.19), and here the extra parameters
+parameters (`p_loo` 21.98 versus 17.78), and here the extra parameters
 cost some predictive accuracy. The difference is still small on the
-scale of `elpd_loo` (about 3 units over 10000 subjects), so it is a
+scale of `elpd_loo` (about 4 units over 10000 subjects), so it is a
 preference for the structured models, not a sign that `saturated`
-misfits. `independence` is clearly worse, trailing by 48.88 (`se_diff`
-10.93). Across the structured models, `high_k` is 0 so no refits were
+misfits. `independence` is clearly worse, trailing by 49.30 (`se_diff`
+10.95). Across the structured models, `high_k` is 0 so no refits were
 needed, `elpd_waic` agrees with `elpd_loo` within 0.2 for all five
-models, and `ppc_pvalue` lies between 0.48 and 0.61 for four models but
+models, and `ppc_pvalue` lies between 0.48 and 0.63 for four models but
 drops to 0.00 for `independence`: conditional independence fails to
 reproduce the observed table. Allowing verification to depend on the
 disease (`order_2_mnar`) does not improve predictions, though this does
@@ -2020,19 +2036,18 @@ frame inside `comparison` (one row per model and cell) and filter for
 
 checks <- comparison$checks
 checks[checks$model == "independence" & checks$p_value < 0.05, ]
-#>           model profile     cell observed  expected   lower upper p_value
-#> 25 independence (0,0,0) diseased        4   0.67300   0.000     3  0.0085
-#> 35 independence (1,1,0)  healthy      149  87.23025  68.000   108  0.0000
-#> 37 independence (0,0,1) diseased       34  12.94700   6.000    21  0.0000
-#> 40 independence (1,0,1) diseased      150 185.09500 151.975   223  0.0445
-#> 43 independence (0,1,1) diseased       44  65.84500  46.000    87  0.0340
+#>           model profile     cell observed expected lower upper p_value
+#> 25 independence (0,0,0) diseased        4  0.67575     0     3  0.0100
+#> 35 independence (1,1,0)  healthy      149 87.70600    69   109  0.0000
+#> 37 independence (0,0,1) diseased       34 13.14225     6    22  0.0000
+#> 43 independence (0,1,1) diseased       44 65.35075    45    87  0.0415
 ```
 
 Each row reports the `observed` count, the `expected` count under the
 model, the 95% interval of replicated counts (`lower` and `upper`), and
 the two-sided cell `p_value`. Five cells fall outside their intervals.
 The largest discrepancies are in `(1,1,0)` verified healthy—149 observed
-against 87.3 expected (67 to 108), because `A` and `B` err together
+against 87.2 expected (68 to 108), because `A` and `B` err together
 among healthy subjects—and `(0,0,1)` verified diseased—34 observed
 against 13.1 expected (6 to 21). In `(0,0,0)` verified diseased, 4
 observed subjects also exceed what conditional independence allows (0 to
@@ -2095,13 +2110,13 @@ compare_models(
 #> 
 #>  model       elpd_loo se_loo elpd_diff se_diff p_loo
 #>  low_prior  -16167.90 148.65      0.00    0.00 19.97
-#>  high_prior -16167.90 148.65      0.00    0.00 19.97
+#>  high_prior -16167.90 148.65      0.00    0.00 19.94
 #> 
 #> Reliability of the estimates and fit to the data
 #> 
 #>  model      loo_method high_k elpd_waic p_waic ppc_pvalue
-#>  low_prior  exact           - -16167.94  20.00       0.48
-#>  high_prior exact           - -16167.78  19.85       0.49
+#>  low_prior  exact           - -16167.87  19.93       0.49
+#>  high_prior exact           - -16167.74  19.78       0.49
 #> 
 #> elpd_diff: difference from the first model, with standard error se_diff.
 #> high_k: cells with Pareto k > 0.7 (- for exact leave-one-out, which has no k).

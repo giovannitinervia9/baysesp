@@ -1580,7 +1580,8 @@ sign). In <code>d3</code>, look at the totals (3 tests, 8 profiles,
 <span>  model <span class="op">=</span> <span class="fu"><a href="../reference/loglinear.html">loglinear</a></span><span class="op">(</span></span>
 <span>    interaction_order <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>    prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    main_effects_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_normal.html">prior_normal</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>,</span>
+<span>    sensitivity_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    specificity_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>    interactions_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_normal.html">prior_normal</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    verification <span class="op">=</span> <span class="fu"><a href="../reference/mar.html">mar</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
@@ -1591,14 +1592,15 @@ sign). In <code>d3</code>, look at the totals (3 tests, 8 profiles,
 <span>  data <span class="op">=</span> <span class="va">d3</span>,</span>
 <span>  model <span class="op">=</span> <span class="fu"><a href="../reference/random_effects.html">random_effects</a></span><span class="op">(</span></span>
 <span>    prevalence_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
-<span>    intercepts_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_normal.html">prior_normal</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span>,</span>
+<span>    sensitivity_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    specificity_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_beta.html">prior_beta</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0.5</span>, precision <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
 <span>    loadings_prior <span class="op">=</span> <span class="fu"><a href="../reference/prior_normal.html">prior_normal</a></span><span class="op">(</span>mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    positive_loadings <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    verification <span class="op">=</span> <span class="fu"><a href="../reference/mar.html">mar</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>For <code><a href="../reference/loglinear.html">loglinear()</a></code>, the five arguments are:</p>
+<p>For <code><a href="../reference/loglinear.html">loglinear()</a></code>, the six arguments are:</p>
 <ul>
 <li>
 <code>interaction_order</code>: largest number of tests in an
@@ -1606,9 +1608,16 @@ interaction, from 1 up to the number of tests;</li>
 <li>
 <code>prevalence_prior</code>: prior on the prevalence;</li>
 <li>
-<code>main_effects_prior</code>: prior on the main effects, which
-with order 1 are the logits of the sensitivities and false positive
-rates;</li>
+<code>sensitivity_prior</code> and <code>specificity_prior</code>:
+priors on the sensitivity and on the specificity, a beta prior
+(<code><a href="../reference/prior_beta.html">prior_beta()</a></code> or <code><a href="../reference/elicit_beta.html">elicit_beta()</a></code>) for all tests
+or a list with one per test (default uniform). With
+<code>interaction_order = 1</code> they are the priors of <span class="math inline">\mathrm{Se}_k</span> and <span class="math inline">\mathrm{Sp}_k</span>. With order 2 or more they act
+on the sensitivity and specificity of test <span class="math inline">k</span> among the subjects negative on all the
+other tests, <span class="math inline">P(T_k = 1 \mid D = 1, T_j = 0\ (j
+\neq k))</span> and <span class="math inline">P(T_k = 0 \mid D = 0, T_j
+= 0\ (j \neq k))</span>; the priors implied on the marginal <span class="math inline">\mathrm{Se}_k</span> and <span class="math inline">\mathrm{Sp}_k</span> also depend on
+<code>interactions_prior</code>;</li>
 <li>
 <code>interactions_prior</code>: prior on the interactions (log odds
 ratios between tests); unused with order 1;</li>
@@ -1618,13 +1627,14 @@ ratios between tests); unused with order 1;</li>
 <code>verification = mnar()</code>), as in
 <code><a href="../reference/saturated.html">saturated()</a></code>.</li>
 </ul>
-<p>For <code><a href="../reference/random_effects.html">random_effects()</a></code>, the five arguments are:</p>
+<p>For <code><a href="../reference/random_effects.html">random_effects()</a></code>, the six arguments are:</p>
 <ul>
 <li>
 <code>prevalence_prior</code>: prior on the prevalence;</li>
 <li>
-<code>intercepts_prior</code>: prior on the probits (inverse normal
-quantiles) of the sensitivities and false positive rates;</li>
+<code>sensitivity_prior</code> and <code>specificity_prior</code>:
+priors on the sensitivity and on the specificity, as in
+<code><a href="../reference/loglinear.html">loglinear()</a></code>. Here they are exactly the priors of <span class="math inline">\mathrm{Se}_k</span> and <span class="math inline">\mathrm{Sp}_k</span>, whatever the loadings;</li>
 <li>
 <code>loadings_prior</code>: prior on the loadings;</li>
 <li>
@@ -1656,24 +1666,24 @@ calls <code><a href="../reference/test_accuracy.html">test_accuracy()</a></code>
 <span><span class="co">#&gt; 2        saturated      Se[A] 0.9100854 0.8861893 0.9294005</span></span>
 <span><span class="co">#&gt; 6        saturated      Se[B] 0.8090805 0.7852423 0.8309561</span></span>
 <span><span class="co">#&gt; 10       saturated      Se[C] 0.7076932 0.6823671 0.7312651</span></span>
-<span><span class="co">#&gt; 11    independence prevalence 0.1944187 0.1866260 0.2021907</span></span>
-<span><span class="co">#&gt; 21    independence      Se[A] 0.9292161 0.9167961 0.9404657</span></span>
-<span><span class="co">#&gt; 61    independence      Se[B] 0.8292508 0.8113633 0.8466420</span></span>
-<span><span class="co">#&gt; 101   independence      Se[C] 0.7163965 0.6942242 0.7374734</span></span>
-<span><span class="co">#&gt; 12         order_2 prevalence 0.1972167 0.1886171 0.2059753</span></span>
-<span><span class="co">#&gt; 22         order_2      Se[A] 0.9112071 0.8931643 0.9277840</span></span>
-<span><span class="co">#&gt; 62         order_2      Se[B] 0.8103481 0.7885902 0.8300613</span></span>
-<span><span class="co">#&gt; 102        order_2      Se[C] 0.7083245 0.6852729 0.7303382</span></span>
-<span><span class="co">#&gt; 13  random_effects prevalence 0.1970222 0.1887660 0.2053168</span></span>
-<span><span class="co">#&gt; 23  random_effects      Se[A] 0.9125926 0.8948424 0.9286064</span></span>
-<span><span class="co">#&gt; 63  random_effects      Se[B] 0.8114346 0.7903588 0.8313092</span></span>
-<span><span class="co">#&gt; 103 random_effects      Se[C] 0.7092199 0.6862007 0.7312607</span></span></code></pre></div>
+<span><span class="co">#&gt; 11    independence prevalence 0.1945184 0.1868211 0.2026585</span></span>
+<span><span class="co">#&gt; 21    independence      Se[A] 0.9292717 0.9165834 0.9413578</span></span>
+<span><span class="co">#&gt; 61    independence      Se[B] 0.8289812 0.8115444 0.8460859</span></span>
+<span><span class="co">#&gt; 101   independence      Se[C] 0.7162347 0.6950885 0.7364342</span></span>
+<span><span class="co">#&gt; 12         order_2 prevalence 0.1971844 0.1888755 0.2056009</span></span>
+<span><span class="co">#&gt; 22         order_2      Se[A] 0.9118878 0.8934664 0.9286490</span></span>
+<span><span class="co">#&gt; 62         order_2      Se[B] 0.8110037 0.7901856 0.8312461</span></span>
+<span><span class="co">#&gt; 102        order_2      Se[C] 0.7086037 0.6854871 0.7310606</span></span>
+<span><span class="co">#&gt; 13  random_effects prevalence 0.1971092 0.1888146 0.2053050</span></span>
+<span><span class="co">#&gt; 23  random_effects      Se[A] 0.9119951 0.8942614 0.9278114</span></span>
+<span><span class="co">#&gt; 63  random_effects      Se[B] 0.8111520 0.7898761 0.8306977</span></span>
+<span><span class="co">#&gt; 103 random_effects      Se[C] 0.7087627 0.6870552 0.7312027</span></span></code></pre></div>
 <p>Look at how each model compares with the true values (0.2, 0.9, 0.8,
 0.7): <code>saturated</code> (0.197, 0.910, 0.809, 0.708),
 <code>order_2</code> (0.197, 0.911, 0.811, 0.709), and
 <code>random_effects</code> (0.197, 0.912, 0.811, 0.709) recover them
 well. <code>independence</code> (<code>interaction_order = 1</code>)
-overestimates <code>Se[A]</code> (0.929, 0.916 to 0.941) and
+overestimates <code>Se[A]</code> (0.929, 0.917 to 0.941) and
 <code>Se[B]</code> (0.829, 0.811 to 0.847), excluding 0.9 and 0.8,
 because treating dependent tests as independent makes shared errors look
 like accuracy. With every profile verified, <code><a href="../reference/saturated.html">saturated()</a></code>
@@ -1776,32 +1786,32 @@ assumed structure fills it in:</p>
 <span>  seed <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Notice the <a href="https://mc-stan.org/rstan/" class="external-link">rstan</a> warnings on <code>fit3n_re</code>:
-<code>The largest R-hat is 1.53</code> (meaning the Markov chains did
-not mix) and both bulk and tail effective sample sizes are too low.
-Next, we run <code>sensitivities()</code> on the three structured
-fits:</p>
+one divergent transition, <code>The largest R-hat is 1.53</code>
+(meaning the Markov chains did not mix) and both bulk and tail effective
+sample sizes are too low. Next, we run <code>sensitivities()</code> on
+the three structured fits:</p>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">sensitivities</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>independence <span class="op">=</span> <span class="va">fit3n_ci</span>, order_2 <span class="op">=</span> <span class="va">fit3n_ll2</span>,</span>
 <span>                   random_effects <span class="op">=</span> <span class="va">fit3n_re</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;              model   quantity      mean     lower     upper</span></span>
-<span><span class="co">#&gt; 1     independence prevalence 0.1954272 0.1874668 0.2035214</span></span>
-<span><span class="co">#&gt; 2     independence      Se[A] 0.9274888 0.9144174 0.9397045</span></span>
-<span><span class="co">#&gt; 6     independence      Se[B] 0.8323080 0.8148901 0.8494855</span></span>
-<span><span class="co">#&gt; 10    independence      Se[C] 0.7120112 0.6906662 0.7330975</span></span>
-<span><span class="co">#&gt; 11         order_2 prevalence 0.2001823 0.1913762 0.2097581</span></span>
-<span><span class="co">#&gt; 21         order_2      Se[A] 0.9029107 0.8796328 0.9220461</span></span>
-<span><span class="co">#&gt; 61         order_2      Se[B] 0.8085621 0.7832055 0.8302638</span></span>
-<span><span class="co">#&gt; 101        order_2      Se[C] 0.6978200 0.6719325 0.7218759</span></span>
-<span><span class="co">#&gt; 12  random_effects prevalence 0.2931367 0.1912347 0.5873901</span></span>
-<span><span class="co">#&gt; 22  random_effects      Se[A] 0.7499224 0.2779922 0.9228573</span></span>
-<span><span class="co">#&gt; 62  random_effects      Se[B] 0.6712067 0.2484340 0.8307187</span></span>
-<span><span class="co">#&gt; 102 random_effects      Se[C] 0.5800861 0.2160296 0.7213823</span></span></code></pre></div>
+<span><span class="co">#&gt; 1     independence prevalence 0.1953353 0.1874344 0.2032667</span></span>
+<span><span class="co">#&gt; 2     independence      Se[A] 0.9276658 0.9145406 0.9400566</span></span>
+<span><span class="co">#&gt; 6     independence      Se[B] 0.8322502 0.8146705 0.8498236</span></span>
+<span><span class="co">#&gt; 10    independence      Se[C] 0.7122842 0.6923109 0.7325706</span></span>
+<span><span class="co">#&gt; 11         order_2 prevalence 0.1999705 0.1916471 0.2086709</span></span>
+<span><span class="co">#&gt; 21         order_2      Se[A] 0.9028841 0.8775643 0.9224495</span></span>
+<span><span class="co">#&gt; 61         order_2      Se[B] 0.8084350 0.7829065 0.8309064</span></span>
+<span><span class="co">#&gt; 101        order_2      Se[C] 0.6979987 0.6736609 0.7211821</span></span>
+<span><span class="co">#&gt; 12  random_effects prevalence 0.2931294 0.1913374 0.5879100</span></span>
+<span><span class="co">#&gt; 22  random_effects      Se[A] 0.7497621 0.2781880 0.9230916</span></span>
+<span><span class="co">#&gt; 62  random_effects      Se[B] 0.6708816 0.2481710 0.8299138</span></span>
+<span><span class="co">#&gt; 102 random_effects      Se[C] 0.5798321 0.2156167 0.7216010</span></span></code></pre></div>
 <p>The three models give three different answers:
 <code>independence</code> again overestimates <code>Se[A]</code>
 (0.928), <code>Se[B]</code> (0.832), and <code>Se[C]</code> (0.712)
 without any warning; <code>order_2</code> stays near truth (0.200,
-0.903, 0.809, 0.698); and <code>random_effects</code> gives a distorted
-<code>prevalence</code> mean (0.481, 0.194 to 0.593) and
+0.904, 0.809, 0.698); and <code>random_effects</code> gives a distorted
+<code>prevalence</code> mean (0.481, 0.194 to 0.594) and
 <code>Se[A]</code> (0.438, 0.276 to 0.918). To see why
 <code>fit3n_re</code> failed, we check each chain’s mean
 <code>prevalence</code> via
@@ -1809,9 +1819,9 @@ without any warning; <code>order_2</code> stays near truth (0.200,
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="fu">posterior</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/posterior/reference/extract_variable_matrix.html" class="external-link">extract_variable_matrix</a></span><span class="op">(</span><span class="va">fit3n_re</span><span class="op">@</span><span class="va">draws</span>, <span class="st">"prevalence"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         1         2         3         4 </span></span>
-<span><span class="co">#&gt; 0.5742174 0.1994957 0.1992896 0.1995440</span></span></code></pre></div>
+<span><span class="co">#&gt; 0.5741164 0.1994698 0.1995423 0.1993891</span></span></code></pre></div>
 <p>Chain 3 averages 0.199 (near 0.2), while chains 1, 2, and 4 average
-0.575, 0.574, and 0.575, placing most diseased subjects in
+0.574, 0.575, and 0.575, placing most diseased subjects in
 <code>0 0 0</code>. Without verified <code>0 0 0</code> subjects, both
 explanations fit the data under <code><a href="../reference/random_effects.html">random_effects()</a></code>, splitting
 the chains across separated modes; a non-convergent fit like
@@ -1949,20 +1959,20 @@ of order 2 where verification may depend on the disease
 <span><span class="co">#&gt; Expected log predictive density of a new subject (leave-one-out)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model           elpd_loo se_loo elpd_diff se_diff p_loo</span></span>
-<span><span class="co">#&gt;  random_effects -18138.91 144.21      0.00    0.00 18.00</span></span>
-<span><span class="co">#&gt;  order_2        -18140.34 144.20     -1.43    1.20 19.79</span></span>
-<span><span class="co">#&gt;  order_2_mnar   -18141.33 144.25     -2.43    1.40 20.34</span></span>
-<span><span class="co">#&gt;  saturated      -18142.39 144.22     -3.48    1.20 21.98</span></span>
-<span><span class="co">#&gt;  independence   -18188.06 144.75    -49.16   10.91 14.05</span></span>
+<span><span class="co">#&gt;  random_effects -18138.86 144.17      0.00    0.00 17.93</span></span>
+<span><span class="co">#&gt;  order_2        -18140.21 144.22     -1.35    1.21 19.64</span></span>
+<span><span class="co">#&gt;  order_2_mnar   -18141.28 144.26     -2.42    1.38 20.25</span></span>
+<span><span class="co">#&gt;  saturated      -18142.39 144.22     -3.53    1.19 21.98</span></span>
+<span><span class="co">#&gt;  independence   -18188.03 144.73    -49.17   10.95 14.01</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Reliability of the estimates and fit to the data</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model          loo_method high_k elpd_waic p_waic ppc_pvalue</span></span>
-<span><span class="co">#&gt;  random_effects psis            0 -18138.89  17.98       0.62</span></span>
-<span><span class="co">#&gt;  order_2        psis            0 -18140.32  19.76       0.56</span></span>
-<span><span class="co">#&gt;  order_2_mnar   psis            0 -18141.31  20.31       0.52</span></span>
+<span><span class="co">#&gt;  random_effects psis            0 -18138.84  17.91       0.62</span></span>
+<span><span class="co">#&gt;  order_2        psis            0 -18140.19  19.62       0.58</span></span>
+<span><span class="co">#&gt;  order_2_mnar   psis            0 -18141.26  20.23       0.52</span></span>
 <span><span class="co">#&gt;  saturated      exact           - -18142.27  21.86       0.49</span></span>
-<span><span class="co">#&gt;  independence   psis            0 -18188.05  14.04       0.00</span></span>
+<span><span class="co">#&gt;  independence   psis            0 -18188.01  14.00       0.00</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; elpd_diff: difference from the first model, with standard error se_diff.</span></span>
 <span><span class="co">#&gt; high_k: cells with Pareto k &gt; 0.7 (- for exact leave-one-out, which has no k).</span></span>
@@ -2066,21 +2076,21 @@ from 0 (such as 0.3 or 0.6) indicate no detectable misfit rather than
 the probability that a model is true.</li>
 </ul>
 <p>In the output, <code>random_effects</code>—the model that simulated
-<code>d3</code>—ranks first (<code>elpd_loo</code> -18139.12). Both
-<code>order_2</code> (<code>elpd_diff</code> -1.23, <code>se_diff</code>
-1.22) and <code>order_2_mnar</code> (-2.21, <code>se_diff</code> 1.42)
-predict essentially as well. <code>saturated</code> is 3.27 lower
-(<code>se_diff</code> 1.21), more than twice <code>se_diff</code>: it
+<code>d3</code>—ranks first (<code>elpd_loo</code> -18138.68). Both
+<code>order_2</code> (<code>elpd_diff</code> -1.66, <code>se_diff</code>
+1.19) and <code>order_2_mnar</code> (-2.54, <code>se_diff</code> 1.37)
+predict essentially as well. <code>saturated</code> is 3.70 lower
+(<code>se_diff</code> 1.19), more than twice <code>se_diff</code>: it
 reproduces the table just as well but uses more parameters
-(<code>p_loo</code> 21.98 versus 18.19), and here the extra parameters
+(<code>p_loo</code> 21.98 versus 17.78), and here the extra parameters
 cost some predictive accuracy. The difference is still small on the
-scale of <code>elpd_loo</code> (about 3 units over 10000 subjects), so
+scale of <code>elpd_loo</code> (about 4 units over 10000 subjects), so
 it is a preference for the structured models, not a sign that
 <code>saturated</code> misfits. <code>independence</code> is clearly
-worse, trailing by 48.88 (<code>se_diff</code> 10.93). Across the
+worse, trailing by 49.30 (<code>se_diff</code> 10.95). Across the
 structured models, <code>high_k</code> is 0 so no refits were needed,
 <code>elpd_waic</code> agrees with <code>elpd_loo</code> within 0.2 for
-all five models, and <code>ppc_pvalue</code> lies between 0.48 and 0.61
+all five models, and <code>ppc_pvalue</code> lies between 0.48 and 0.63
 for four models but drops to 0.00 for <code>independence</code>:
 conditional independence fails to reproduce the observed table. Allowing
 verification to depend on the disease (<code>order_2_mnar</code>) does
@@ -2093,18 +2103,17 @@ per model and cell) and filter for <code>p_value &lt; 0.05</code>:</p>
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">checks</span> <span class="op">&lt;-</span> <span class="va">comparison</span><span class="op">$</span><span class="va">checks</span></span>
 <span><span class="va">checks</span><span class="op">[</span><span class="va">checks</span><span class="op">$</span><span class="va">model</span> <span class="op">==</span> <span class="st">"independence"</span> <span class="op">&amp;</span> <span class="va">checks</span><span class="op">$</span><span class="va">p_value</span> <span class="op">&lt;</span> <span class="fl">0.05</span>, <span class="op">]</span></span>
-<span><span class="co">#&gt;           model profile     cell observed  expected   lower upper p_value</span></span>
-<span><span class="co">#&gt; 25 independence (0,0,0) diseased        4   0.67300   0.000     3  0.0085</span></span>
-<span><span class="co">#&gt; 35 independence (1,1,0)  healthy      149  87.23025  68.000   108  0.0000</span></span>
-<span><span class="co">#&gt; 37 independence (0,0,1) diseased       34  12.94700   6.000    21  0.0000</span></span>
-<span><span class="co">#&gt; 40 independence (1,0,1) diseased      150 185.09500 151.975   223  0.0445</span></span>
-<span><span class="co">#&gt; 43 independence (0,1,1) diseased       44  65.84500  46.000    87  0.0340</span></span></code></pre></div>
+<span><span class="co">#&gt;           model profile     cell observed expected lower upper p_value</span></span>
+<span><span class="co">#&gt; 25 independence (0,0,0) diseased        4  0.67575     0     3  0.0100</span></span>
+<span><span class="co">#&gt; 35 independence (1,1,0)  healthy      149 87.70600    69   109  0.0000</span></span>
+<span><span class="co">#&gt; 37 independence (0,0,1) diseased       34 13.14225     6    22  0.0000</span></span>
+<span><span class="co">#&gt; 43 independence (0,1,1) diseased       44 65.35075    45    87  0.0415</span></span></code></pre></div>
 <p>Each row reports the <code>observed</code> count, the
 <code>expected</code> count under the model, the 95% interval of
 replicated counts (<code>lower</code> and <code>upper</code>), and the
 two-sided cell <code>p_value</code>. Five cells fall outside their
 intervals. The largest discrepancies are in <code>(1,1,0)</code>
-verified healthy—149 observed against 87.3 expected (67 to 108), because
+verified healthy—149 observed against 87.2 expected (68 to 108), because
 <code>A</code> and <code>B</code> err together among healthy
 subjects—and <code>(0,0,1)</code> verified diseased—34 observed against
 13.1 expected (6 to 21). In <code>(0,0,0)</code> verified diseased, 4
@@ -2159,13 +2168,13 @@ and compare it with <code>fit3n_sat</code>:</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model       elpd_loo se_loo elpd_diff se_diff p_loo</span></span>
 <span><span class="co">#&gt;  low_prior  -16167.90 148.65      0.00    0.00 19.97</span></span>
-<span><span class="co">#&gt;  high_prior -16167.90 148.65      0.00    0.00 19.97</span></span>
+<span><span class="co">#&gt;  high_prior -16167.90 148.65      0.00    0.00 19.94</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Reliability of the estimates and fit to the data</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;  model      loo_method high_k elpd_waic p_waic ppc_pvalue</span></span>
-<span><span class="co">#&gt;  low_prior  exact           - -16167.94  20.00       0.48</span></span>
-<span><span class="co">#&gt;  high_prior exact           - -16167.78  19.85       0.49</span></span>
+<span><span class="co">#&gt;  low_prior  exact           - -16167.87  19.93       0.49</span></span>
+<span><span class="co">#&gt;  high_prior exact           - -16167.74  19.78       0.49</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; elpd_diff: difference from the first model, with standard error se_diff.</span></span>
 <span><span class="co">#&gt; high_k: cells with Pareto k &gt; 0.7 (- for exact leave-one-out, which has no k).</span></span>

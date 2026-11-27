@@ -68,18 +68,18 @@ fit <- baysesp(d, seed = 1)
 fit_ci <- update(fit, model = loglinear(interaction_order = 1))
 fit_ci
 #> <baysesp_fit> loglinear model, MAR verification, 4 chains x 1000 draws (rstan)
-#> Convergence: max R-hat 1.002, min bulk ESS 4426, min tail ESS 2489, 0 divergent transitions
+#> Convergence: max R-hat 1.001, min bulk ESS 4220, min tail ESS 2620, 0 divergent transitions
 #> 
 #>    quantity  mean median lower upper identified
-#>  prevalence 0.205  0.205 0.180 0.232       TRUE
-#>       Se[A] 0.885  0.886 0.831 0.929       TRUE
+#>  prevalence 0.204  0.204 0.178 0.230       TRUE
+#>       Se[A] 0.886  0.887 0.833 0.929       TRUE
 #>       Sp[A] 0.849  0.849 0.823 0.874       TRUE
-#>      PPV[A] 0.602  0.602 0.546 0.657       TRUE
-#>      NPV[A] 0.966  0.967 0.950 0.980       TRUE
-#>       Se[B] 0.788  0.789 0.726 0.844       TRUE
-#>       Sp[B] 0.946  0.947 0.929 0.962       TRUE
-#>      PPV[B] 0.791  0.792 0.731 0.847       TRUE
-#>      NPV[B] 0.945  0.946 0.927 0.962       TRUE
+#>      PPV[A] 0.601  0.601 0.542 0.657       TRUE
+#>      NPV[A] 0.967  0.967 0.950 0.980       TRUE
+#>       Se[B] 0.790  0.791 0.726 0.848       TRUE
+#>       Sp[B] 0.947  0.947 0.931 0.962       TRUE
+#>      PPV[B] 0.793  0.794 0.733 0.847       TRUE
+#>      NPV[B] 0.946  0.946 0.927 0.962       TRUE
 #> 
 #> Odds ratio of verification fixed at 1 (MAR).
 # }

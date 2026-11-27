@@ -192,6 +192,24 @@ saturated <- S7::new_class(
   }
 )
 
+# sensitivity_prior and specificity_prior of the structured models: a beta
+# prior, or a list with one per test (their number is checked at fit time).
+accuracy_prior <- S7::new_union(prior_distribution, S7::class_list)
+
+check_accuracy_prior <- function(x, argument) {
+  p <- as_prior_list(x, argument)
+  if (!length(p) || !all(vapply(p, S7::S7_inherits, logical(1), prior_beta))) {
+    stop("`", argument, "` must be a beta prior, such as prior_beta() or ",
+         "elicit_beta(), or a list with one per test.", call. = FALSE)
+  }
+  invisible(x)
+}
+
+# Label of a prior or of a list of priors.
+priors_label <- function(x) {
+  paste(vapply(as_prior_list(x, ""), prior_label, character(1)), collapse = "; ")
+}
+
 # A prior or a list of priors as a named list (names for error messages).
 as_prior_list <- function(x, argument) {
   if (is.null(x)) return(list())

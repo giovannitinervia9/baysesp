@@ -314,7 +314,7 @@ S7::method(print_generic, prior_distribution) <- function(x, ...) {
 # scale and its prior is added by prior_lpdf() (inst/stan/include/priors.stan),
 # which receives a family code and a parameter vector of fixed length 3.
 
-stan_prior_families <- c(normal = 1L, student = 2L, beta = 3L)
+stan_prior_families <- c(normal = 1L, student = 2L, beta = 3L, probit_beta = 4L)
 
 prior_code <- S7::new_generic("prior_code", "prior")
 

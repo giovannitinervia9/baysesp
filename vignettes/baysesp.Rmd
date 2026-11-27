@@ -695,7 +695,8 @@ fit3_ci <- baysesp(
   model = loglinear(
     interaction_order = 1,
     prevalence_prior = prior_beta(mean = 0.5, precision = 2),
-    main_effects_prior = prior_normal(mean = 0, sd = 1.5),
+    sensitivity_prior = prior_beta(mean = 0.5, precision = 2),
+    specificity_prior = prior_beta(mean = 0.5, precision = 2),
     interactions_prior = prior_normal(mean = 0, sd = 1),
     verification = mar()
   ),
@@ -706,7 +707,8 @@ fit3_re <- baysesp(
   data = d3,
   model = random_effects(
     prevalence_prior = prior_beta(mean = 0.5, precision = 2),
-    intercepts_prior = prior_normal(mean = 0, sd = 1.5),
+    sensitivity_prior = prior_beta(mean = 0.5, precision = 2),
+    specificity_prior = prior_beta(mean = 0.5, precision = 2),
     loadings_prior = prior_normal(mean = 0, sd = 1),
     positive_loadings = TRUE,
     verification = mar()
@@ -715,18 +717,18 @@ fit3_re <- baysesp(
 )
 ```
 
-For `loglinear()`, the five arguments are:
+For `loglinear()`, the six arguments are:
 
 - `interaction_order`: largest number of tests in an interaction, from 1 up to the number of tests;
 - `prevalence_prior`: prior on the prevalence;
-- `main_effects_prior`: prior on the main effects, which with order 1 are the logits of the sensitivities and false positive rates;
+- `sensitivity_prior` and `specificity_prior`: priors on the sensitivity and on the specificity, a beta prior (`prior_beta()` or `elicit_beta()`) for all tests or a list with one per test (default uniform). With `interaction_order = 1` they are the priors of $\mathrm{Se}_k$ and $\mathrm{Sp}_k$. With order 2 or more they act on the sensitivity and specificity of test $k$ among the subjects negative on all the other tests, $P(T_k = 1 \mid D = 1, T_j = 0\ (j \neq k))$ and $P(T_k = 0 \mid D = 0, T_j = 0\ (j \neq k))$; the priors implied on the marginal $\mathrm{Se}_k$ and $\mathrm{Sp}_k$ also depend on `interactions_prior`;
 - `interactions_prior`: prior on the interactions (log odds ratios between tests); unused with order 1;
 - `verification`: verification assumption (`verification = mar()` or `verification = mnar()`), as in `saturated()`.
 
-For `random_effects()`, the five arguments are:
+For `random_effects()`, the six arguments are:
 
 - `prevalence_prior`: prior on the prevalence;
-- `intercepts_prior`: prior on the probits (inverse normal quantiles) of the sensitivities and false positive rates;
+- `sensitivity_prior` and `specificity_prior`: priors on the sensitivity and on the specificity, as in `loglinear()`. Here they are exactly the priors of $\mathrm{Se}_k$ and $\mathrm{Sp}_k$, whatever the loadings;
 - `loadings_prior`: prior on the loadings;
 - `positive_loadings`: `TRUE` (default) keeps loadings positive so tests correlate positively, as usual when measuring one condition; `FALSE` allows negative dependence but can make the MCMC sampler unreliable;
 - `verification`: verification assumption (`verification = mar()` or `verification = mnar()`).
@@ -746,7 +748,7 @@ sensitivities(list(saturated = fit3_sat, independence = fit3_ci,
                    order_2 = fit3_ll2, random_effects = fit3_re))
 ```
 
-Look at how each model compares with the true values (0.2, 0.9, 0.8, 0.7): `saturated` (0.197, 0.910, 0.809, 0.708), `order_2` (0.197, 0.911, 0.811, 0.709), and `random_effects` (0.197, 0.912, 0.811, 0.709) recover them well. `independence` (`interaction_order = 1`) overestimates `Se[A]` (0.929, 0.916 to 0.941) and `Se[B]` (0.829, 0.811 to 0.847), excluding 0.9 and 0.8, because treating dependent tests as independent makes shared errors look like accuracy. With every profile verified, `saturated()` needs no dependence assumption, so structured models add little here.
+Look at how each model compares with the true values (0.2, 0.9, 0.8, 0.7): `saturated` (0.197, 0.910, 0.809, 0.708), `order_2` (0.197, 0.911, 0.811, 0.709), and `random_effects` (0.197, 0.912, 0.811, 0.709) recover them well. `independence` (`interaction_order = 1`) overestimates `Se[A]` (0.929, 0.917 to 0.941) and `Se[B]` (0.829, 0.811 to 0.847), excluding 0.9 and 0.8, because treating dependent tests as independent makes shared errors look like accuracy. With every profile verified, `saturated()` needs no dependence assumption, so structured models add little here.
 
 Dependence also matters for rules combining tests. With `test_rule()`, a rule is a function taking the profile matrix (one row per profile, columns named by test) and returning whether each is positive. We define `confirmed` ("positive if `A` is positive and `B` or `C` confirms it") and compare `"A"` with `confirmed` via `rule_accuracy()`:
 
@@ -807,20 +809,20 @@ fit3n_sat <- baysesp(
 )
 ```
 
-Notice the `{rstan}` warnings on `fit3n_re`: `The largest R-hat is 1.53` (meaning the Markov chains did not mix) and both bulk and tail effective sample sizes are too low. Next, we run `sensitivities()` on the three structured fits:
+Notice the `{rstan}` warnings on `fit3n_re`: one divergent transition, `The largest R-hat is 1.53` (meaning the Markov chains did not mix) and both bulk and tail effective sample sizes are too low. Next, we run `sensitivities()` on the three structured fits:
 
 ```{r}
 sensitivities(list(independence = fit3n_ci, order_2 = fit3n_ll2,
                    random_effects = fit3n_re))
 ```
 
-The three models give three different answers: `independence` again overestimates `Se[A]` (0.928), `Se[B]` (0.832), and `Se[C]` (0.712) without any warning; `order_2` stays near truth (0.200, 0.903, 0.809, 0.698); and `random_effects` gives a distorted `prevalence` mean (0.481, 0.194 to 0.593) and `Se[A]` (0.438, 0.276 to 0.918). To see why `fit3n_re` failed, we check each chain's mean `prevalence` via `posterior::extract_variable_matrix()`:
+The three models give three different answers: `independence` again overestimates `Se[A]` (0.928), `Se[B]` (0.832), and `Se[C]` (0.712) without any warning; `order_2` stays near truth (0.200, 0.904, 0.809, 0.698); and `random_effects` gives a distorted `prevalence` mean (0.481, 0.194 to 0.594) and `Se[A]` (0.438, 0.276 to 0.918). To see why `fit3n_re` failed, we check each chain's mean `prevalence` via `posterior::extract_variable_matrix()`:
 
 ```{r}
 colMeans(posterior::extract_variable_matrix(fit3n_re@draws, "prevalence"))
 ```
 
-Chain 3 averages 0.199 (near 0.2), while chains 1, 2, and 4 average 0.575, 0.574, and 0.575, placing most diseased subjects in `0 0 0`. Without verified `0 0 0` subjects, both explanations fit the data under `random_effects()`, splitting the chains across separated modes; a non-convergent fit like `fit3n_re` must never be used.
+Chain 3 averages 0.199 (near 0.2), while chains 1, 2, and 4 average 0.574, 0.575, and 0.575, placing most diseased subjects in `0 0 0`. Without verified `0 0 0` subjects, both explanations fit the data under `random_effects()`, splitting the chains across separated modes; a non-convergent fit like `fit3n_re` must never be used.
 
 By contrast, `saturated()` exposes the full range compatible with the data, which we inspect via `accuracy_bounds(fit = fit3n_sat)`:
 
@@ -898,7 +900,7 @@ The second table reports the reliability of these estimates and how well each mo
 - `elpd_waic`, `p_waic`: the same two quantities estimated by WAIC, an approximation to leave-one-out; they should stay close to `elpd_loo` and `p_loo`, and a difference larger than 1 triggers a warning to trust `elpd_loo`;
 - `ppc_pvalue`: posterior predictive p-value for the whole table. For each posterior draw, a table of the same size is simulated and its chi-square discrepancy from the expected counts is compared with the observed table's; `ppc_pvalue` is the proportion of simulated tables at least as extreme as the observed one. Values near 0 indicate that the model fails to reproduce the data, whereas values away from 0 (such as 0.3 or 0.6) indicate no detectable misfit rather than the probability that a model is true.
 
-In the output, `random_effects`—the model that simulated `d3`—ranks first (`elpd_loo` -18139.12). Both `order_2` (`elpd_diff` -1.23, `se_diff` 1.22) and `order_2_mnar` (-2.21, `se_diff` 1.42) predict essentially as well. `saturated` is 3.27 lower (`se_diff` 1.21), more than twice `se_diff`: it reproduces the table just as well but uses more parameters (`p_loo` 21.98 versus 18.19), and here the extra parameters cost some predictive accuracy. The difference is still small on the scale of `elpd_loo` (about 3 units over 10000 subjects), so it is a preference for the structured models, not a sign that `saturated` misfits. `independence` is clearly worse, trailing by 48.88 (`se_diff` 10.93). Across the structured models, `high_k` is 0 so no refits were needed, `elpd_waic` agrees with `elpd_loo` within 0.2 for all five models, and `ppc_pvalue` lies between 0.48 and 0.61 for four models but drops to 0.00 for `independence`: conditional independence fails to reproduce the observed table. Allowing verification to depend on the disease (`order_2_mnar`) does not improve predictions, though this does not confirm MAR because in structured models the verification odds ratio is driven by the assumed dependence structure rather than directly by the data.
+In the output, `random_effects`—the model that simulated `d3`—ranks first (`elpd_loo` -18138.68). Both `order_2` (`elpd_diff` -1.66, `se_diff` 1.19) and `order_2_mnar` (-2.54, `se_diff` 1.37) predict essentially as well. `saturated` is 3.70 lower (`se_diff` 1.19), more than twice `se_diff`: it reproduces the table just as well but uses more parameters (`p_loo` 21.98 versus 17.78), and here the extra parameters cost some predictive accuracy. The difference is still small on the scale of `elpd_loo` (about 4 units over 10000 subjects), so it is a preference for the structured models, not a sign that `saturated` misfits. `independence` is clearly worse, trailing by 49.30 (`se_diff` 10.95). Across the structured models, `high_k` is 0 so no refits were needed, `elpd_waic` agrees with `elpd_loo` within 0.2 for all five models, and `ppc_pvalue` lies between 0.48 and 0.63 for four models but drops to 0.00 for `independence`: conditional independence fails to reproduce the observed table. Allowing verification to depend on the disease (`order_2_mnar`) does not improve predictions, though this does not confirm MAR because in structured models the verification odds ratio is driven by the assumed dependence structure rather than directly by the data.
 
 To see which cells `independence` misses, we inspect the `checks` data frame inside `comparison` (one row per model and cell) and filter for `p_value < 0.05`:
 
@@ -907,7 +909,7 @@ checks <- comparison$checks
 checks[checks$model == "independence" & checks$p_value < 0.05, ]
 ```
 
-Each row reports the `observed` count, the `expected` count under the model, the 95% interval of replicated counts (`lower` and `upper`), and the two-sided cell `p_value`. Five cells fall outside their intervals. The largest discrepancies are in `(1,1,0)` verified healthy—149 observed against 87.3 expected (67 to 108), because `A` and `B` err together among healthy subjects—and `(0,0,1)` verified diseased—34 observed against 13.1 expected (6 to 21). In `(0,0,0)` verified diseased, 4 observed subjects also exceed what conditional independence allows (0 to 3): when tests are dependent, a diseased subject missed by one test is more likely to be missed by the others too.
+Each row reports the `observed` count, the `expected` count under the model, the 95% interval of replicated counts (`lower` and `upper`), and the two-sided cell `p_value`. Five cells fall outside their intervals. The largest discrepancies are in `(1,1,0)` verified healthy—149 observed against 87.2 expected (68 to 108), because `A` and `B` err together among healthy subjects—and `(0,0,1)` verified diseased—34 observed against 13.1 expected (6 to 21). In `(0,0,0)` verified diseased, 4 observed subjects also exceed what conditional independence allows (0 to 3): when tests are dependent, a diseased subject missed by one test is more likely to be missed by the others too.
 
 Calling `plot(comparison)` displays these posterior predictive checks graphically, showing each cell's observed count (orange) alongside the 95% interval of replicated counts (blue):
 

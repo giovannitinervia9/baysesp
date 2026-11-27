@@ -12,7 +12,8 @@ test_that("gauss_hermite() integrates against the standard normal", {
 test_that("random_effects() has the documented defaults and checks its priors", {
   m <- random_effects()
   expect_true(S7::S7_inherits(m, accuracy_model))
-  expect_identical(m@intercepts_prior@sd, 1.5)
+  expect_identical(c(m@sensitivity_prior@shape1, m@sensitivity_prior@shape2), c(1, 1))
+  expect_error(random_effects(specificity_prior = prior_normal(0, 1)), "specificity_prior")
   expect_identical(m@loadings_prior@sd, 1)
   expect_output(print(m), "random effects model")
   expect_error(random_effects(loadings_prior = prior_beta()), "loadings_prior")
@@ -28,6 +29,7 @@ test_that("stan_data() translates the random effects model", {
   expect_identical(s$profiles[6, ], c(1, 0, 1))
   expect_equal(sum(exp(s$log_weights)), 1)
   expect_identical(c(s$mnar, s$n_beta), c(0L, 0L))
+  expect_identical(s$accuracy_family, matrix(4L, 2, 3))   # beta on the probit
   expect_identical(s$positive_loadings, 1L)
   expect_identical(stan_data(random_effects(positive_loadings = FALSE), mar(), d)$positive_loadings, 0L)
   m <- random_effects(verification = mnar())

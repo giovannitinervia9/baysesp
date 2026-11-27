@@ -34,7 +34,12 @@ NULL
 #' so that the sensitivity of test \eqn{k} is \eqn{Se_k = \Phi(m_{1k})} and
 #' its specificity is \eqn{Sp_k = 1 - \Phi(m_{0k})}. The model is sampled in
 #' the marginal probits \eqn{m_{dk}}, which the data inform directly, and
-#' \eqn{a_{dk} = m_{dk}\sqrt{1 + b_{dk}^2}}.
+#' \eqn{a_{dk} = m_{dk}\sqrt{1 + b_{dk}^2}}. Since \eqn{Se_k = \Phi(m_{1k})} and
+#' \eqn{Sp_k = 1 - \Phi(m_{0k})} whatever the loadings, `sensitivity_prior` and
+#' `specificity_prior` are translated into priors on \eqn{m_{1k}} and
+#' \eqn{m_{0k}} and are exactly the priors of the marginal sensitivity and
+#' specificity. The uniform default corresponds to a standard normal prior on
+#' \eqn{m_{dk}}.
 #'
 #' The loadings describe the dependence between the tests within each class.
 #' Given \eqn{D = d}, the covariance between tests \eqn{j} and \eqn{k} has the
@@ -119,12 +124,12 @@ NULL
 #'   or on the real line, such as `prior_normal()`, which acts on
 #'   \eqn{\mathrm{logit}\,\pi}. Default `prior_beta(0.5, 2)`, the uniform
 #'   distribution on (0, 1).
-#' @param intercepts_prior Prior on the marginal probits \eqn{m_{dk}}, a
-#'   real-valued prior applied to all \eqn{2K} values (\eqn{K} tests for each
-#'   class) with the same prior, for example `prior_normal()`. For the diseased
-#'   class it is a prior on the probit of the sensitivity, for the healthy
-#'   class on the probit of one minus the specificity. Default
-#'   `prior_normal(0, 1.5)`.
+#' @param sensitivity_prior,specificity_prior Priors on the sensitivity and
+#'   on the specificity of the tests: a single prior on a probability,
+#'   `prior_beta()` or `elicit_beta()`, used for all tests, or a list with one
+#'   such prior per test, in the order of the tests. Default
+#'   `prior_beta(0.5, 2)`, the uniform distribution on (0, 1). They are the
+#'   priors of the marginal sensitivity and specificity, see Details.
 #' @param loadings_prior Prior on the loadings \eqn{b_{dk}}, a real-valued prior
 #'   applied to all \eqn{2K} loadings with the same prior, for example
 #'   `prior_normal()`. If `positive_loadings = TRUE` the prior is restricted to
@@ -163,12 +168,14 @@ random_effects <- S7::new_class(
   parent = accuracy_model,
   properties = list(
     prevalence_prior = prior_distribution,
-    intercepts_prior = prior_distribution,
+    sensitivity_prior = accuracy_prior,
+    specificity_prior = accuracy_prior,
     loadings_prior = prior_distribution,
     positive_loadings = S7::class_logical
   ),
   constructor = function(prevalence_prior = prior_beta(0.5, 2),
-                         intercepts_prior = prior_normal(0, 1.5),
+                         sensitivity_prior = prior_beta(0.5, 2),
+                         specificity_prior = prior_beta(0.5, 2),
                          loadings_prior = prior_normal(0, 1),
                          positive_loadings = TRUE,
                          verification = mar()) {
@@ -176,16 +183,21 @@ random_effects <- S7::new_class(
       S7::S7_object(),
       verification = verification,
       prevalence_prior = prevalence_prior,
-      intercepts_prior = intercepts_prior,
+      sensitivity_prior = sensitivity_prior,
+      specificity_prior = specificity_prior,
       loadings_prior = loadings_prior,
       positive_loadings = positive_loadings
     )
   },
   validator = function(self) {
-    targets <- c(prevalence_prior = "probability", intercepts_prior = "real",
-                 loadings_prior = "real")
+    targets <- c(prevalence_prior = "probability", loadings_prior = "real")
     for (name in names(targets)) {
       problem <- tryCatch(check_prior(S7::prop(self, name), targets[[name]], name),
+                          error = conditionMessage)
+      if (is.character(problem)) return(problem)
+    }
+    for (name in c("sensitivity_prior", "specificity_prior")) {
+      problem <- tryCatch(check_accuracy_prior(S7::prop(self, name), name),
                           error = conditionMessage)
       if (is.character(problem)) return(problem)
     }
@@ -197,12 +209,13 @@ random_effects <- S7::new_class(
 
 S7::method(print_generic, random_effects) <- function(x, ...) {
   cat("<random_effects> random effects model, Gauss-Hermite quadrature\n",
-      "  prevalence_prior: ", prior_label(x@prevalence_prior), "\n",
-      "  intercepts_prior: ", prior_label(x@intercepts_prior), "\n",
-      "  loadings_prior:   ", prior_label(x@loadings_prior),
+      "  prevalence_prior:  ", prior_label(x@prevalence_prior), "\n",
+      "  sensitivity_prior: ", priors_label(x@sensitivity_prior), "\n",
+      "  specificity_prior: ", priors_label(x@specificity_prior), "\n",
+      "  loadings_prior:    ", prior_label(x@loadings_prior),
       if (x@positive_loadings) ", all loadings positive" else ", first loading positive",
       "\n",
-      "  verification:     ", sub("^baysesp::", "", class(x@verification)[1]),
+      "  verification:      ", sub("^baysesp::", "", class(x@verification)[1]),
       "\n", sep = "")
   invisible(x)
 }

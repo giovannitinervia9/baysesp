@@ -15,11 +15,15 @@ test_that("loglinear() has the documented defaults and checks its priors", {
   m <- loglinear()
   expect_true(S7::S7_inherits(m, accuracy_model))
   expect_identical(m@interaction_order, 1L)
-  expect_identical(m@main_effects_prior@sd, 1.5)
+  expect_identical(c(m@sensitivity_prior@shape1, m@sensitivity_prior@shape2), c(1, 1))
+  expect_identical(c(m@specificity_prior@shape1, m@specificity_prior@shape2), c(1, 1))
   expect_identical(m@interactions_prior@sd, 1)
   expect_output(print(loglinear(2)), "log-linear model of order 2")
   expect_silent(loglinear(prevalence_prior = prior_normal(-2, 1)))
-  expect_error(loglinear(main_effects_prior = prior_beta()), "main_effects_prior")
+  expect_error(loglinear(sensitivity_prior = prior_normal(0, 1)), "sensitivity_prior")
+  expect_error(loglinear(specificity_prior = list(prior_beta(), 1)), "specificity_prior")
+  expect_output(print(loglinear(sensitivity_prior = list(prior_beta(0.9, 20), prior_beta()))),
+                "sensitivity_prior: +Beta.*; Beta")
   expect_error(loglinear(interaction_order = 0), "interaction_order")
   expect_error(loglinear(interaction_order = 1.5), "interaction_order")
 })
@@ -31,6 +35,17 @@ test_that("stan_data() translates the log-linear models", {
   expect_identical(s$order, as.array(c(1L, 1L, 1L, 2L, 2L, 2L)))
   expect_identical(c(s$mnar, s$n_beta), c(0L, 0L))
   expect_identical(s$prevalence_family, 3L)
+  # beta priors on Se (row 2) and on 1 - Sp (row 1, shapes swapped), per test
+  m <- loglinear(sensitivity_prior = prior_beta(0.8, 10),
+                 specificity_prior = list(prior_beta(0.9, 10), prior_beta(), prior_beta()))
+  s <- stan_data(m, mar(), d)
+  expect_identical(s$K, 3L)
+  expect_identical(s$accuracy_family, matrix(3L, 2, 3))
+  expect_equal(s$accuracy_params[2, , 1:2], matrix(c(8, 2), 3, 2, byrow = TRUE))
+  expect_equal(s$accuracy_params[1, 1, ], c(1, 9, 0))
+  expect_equal(s$accuracy_params[1, 2, ], c(1, 1, 0))
+  expect_error(stan_data(loglinear(sensitivity_prior = list(prior_beta(), prior_beta())),
+                         mar(), d), "one prior per test \\(3\\)")
   m <- loglinear(verification = mnar(by_profile = TRUE))
   # profile (0,0,0) has a subject but none verified: not MNAR for it (validation)
   expect_warning(s <- stan_data(m, m@verification, d),

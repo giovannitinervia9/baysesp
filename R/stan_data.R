@@ -132,16 +132,37 @@ loglinear_data <- function(model, data) {
   }
   X <- design_matrix(data@profiles, model@interaction_order)
   prevalence <- prior_code(model@prevalence_prior)
-  main <- prior_code(model@main_effects_prior)
   interaction <- prior_code(model@interactions_prior)
   c(list(
     J = nrow(X), P = ncol(X), X = unname(X),
     order = as.array(attr(X, "order")),
     n1 = data@n_diseased, n0 = data@n_healthy, u = data@n_unverified,
     prevalence_family = prevalence$family, prevalence_params = prevalence$params,
-    main_family = main$family, main_params = main$params,
-    interaction_family = interaction$family, interaction_params = interaction$params
-  ), structured_mar)
+    K = K, interaction_family = interaction$family, interaction_params = interaction$params
+  ), accuracy_priors(model, K, stan_prior_families[["beta"]]), structured_mar)
+}
+
+# Stan codes of sensitivity_prior and specificity_prior, which are beta priors
+# on Se_k and Sp_k: `family` is the beta family on the logit (loglinear.stan) or
+# on the probit (random_effects.stan). Row 1 is the healthy class, whose
+# parameter represents 1 - Sp_k, so the shapes are swapped; row 2 the diseased.
+accuracy_priors <- function(model, K, family) {
+  per_test <- function(argument) {
+    p <- as_prior_list(S7::prop(model, argument), argument)
+    if (length(p) != 1L && length(p) != K) {
+      stop("`", argument, "` must be one prior, or a list with one prior per test (",
+           K, ").", call. = FALSE)
+    }
+    rep_len(unname(p), K)
+  }
+  sp <- per_test("specificity_prior")
+  se <- per_test("sensitivity_prior")
+  params <- array(0, c(2L, K, 3L))
+  for (k in seq_len(K)) {
+    params[1L, k, 1:2] <- c(sp[[k]]@shape2, sp[[k]]@shape1)
+    params[2L, k, 1:2] <- c(se[[k]]@shape1, se[[k]]@shape2)
+  }
+  list(accuracy_family = matrix(family, 2L, K), accuracy_params = params)
 }
 
 # Design matrix X_m (specification, section 5.2): one column per subset S of at
@@ -178,7 +199,6 @@ random_effects_data <- function(model, data) {
   }
   gh <- gauss_hermite(32L)
   prevalence <- prior_code(model@prevalence_prior)
-  intercepts <- prior_code(model@intercepts_prior)
   loadings <- prior_code(model@loadings_prior)
   c(list(
     J = nrow(data@profiles), K = K, profiles = unname(data@profiles * 1),
@@ -186,9 +206,8 @@ random_effects_data <- function(model, data) {
     Q = length(gh$nodes), nodes = gh$nodes, log_weights = log(gh$weights),
     n1 = data@n_diseased, n0 = data@n_healthy, u = data@n_unverified,
     prevalence_family = prevalence$family, prevalence_params = prevalence$params,
-    intercepts_family = intercepts$family, intercepts_params = intercepts$params,
     loadings_family = loadings$family, loadings_params = loadings$params
-  ), structured_mar)
+  ), accuracy_priors(model, K, stan_prior_families[["probit_beta"]]), structured_mar)
 }
 
 # Gauss-Hermite quadrature for the standard normal distribution (Golub-Welsch):

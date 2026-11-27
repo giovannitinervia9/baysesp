@@ -61,8 +61,10 @@ data {
 
   int prevalence_family;                         // prior on the prevalence
   vector[3] prevalence_params;
-  int intercepts_family;                         // prior on the intercepts a_dk
-  vector[3] intercepts_params;
+  // priors on the marginal probits m_dk: row 1 on the healthy, the prior of
+  // 1 - Sp_k = Phi(m_1k); row 2 on the diseased, the prior of Se_k = Phi(m_2k)
+  array[2, K] int accuracy_family;
+  array[2, K] vector[3] accuracy_params;
   int loadings_family;                           // prior on the loadings b_dk
   vector[3] loadings_params;
 
@@ -104,7 +106,7 @@ transformed parameters {
 model {
   logit_prevalence ~ prior(prevalence_family, prevalence_params);
   for (d in 1:2) {
-    for (k in 1:K) m[d][k] ~ prior(intercepts_family, intercepts_params);
+    for (k in 1:K) m[d][k] ~ prior(accuracy_family[d, k], accuracy_params[d, k]);
     // b_head is declared positive: Stan adds the Jacobian, the prior is truncated
     for (k in 1:K) b[d][k] ~ prior(loadings_family, loadings_params);
   }

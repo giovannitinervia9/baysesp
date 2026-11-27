@@ -6,9 +6,12 @@
   //   1 = normal(mean, sd)                 params = [mean, sd, 0]
   //   2 = student_t(df, location, scale)   params = [df, location, scale]
   //   3 = beta(shape1, shape2)             params = [shape1, shape2, 0]
+  //   4 = beta(shape1, shape2) on Phi(x)   params = [shape1, shape2, 0]
   // Families 1 and 2 are densities of x itself (for a probability: of its
   // logit). Family 3 is a density of p = inv_logit(x), so the log Jacobian of
-  // the transformation, log p + log(1 - p), is added.
+  // the transformation, log p + log(1 - p), is added. Family 4 is a density of
+  // p = Phi(x), for a probability represented by its probit x (the marginal
+  // probits of random_effects.stan), with log Jacobian log phi(x).
 
   real prior_lpdf(real x, int family, vector params) {
     if (family == 1) {
@@ -18,6 +21,10 @@
     } else if (family == 3) {
       return beta_lpdf(inv_logit(x) | params[1], params[2])
              + log_inv_logit(x) + log1m_inv_logit(x);
+    } else if (family == 4) {
+      // log Phi on both tails: finite where Phi(x) rounds to 0 or 1
+      return (params[1] - 1) * std_normal_lcdf(x) + (params[2] - 1) * std_normal_lcdf(-x)
+             - lbeta(params[1], params[2]) + std_normal_lpdf(x);
     }
     reject("prior_lpdf: unknown prior family ", family);
   }

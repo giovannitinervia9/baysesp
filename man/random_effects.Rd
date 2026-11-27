@@ -6,7 +6,8 @@
 \usage{
 random_effects(
   prevalence_prior = prior_beta(0.5, 2),
-  intercepts_prior = prior_normal(0, 1.5),
+  sensitivity_prior = prior_beta(0.5, 2),
+  specificity_prior = prior_beta(0.5, 2),
   loadings_prior = prior_normal(0, 1),
   positive_loadings = TRUE,
   verification = mar()
@@ -19,12 +20,12 @@ or on the real line, such as \code{prior_normal()}, which acts on
 \eqn{\mathrm{logit}\,\pi}. Default \code{prior_beta(0.5, 2)}, the uniform
 distribution on (0, 1).}
 
-\item{intercepts_prior}{Prior on the marginal probits \eqn{m_{dk}}, a
-real-valued prior applied to all \eqn{2K} values (\eqn{K} tests for each
-class) with the same prior, for example \code{prior_normal()}. For the diseased
-class it is a prior on the probit of the sensitivity, for the healthy
-class on the probit of one minus the specificity. Default
-\code{prior_normal(0, 1.5)}.}
+\item{sensitivity_prior, specificity_prior}{Priors on the sensitivity and
+on the specificity of the tests: a single prior on a probability,
+\code{prior_beta()} or \code{elicit_beta()}, used for all tests, or a list with one
+such prior per test, in the order of the tests. Default
+\code{prior_beta(0.5, 2)}, the uniform distribution on (0, 1). They are the
+priors of the marginal sensitivity and specificity, see Details.}
 
 \item{loadings_prior}{Prior on the loadings \eqn{b_{dk}}, a real-valued prior
 applied to all \eqn{2K} loadings with the same prior, for example
@@ -80,7 +81,12 @@ m_{dk} = \frac{a_{dk}}{\sqrt{1 + b_{dk}^2}},}
 so that the sensitivity of test \eqn{k} is \eqn{Se_k = \Phi(m_{1k})} and
 its specificity is \eqn{Sp_k = 1 - \Phi(m_{0k})}. The model is sampled in
 the marginal probits \eqn{m_{dk}}, which the data inform directly, and
-\eqn{a_{dk} = m_{dk}\sqrt{1 + b_{dk}^2}}.
+\eqn{a_{dk} = m_{dk}\sqrt{1 + b_{dk}^2}}. Since \eqn{Se_k = \Phi(m_{1k})} and
+\eqn{Sp_k = 1 - \Phi(m_{0k})} whatever the loadings, \code{sensitivity_prior} and
+\code{specificity_prior} are translated into priors on \eqn{m_{1k}} and
+\eqn{m_{0k}} and are exactly the priors of the marginal sensitivity and
+specificity. The uniform default corresponds to a standard normal prior on
+\eqn{m_{dk}}.
 
 The loadings describe the dependence between the tests within each class.
 Given \eqn{D = d}, the covariance between tests \eqn{j} and \eqn{k} has the

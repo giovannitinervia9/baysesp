@@ -74,6 +74,36 @@ NULL
 #' from the data, and it is fragile if the structure is wrong (Albert and Dodd, 2004). With order
 #' \eqn{K} the model imposes no restriction and \eqn{\beta} is not identified (Gustafson, 2015).
 #'
+#' @section Priors on sensitivity and specificity:
+#' The model is fitted on the main effects \eqn{\eta_{d,k}}, and
+#' `sensitivity_prior` and `specificity_prior` are translated into priors on
+#' them. With `interaction_order = 1` the main effects are the logits of the
+#' accuracy,
+#' \deqn{\eta_{1,k} = \mathrm{logit}\,\mathrm{Se}_k, \qquad
+#'       \eta_{0,k} = \mathrm{logit}(1 - \mathrm{Sp}_k),}
+#' so a prior \eqn{\mathrm{Beta}(a, b)} given to `sensitivity_prior` is the
+#' prior of \eqn{\mathrm{Se}_k}, and one given to `specificity_prior` is the
+#' prior of \eqn{\mathrm{Sp}_k} (that is, \eqn{\mathrm{Beta}(b, a)} on the
+#' false positive rate \eqn{1 - \mathrm{Sp}_k}).
+#'
+#' With `interaction_order` of 2 or more the main effects are logits of
+#' conditional probabilities: the probability that test \eqn{k} is positive
+#' among the subjects of class \eqn{d} who are negative on all the other
+#' tests,
+#' \deqn{\mathrm{expit}\,\eta_{d,k} = P(T_k = 1 \mid D = d,\ T_j = 0
+#'       \ (j \neq k)).}
+#' So `sensitivity_prior` acts on the conditional sensitivity
+#' \deqn{P(T_k = 1 \mid D = 1,\ T_j = 0 \ (j \neq k)) = \mathrm{expit}\,\eta_{1,k},}
+#' and `specificity_prior` on the conditional specificity
+#' \deqn{P(T_k = 0 \mid D = 0,\ T_j = 0 \ (j \neq k)) = 1 - \mathrm{expit}\,\eta_{0,k},}
+#' not on the marginal \eqn{\mathrm{Se}_k} and \eqn{\mathrm{Sp}_k}. The
+#' priors implied on the marginal sensitivity and specificity also depend on
+#' `interactions_prior`. With the default priors and three tests they are
+#' close to the uniform, but the interactions move the marginal sensitivity
+#' slightly up and the marginal specificity slightly down (medians about 0.54
+#' and 0.46). An informative `sensitivity_prior` or `specificity_prior` should
+#' be set with this in mind.
+#'
 #' @param interaction_order A single whole number from 1 to the number of tests
 #'   \eqn{K}, the largest number of tests in an interaction. Default `1L`
 #'   (conditional independence). The lower bound is checked when the model is
@@ -83,10 +113,14 @@ NULL
 #'   or on the real line, such as `prior_normal()`, which acts on
 #'   \eqn{\mathrm{logit}\,\pi}. Default `prior_beta(0.5, 2)`, the uniform
 #'   distribution on (0, 1).
-#' @param main_effects_prior A single prior on the real line, applied to each
-#'   class-specific main effect \eqn{\eta_{d,k}} (one per test and disease
-#'   class). Default `prior_normal(0, 1.5)`. With order 1 these parameters are
-#'   logits of sensitivities and of false positive rates.
+#' @param sensitivity_prior,specificity_prior Priors on the sensitivity and
+#'   on the specificity of the tests: a single prior on a probability,
+#'   `prior_beta()` or `elicit_beta()`, used for all tests, or a list with one
+#'   such prior per test, in the order of the tests. Default
+#'   `prior_beta(0.5, 2)`, the uniform distribution on (0, 1). With
+#'   `interaction_order` of 2 or more they act on conditional sensitivities
+#'   and specificities: see the section "Priors on sensitivity and
+#'   specificity".
 #' @param interactions_prior A single prior on the real line, applied to each
 #'   class-specific interaction of order 2 or higher. Default
 #'   `prior_normal(0, 1)`. It has no effect when `interaction_order = 1`.
@@ -124,12 +158,14 @@ loglinear <- S7::new_class(
   properties = list(
     interaction_order = S7::class_integer,
     prevalence_prior = prior_distribution,
-    main_effects_prior = prior_distribution,
+    sensitivity_prior = accuracy_prior,
+    specificity_prior = accuracy_prior,
     interactions_prior = prior_distribution
   ),
   constructor = function(interaction_order = 1L,
                          prevalence_prior = prior_beta(0.5, 2),
-                         main_effects_prior = prior_normal(0, 1.5),
+                         sensitivity_prior = prior_beta(0.5, 2),
+                         specificity_prior = prior_beta(0.5, 2),
                          interactions_prior = prior_normal(0, 1),
                          verification = mar()) {
     if (!is_scalar_number(interaction_order) || interaction_order < 1 ||
@@ -141,15 +177,20 @@ loglinear <- S7::new_class(
       verification = verification,
       interaction_order = as.integer(interaction_order),
       prevalence_prior = prevalence_prior,
-      main_effects_prior = main_effects_prior,
+      sensitivity_prior = sensitivity_prior,
+      specificity_prior = specificity_prior,
       interactions_prior = interactions_prior
     )
   },
   validator = function(self) {
-    targets <- c(prevalence_prior = "probability", main_effects_prior = "real",
-                 interactions_prior = "real")
+    targets <- c(prevalence_prior = "probability", interactions_prior = "real")
     for (name in names(targets)) {
       problem <- tryCatch(check_prior(S7::prop(self, name), targets[[name]], name),
+                          error = conditionMessage)
+      if (is.character(problem)) return(problem)
+    }
+    for (name in c("sensitivity_prior", "specificity_prior")) {
+      problem <- tryCatch(check_accuracy_prior(S7::prop(self, name), name),
                           error = conditionMessage)
       if (is.character(problem)) return(problem)
     }
@@ -159,7 +200,8 @@ loglinear <- S7::new_class(
 S7::method(print_generic, loglinear) <- function(x, ...) {
   cat("<loglinear> log-linear model of order ", x@interaction_order, "\n",
       "  prevalence_prior:   ", prior_label(x@prevalence_prior), "\n",
-      "  main_effects_prior: ", prior_label(x@main_effects_prior), "\n",
+      "  sensitivity_prior:  ", priors_label(x@sensitivity_prior), "\n",
+      "  specificity_prior:  ", priors_label(x@specificity_prior), "\n",
       "  interactions_prior: ", prior_label(x@interactions_prior), "\n",
       "  verification:       ", sub("^baysesp::", "", class(x@verification)[1]),
       "\n", sep = "")

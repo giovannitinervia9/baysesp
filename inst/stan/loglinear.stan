@@ -26,8 +26,11 @@ data {
 
   int prevalence_family;                         // prior on the prevalence
   vector[3] prevalence_params;
-  int main_family;                               // prior on the main effects
-  vector[3] main_params;
+  int<lower=1> K;                                // number of tests
+  // priors on the main effects eta_{d,k} (the first K columns of X): row 1 on
+  // the healthy, the prior of 1 - Sp_k; row 2 on the diseased, the prior of Se_k
+  array[2, K] int accuracy_family;
+  array[2, K] vector[3] accuracy_params;
   int interaction_family;                        // prior on the interactions
   vector[3] interaction_params;
 
@@ -43,6 +46,7 @@ data {
 transformed data {
   array[J] int verified_pos = verified_positions(n1, n0);
   int J1 = max(verified_pos);                    // profiles with verified subjects
+  for (k in 1:K) if (order[k] != 1) reject("the first K columns of X must be the main effects");
   if (n_beta > 1 && n_beta != J1) reject("n_beta must be 0, 1 or the number of verified profiles");
 }
 
@@ -57,9 +61,9 @@ parameters {
 model {
   logit_prevalence ~ prior(prevalence_family, prevalence_params);
   for (p in 1:P) {
-    if (order[p] == 1) {
-      eta0[p] ~ prior(main_family, main_params);
-      eta1[p] ~ prior(main_family, main_params);
+    if (p <= K) {
+      eta0[p] ~ prior(accuracy_family[1, p], accuracy_params[1, p]);
+      eta1[p] ~ prior(accuracy_family[2, p], accuracy_params[2, p]);
     } else {
       eta0[p] ~ prior(interaction_family, interaction_params);
       eta1[p] ~ prior(interaction_family, interaction_params);
